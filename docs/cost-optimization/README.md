@@ -42,7 +42,7 @@ Use `opencode stats --json --cost --project .` and record:
 - test pass rate
 - rework and human interventions
 
-See [benchmark methodology](../benchmarks/methodology.md).
+See [benchmark methodology](../benchmarks/methodology.md) and [cost observability](observability.md).
 
 ## Warning on vendor claims
 

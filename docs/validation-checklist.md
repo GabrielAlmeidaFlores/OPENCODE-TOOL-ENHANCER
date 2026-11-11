@@ -61,6 +61,13 @@ Then complete the manual checks for your environment.
 - [ ] `examples/csharp`: `dotnet test Example.Tests/Example.Tests.csproj` passes.
 - [ ] The multi-agent example documents the expected event flow.
 
+## Runtime smoke
+
+- [ ] All eight commands respond on the TypeScript fixture.
+- [ ] All ten skills load through the `skill` tool.
+- [ ] `python3 scripts/benchmarking/report_costs.py` runs without error.
+- [ ] MCP overhead evidence is current.
+
 ## Documentation
 
 - [ ] Every command in the quick start was executed.

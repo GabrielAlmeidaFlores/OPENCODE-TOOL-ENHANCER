@@ -10,8 +10,10 @@
 # license: MIT
 # modified: adapted command frontmatter for OpenCode; body unchanged
 description: Orchestrate end-to-end application performance optimization from profiling to monitoring
-agent: performance-analyst
+agent: coordinator
 ---
+> **OpenCode compatibility (local).** Use the `subagent` tool, not Claude Code `Task`. Use `question` for checkpoints, not `AskUserQuestion`. Do not use `EnterPlanMode`. The specialist names in this command are mapped to the agents in `docs/agents/roles.md`.
+
 
 > OpenCode adaptation: map the specialist names in this command to the agents in `docs/agents/roles.md`.
 
@@ -23,10 +25,10 @@ You MUST follow these rules exactly. Violating any of them is a failure.
 
 1. **Execute steps in order.** Do NOT skip ahead, reorder, or merge steps.
 2. **Write output files.** Each step MUST produce its output file in `.performance-optimization/` before the next step begins. Read from prior step files — do NOT rely on context window memory.
-3. **Stop at checkpoints.** When you reach a `PHASE CHECKPOINT`, you MUST stop and wait for explicit user approval before continuing. Use the AskUserQuestion tool with clear options.
+3. **Stop at checkpoints.** When you reach a `PHASE CHECKPOINT`, you MUST stop and wait for explicit user approval before continuing. Use the question tool with clear options.
 4. **Halt on failure.** If any step fails (agent error, test failure, missing dependency), STOP immediately. Present the error and ask the user how to proceed. Do NOT silently continue.
-5. **Use only local agents.** All `subagent_type` references use agents bundled with this plugin or `general-purpose`. No cross-plugin dependencies.
-6. **Never enter plan mode autonomously.** Do NOT use EnterPlanMode. This command IS the plan — execute it.
+5. **Use only local agents.** All `agent` references use agents bundled with this plugin or `researcher`. No cross-plugin dependencies.
+6. **Never enter plan mode autonomously.** Do NOT use plan mode. This command IS the plan — execute it.
 
 ## Pre-flight Checks
 
@@ -80,11 +82,11 @@ Extract the target description from `$ARGUMENTS` (everything before the flags). 
 
 ### Step 1: Comprehensive Performance Profiling
 
-Use the Task tool to launch the performance engineer:
+Use the subagent tool to launch the performance engineer:
 
 ```
 Task:
-  subagent_type: "application-performance-performance-engineer"
+  agent: "performance-analyst"
   description: "Profile application performance for $TARGET"
   prompt: |
     Profile application performance comprehensively for: $TARGET.
@@ -112,11 +114,11 @@ Update `state.json`: set `current_step` to 2, add step 1 to `completed_steps`.
 
 Read `.performance-optimization/01-profiling.md` to load profiling context.
 
-Use the Task tool:
+Use the subagent tool:
 
 ```
 Task:
-  subagent_type: "application-performance-observability-engineer"
+  agent: "performance-analyst"
   description: "Assess observability setup for $TARGET"
   prompt: |
     Assess current observability setup for: $TARGET.
@@ -146,11 +148,11 @@ Update `state.json`: set `current_step` to 3, add step 2 to `completed_steps`.
 
 Read `.performance-optimization/01-profiling.md`.
 
-Use the Task tool:
+Use the subagent tool:
 
 ```
 Task:
-  subagent_type: "application-performance-performance-engineer"
+  agent: "performance-analyst"
   description: "Analyze user experience metrics for $TARGET"
   prompt: |
     Analyze user experience metrics for: $TARGET.
@@ -208,11 +210,11 @@ Do NOT proceed to Phase 2 until the user selects option 1. If they select option
 
 Read `.performance-optimization/01-profiling.md` and `.performance-optimization/03-ux-analysis.md`.
 
-Use the Task tool:
+Use the subagent tool:
 
 ```
 Task:
-  subagent_type: "general-purpose"
+  agent: "researcher"
   description: "Optimize database performance for $TARGET"
   prompt: |
     You are a database optimization expert. Optimize database performance for: $TARGET.
@@ -245,11 +247,11 @@ Update `state.json`: set `current_step` to 5, add step 4 to `completed_steps`.
 
 Read `.performance-optimization/01-profiling.md` and `.performance-optimization/04-database.md`.
 
-Use the Task tool:
+Use the subagent tool:
 
 ```
 Task:
-  subagent_type: "general-purpose"
+  agent: "researcher"
   description: "Optimize backend services for $TARGET"
   prompt: |
     You are a backend performance architect. Optimize backend services for: $TARGET.
@@ -283,11 +285,11 @@ Update `state.json`: set `current_step` to 6, add step 5 to `completed_steps`.
 
 Read `.performance-optimization/01-profiling.md` and `.performance-optimization/05-backend.md`.
 
-Use the Task tool:
+Use the subagent tool:
 
 ```
 Task:
-  subagent_type: "application-performance-performance-engineer"
+  agent: "performance-analyst"
   description: "Optimize distributed system performance for $TARGET"
   prompt: |
     Optimize distributed system performance for: $TARGET.
@@ -343,11 +345,11 @@ Do NOT proceed to Phase 3 until the user approves.
 
 Read `.performance-optimization/03-ux-analysis.md` and `.performance-optimization/05-backend.md`.
 
-Use the Task tool:
+Use the subagent tool:
 
 ```
 Task:
-  subagent_type: "application-performance-frontend-developer"
+  agent: "frontend-developer"
   description: "Optimize frontend performance for $TARGET"
   prompt: |
     Optimize frontend performance for: $TARGET targeting Core Web Vitals improvements.
@@ -380,11 +382,11 @@ Update `state.json`: set `current_step` to 8, add step 7 to `completed_steps`.
 
 Read `.performance-optimization/07-frontend.md`.
 
-Use the Task tool:
+Use the subagent tool:
 
 ```
 Task:
-  subagent_type: "general-purpose"
+  agent: "researcher"
   description: "Optimize CDN and edge performance for $TARGET"
   prompt: |
     You are a cloud infrastructure and CDN optimization expert. Optimize CDN and edge
@@ -416,11 +418,11 @@ Update `state.json`: set `current_step` to 9, add step 8 to `completed_steps`.
 
 Read `.performance-optimization/07-frontend.md` and `.performance-optimization/08-cdn.md`.
 
-Use the Task tool:
+Use the subagent tool:
 
 ```
 Task:
-  subagent_type: "general-purpose"
+  agent: "researcher"
   description: "Optimize mobile experience for $TARGET"
   prompt: |
     You are a mobile performance optimization expert. Optimize mobile experience for: $TARGET.
@@ -477,11 +479,11 @@ Do NOT proceed to Phase 4 until the user approves.
 
 Read `.performance-optimization/01-profiling.md`.
 
-Use the Task tool:
+Use the subagent tool:
 
 ```
 Task:
-  subagent_type: "application-performance-performance-engineer"
+  agent: "performance-analyst"
   description: "Conduct comprehensive load testing for $TARGET"
   prompt: |
     Conduct comprehensive load testing for: $TARGET using k6/Gatling/Artillery.
@@ -512,11 +514,11 @@ Update `state.json`: set `current_step` to 11, add step 10 to `completed_steps`.
 
 Read `.performance-optimization/10-load-testing.md` and `.performance-optimization/01-profiling.md`.
 
-Use the Task tool:
+Use the subagent tool:
 
 ```
 Task:
-  subagent_type: "general-purpose"
+  agent: "researcher"
   description: "Create performance regression tests for $TARGET"
   prompt: |
     You are a test automation expert specializing in performance testing. Create automated
@@ -573,11 +575,11 @@ Do NOT proceed to Phase 5 until the user approves.
 
 Read `.performance-optimization/02-observability.md` and `.performance-optimization/10-load-testing.md`.
 
-Use the Task tool:
+Use the subagent tool:
 
 ```
 Task:
-  subagent_type: "application-performance-observability-engineer"
+  agent: "performance-analyst"
   description: "Implement production performance monitoring for $TARGET"
   prompt: |
     Implement production performance monitoring for: $TARGET.
@@ -611,11 +613,11 @@ Update `state.json`: set `current_step` to 13, add step 12 to `completed_steps`.
 
 Read all previous `.performance-optimization/*.md` files.
 
-Use the Task tool:
+Use the subagent tool:
 
 ```
 Task:
-  subagent_type: "application-performance-performance-engineer"
+  agent: "performance-analyst"
   description: "Establish continuous optimization process for $TARGET"
   prompt: |
     Establish continuous optimization process for: $TARGET.

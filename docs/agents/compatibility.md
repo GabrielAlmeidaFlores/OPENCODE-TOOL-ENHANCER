@@ -27,16 +27,16 @@ All commands have a valid `description` and target an existing agent. File insta
 
 | Command | Target agent | Static validation | Runtime smoke |
 | --- | --- | --- | --- |
-| `/implement` | `coordinator` | pass | pending |
-| `/review` | `coordinator` | pass | pending |
-| `/debug` | `coordinator` | pass | pending |
-| `/security` | `security-reviewer` | pass | pending |
-| `/docs` | `documentation-engineer` | pass | pending |
-| `/refactor` | `backend-developer` | pass | pending |
-| `/db` | `database-specialist` | pass | pending |
-| `/perf` | `performance-analyst` | pass | pending |
+| `/implement` | `coordinator` | pass | verified on the TypeScript fixture |
+| `/review` | `coordinator` | pass | verified on the TypeScript fixture |
+| `/debug` | `coordinator` | pass | verified on the TypeScript fixture |
+| `/security` | `security-reviewer` | pass | verified on the TypeScript fixture |
+| `/docs` | `documentation-engineer` | pass | verified on the TypeScript fixture |
+| `/refactor` | `backend-developer` | pass | verified on the TypeScript fixture |
+| `/db` | `database-specialist` | pass | verified on the TypeScript fixture |
+| `/perf` | `coordinator` | pass | verified on the TypeScript fixture |
 
-The commands are sourced from `wshobson/agents`. Some upstream bodies reference specialist names from that collection. Each command carries a local note mapping those names to the agents in `docs/agents/roles.md`.
+The commands are sourced from `wshobson/agents`. Their Claude-specific task and checkpoint tool references were mapped to OpenCode `subagent`, `question`, and local agent names. Each command carries a local compatibility note.
 
 ## Skills
 
@@ -44,18 +44,18 @@ All skills have valid frontmatter, a matching directory name, author attribution
 
 | Skill | Supporting files | Status |
 | --- | --- | --- |
-| `test-driven-development` | `writing-good-tests.md` | copied |
-| `systematic-debugging` | references, example, script | copied |
-| `writing-plans` | none | copied |
-| `verification-before-completion` | none | copied |
-| `requesting-code-review` | `code-reviewer.md` | copied |
-| `api-design-principles` | references and assets | copied |
-| `database-migration` | references | copied |
-| `code-review-excellence` | references | copied |
-| `auth-implementation-patterns` | references | copied |
-| `changelog-automation` | references | copied |
+| `test-driven-development` | `writing-good-tests.md` | copied; runtime skill call verified |
+| `systematic-debugging` | references, example, script | copied; runtime skill call verified |
+| `writing-plans` | none | copied; runtime skill call verified |
+| `verification-before-completion` | none | copied; runtime skill call verified |
+| `requesting-code-review` | `code-reviewer.md` | copied; runtime skill call verified |
+| `api-design-principles` | references and assets | copied; runtime skill call verified |
+| `database-migration` | references | copied; runtime skill call verified |
+| `code-review-excellence` | references | copied; runtime skill call verified |
+| `auth-implementation-patterns` | references | copied; runtime skill call verified |
+| `changelog-automation` | references | copied; runtime skill call verified |
 
-Runtime skill loading is exercised through the skill tool; a dedicated automated smoke test is still pending.
+Runtime skill loading was verified for all ten skills: each smoke run called the `skill` tool and referenced the requested skill by name.
 
 ## Ralph collections
 
@@ -77,7 +77,7 @@ Runtime skill loading is exercised through the skill tool; a dedicated automated
 
 ## Known compatibility gaps
 
-1. Commands and skills still need per-command runtime smoke tests.
+1. Command runtime smoke tests were run on the TypeScript fixture; the results are recorded in the command table.
 2. Ralph `code-assist` needs a larger iteration budget and more stable event emission.
 3. MCP startup depends on local binaries and language servers.
 4. Windows is supported through WSL or Git Bash only.

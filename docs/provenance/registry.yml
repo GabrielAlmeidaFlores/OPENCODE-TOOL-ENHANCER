@@ -407,4 +407,9 @@ original_artifacts:
     kind: "glue"
     author: "OPENCODE-TOOL-ENHANCER contributors"
     justification: "Isolated runner required because Ralph 2.10.1 auto-commits during landing; keeps the main checkout untouched and exports an unstaged patch."
+  - id: cost-report
+    local: "scripts/benchmarking/report_costs.py"
+    kind: "glue"
+    author: "OPENCODE-TOOL-ENHANCER contributors"
+    justification: "Aggregates harness session artifacts into a Markdown cost report; no upstream equivalent."
 

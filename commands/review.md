@@ -12,6 +12,8 @@
 description: Orchestrate comprehensive multi-dimensional code review using specialized review agents across architecture, security, performance, testing, and best practices
 agent: coordinator
 ---
+> **OpenCode compatibility (local).** Use the `subagent` tool, not Claude Code `Task`. Use `question` for checkpoints, not `AskUserQuestion`. Do not use `EnterPlanMode`. The specialist names in this command are mapped to the agents in `docs/agents/roles.md`.
+
 
 > OpenCode adaptation: map the specialist names in this command to the agents in `docs/agents/roles.md`.
 
@@ -23,10 +25,10 @@ You MUST follow these rules exactly. Violating any of them is a failure.
 
 1. **Execute phases in order.** Do NOT skip ahead, reorder, or merge phases.
 2. **Write output files.** Each phase MUST produce its output file in `.full-review/` before the next phase begins. Read from prior phase files -- do NOT rely on context window memory.
-3. **Stop at checkpoints.** When you reach a `PHASE CHECKPOINT`, you MUST stop and wait for explicit user approval before continuing. Use the AskUserQuestion tool with clear options.
+3. **Stop at checkpoints.** When you reach a `PHASE CHECKPOINT`, you MUST stop and wait for explicit user approval before continuing. Use the question tool with clear options.
 4. **Halt on failure.** If any step fails (agent error, missing files, access issues), STOP immediately. Present the error and ask the user how to proceed. Do NOT silently continue.
-5. **Use only local agents.** All `subagent_type` references use agents bundled with this plugin or `general-purpose`. No cross-plugin dependencies.
-6. **Never enter plan mode autonomously.** Do NOT use EnterPlanMode. This command IS the plan -- execute it.
+5. **Use only local agents.** All `agent` references use agents bundled with this plugin or `researcher`. No cross-plugin dependencies.
+6. **Never enter plan mode autonomously.** Do NOT use plan mode. This command IS the plan -- execute it.
 
 ## Pre-flight Checks
 
@@ -117,13 +119,13 @@ Update `state.json`: add `"00-scope.md"` to `files_created`, add step 0 to `comp
 
 ## Phase 1: Code Quality & Architecture Review (Steps 1A-1B)
 
-Run both agents in parallel using multiple Task tool calls in a single response.
+Run both agents in parallel using multiple subagent tool calls in a single response.
 
 ### Step 1A: Code Quality Analysis
 
 ```
 Task:
-  subagent_type: "comprehensive-review-code-reviewer"
+  agent: "code-reviewer"
   description: "Code quality analysis for $ARGUMENTS"
   prompt: |
     Perform a comprehensive code quality review.
@@ -153,7 +155,7 @@ Task:
 
 ```
 Task:
-  subagent_type: "comprehensive-review-architect-review"
+  agent: "architect"
   description: "Architecture review for $ARGUMENTS"
   prompt: |
     Review the architectural design and structural integrity of the target code.
@@ -204,13 +206,13 @@ Update `state.json`: set `current_step` to 2, `current_phase` to 2, add steps 1A
 
 Read `.full-review/01-quality-architecture.md` for context from Phase 1.
 
-Run both agents in parallel using multiple Task tool calls in a single response.
+Run both agents in parallel using multiple subagent tool calls in a single response.
 
 ### Step 2A: Security Vulnerability Assessment
 
 ```
 Task:
-  subagent_type: "comprehensive-review-security-auditor"
+  agent: "security-reviewer"
   description: "Security audit for $ARGUMENTS"
   prompt: |
     Execute a comprehensive security audit on the target code.
@@ -244,7 +246,7 @@ Task:
 
 ```
 Task:
-  subagent_type: "general-purpose"
+  agent: "researcher"
   description: "Performance analysis for $ARGUMENTS"
   prompt: |
     You are a performance engineer. Conduct a performance and scalability analysis of the target code.
@@ -327,13 +329,13 @@ Do NOT proceed to Phase 3 until the user approves.
 
 Read `.full-review/01-quality-architecture.md` and `.full-review/02-security-performance.md` for context.
 
-Run both agents in parallel using multiple Task tool calls in a single response.
+Run both agents in parallel using multiple subagent tool calls in a single response.
 
 ### Step 3A: Test Coverage & Quality Analysis
 
 ```
 Task:
-  subagent_type: "general-purpose"
+  agent: "researcher"
   description: "Test coverage analysis for $ARGUMENTS"
   prompt: |
     You are a test automation engineer. Evaluate the testing strategy and coverage for the target code.
@@ -366,7 +368,7 @@ Task:
 
 ```
 Task:
-  subagent_type: "general-purpose"
+  agent: "researcher"
   description: "Documentation review for $ARGUMENTS"
   prompt: |
     You are a technical documentation architect. Review documentation completeness and accuracy.
@@ -416,13 +418,13 @@ Update `state.json`: set `current_step` to 4, `current_phase` to 4, add steps 3A
 
 Read all previous `.full-review/*.md` files for full context.
 
-Run both agents in parallel using multiple Task tool calls in a single response.
+Run both agents in parallel using multiple subagent tool calls in a single response.
 
 ### Step 4A: Framework & Language Best Practices
 
 ```
 Task:
-  subagent_type: "general-purpose"
+  agent: "researcher"
   description: "Framework best practices review for $ARGUMENTS"
   prompt: |
     You are an expert in modern framework and language best practices. Verify adherence to current standards.
@@ -454,7 +456,7 @@ Task:
 
 ```
 Task:
-  subagent_type: "general-purpose"
+  agent: "researcher"
   description: "CI/CD and DevOps practices review for $ARGUMENTS"
   prompt: |
     You are a DevOps engineer. Review CI/CD pipeline and operational practices.

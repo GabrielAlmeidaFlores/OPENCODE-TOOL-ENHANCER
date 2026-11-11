@@ -12,6 +12,8 @@
 description: Static Application Security Testing (SAST) for code vulnerability analysis across multiple languages and frameworks
 agent: security-reviewer
 ---
+> **OpenCode compatibility (local).** Use the `subagent` tool, not Claude Code `Task`. Use `question` for checkpoints, not `AskUserQuestion`. Do not use `EnterPlanMode`. The specialist names in this command are mapped to the agents in `docs/agents/roles.md`.
+
 
 > OpenCode adaptation: map the specialist names in this command to the agents in `docs/agents/roles.md`.
 

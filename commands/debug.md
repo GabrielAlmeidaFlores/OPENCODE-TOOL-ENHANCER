@@ -12,6 +12,8 @@
 description: AI-assisted smart debugging — parse error messages, stack traces, and failure patterns to identify root causes and produce a fix with automated observability steps.
 agent: coordinator
 ---
+> **OpenCode compatibility (local).** Use the `subagent` tool, not Claude Code `Task`. Use `question` for checkpoints, not `AskUserQuestion`. Do not use `EnterPlanMode`. The specialist names in this command are mapped to the agents in `docs/agents/roles.md`.
+
 
 > OpenCode adaptation: map the specialist names in this command to the agents in `docs/agents/roles.md`.
 
@@ -34,7 +36,7 @@ Parse for:
 
 ### 1. Initial Triage
 
-Use Task tool (subagent_type="debugging-toolkit-debugger") for AI-powered analysis:
+Use subagent tool (agent="researcher") for AI-powered analysis:
 
 - Error pattern recognition
 - Stack trace analysis with probable causes

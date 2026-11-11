@@ -12,6 +12,8 @@
 description: Refactor provided code for cleanliness, maintainability, and alignment with SOLID principles and modern best practices — no over-engineering.
 agent: backend-developer
 ---
+> **OpenCode compatibility (local).** Use the `subagent` tool, not Claude Code `Task`. Use `question` for checkpoints, not `AskUserQuestion`. Do not use `EnterPlanMode`. The specialist names in this command are mapped to the agents in `docs/agents/roles.md`.
+
 
 > OpenCode adaptation: map the specialist names in this command to the agents in `docs/agents/roles.md`.
 

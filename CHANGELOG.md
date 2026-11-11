@@ -48,6 +48,15 @@ All notable changes to this repository are documented here.
 - Removed inline and field-level comments from configuration files; explanations live in `docs/`.
 - Moved Ralph hat provenance and preset notes into a single standardized header block.
 
+### Observability and release readiness (2026-11-11)
+
+- Added `scripts/benchmarking/report_costs.py` to aggregate cost and token data from session artifacts.
+- Added cost observability and MCP overhead documentation.
+- Added the release checklist.
+- Added an evidence-status table to the README and downgraded the hero claim to “production-oriented”.
+- Adapted sourced commands to OpenCode subagent and question tools; all eight commands passed runtime smoke tests on the TypeScript fixture.
+- Verified all ten skills through the OpenCode `skill` tool.
+
 ### Stabilization and validation (2026-11-11)
 
 - Added `scripts/maintenance/run-ralph-isolated.sh` so Ralph runs in a separate clone and exports an unstaged patch.

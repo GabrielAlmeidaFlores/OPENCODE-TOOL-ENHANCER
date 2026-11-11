@@ -8,7 +8,7 @@
 <h1 align="center">OPENCODE-TOOL-ENHANCER</h1>
 
 <p align="center">
-  <strong>A production-grade OpenCode profile with sourced agents, Ralph orchestration, and a code-intelligence stack.</strong>
+  <strong>A production-oriented OpenCode profile with sourced agents, Ralph orchestration, and a code-intelligence stack.</strong>
 </p>
 
 <p align="center">
@@ -56,6 +56,21 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 | Examples | TypeScript, C#, multi-agent workflows | [`examples/`](examples) |
 | Benchmarks | Methodology, tasks, harness, results | [`benchmarks/`](benchmarks) |
 | Documentation | Research, decisions, guides, provenance | [`docs/`](docs) |
+
+## Evidence status
+
+| Area | Current status |
+| --- | --- |
+| Static validation | Verified, including links and provenance |
+| Agent discovery | Verified with OpenCode 2.2.7 |
+| TypeScript and C# examples | Verified |
+| Harness smoke execution | Verified on one TypeScript task; not a benchmark result |
+| Command runtime | All eight commands verified on the TypeScript fixture |
+| Skill runtime | All ten skills verified through the `skill` tool |
+| MCP startup overhead | Narrow `debug agents` measurement recorded |
+| Benchmarks | Deferred by decision; no published results |
+| Real-repository pilots | Repositories selected and pinned; execution pending |
+| CI | Workflow added; green confirmation pending |
 
 ## Architecture
 
@@ -480,7 +495,7 @@ All skills are adapted from maintained upstream repositories and keep their orig
 | `/docs` | `documentation-engineer` | Generate and refresh documentation |
 | `/refactor` | `backend-developer` | Behavior-preserving cleanup |
 | `/db` | `database-specialist` | SQL migrations and zero-downtime changes |
-| `/perf` | `performance-analyst` | Profiling to monitoring |
+| `/perf` | `coordinator` | Profiling to monitoring |
 
 ## Ralph workflows
 
@@ -593,6 +608,9 @@ The benchmark harness is reproducible, but **no results are published yet**. Thi
 | [Code intelligence](docs/code-intelligence/README.md) | Retrieval strategy and tool guides |
 | [Cost optimization](docs/cost-optimization/README.md) | Levers, anti-patterns, metrics |
 | [Benchmark methodology](docs/benchmarks/methodology.md) | Tasks, metrics, validity rules |
+| [Cost observability](docs/cost-optimization/observability.md) | Cost and token reporting |
+| [MCP overhead](docs/code-intelligence/overhead.md) | Narrow startup measurement |
+| [Release checklist](docs/RELEASE_CHECKLIST.md) | Pre-release requirements |
 | [Validation checklist](docs/validation-checklist.md) | Automated and manual checks |
 | [Troubleshooting](docs/troubleshooting/README.md) | Common failures and fixes |
 | [Provenance](docs/provenance/README.md) | Sources, authors, modification rules |

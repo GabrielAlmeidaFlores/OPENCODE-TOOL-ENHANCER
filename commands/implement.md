@@ -12,6 +12,8 @@
 description: Orchestrate end-to-end feature development from requirements to deployment
 agent: coordinator
 ---
+> **OpenCode compatibility (local).** Use the `subagent` tool, not Claude Code `Task`. Use `question` for checkpoints, not `AskUserQuestion`. Do not use `EnterPlanMode`. The specialist names in this command are mapped to the agents in `docs/agents/roles.md`.
+
 
 > OpenCode adaptation: map the specialist names in this command to the agents in `docs/agents/roles.md`.
 
@@ -23,10 +25,10 @@ You MUST follow these rules exactly. Violating any of them is a failure.
 
 1. **Execute steps in order.** Do NOT skip ahead, reorder, or merge steps.
 2. **Write output files.** Each step MUST produce its output file in `.feature-dev/` before the next step begins. Read from prior step files — do NOT rely on context window memory.
-3. **Stop at checkpoints.** When you reach a `PHASE CHECKPOINT`, you MUST stop and wait for explicit user approval before continuing. Use the AskUserQuestion tool with clear options.
+3. **Stop at checkpoints.** When you reach a `PHASE CHECKPOINT`, you MUST stop and wait for explicit user approval before continuing. Use the question tool with clear options.
 4. **Halt on failure.** If any step fails (agent error, test failure, missing dependency), STOP immediately. Present the error and ask the user how to proceed. Do NOT silently continue.
-5. **Use only local agents.** All `subagent_type` references use agents bundled with this plugin or `general-purpose`. No cross-plugin dependencies.
-6. **Never enter plan mode autonomously.** Do NOT use EnterPlanMode. This command IS the plan — execute it.
+5. **Use only local agents.** All `agent` references use agents bundled with this plugin or `researcher`. No cross-plugin dependencies.
+6. **Never enter plan mode autonomously.** Do NOT use plan mode. This command IS the plan — execute it.
 
 ## Pre-flight Checks
 
@@ -80,7 +82,7 @@ Extract the feature description from `$ARGUMENTS` (everything before the flags).
 
 ### Step 1: Requirements Gathering
 
-Gather requirements through interactive Q&A. Ask ONE question at a time using the AskUserQuestion tool. Do NOT ask all questions at once.
+Gather requirements through interactive Q&A. Ask ONE question at a time using the question tool. Do NOT ask all questions at once.
 
 **Questions to ask (in order):**
 
@@ -134,11 +136,11 @@ Update `state.json`: set `current_step` to 2, add `"01-requirements.md"` to `fil
 
 Read `.feature-dev/01-requirements.md` to load requirements context.
 
-Use the Task tool to launch the architecture agent:
+Use the subagent tool to launch the architecture agent:
 
 ```
 Task:
-  subagent_type: "backend-development-backend-architect"
+  agent: "backend-developer"
   description: "Design architecture for $FEATURE"
   prompt: |
     Design the technical architecture for this feature.
@@ -187,11 +189,11 @@ Do NOT proceed to Phase 2 until the user selects option 1. If they select option
 
 Read `.feature-dev/01-requirements.md` and `.feature-dev/02-architecture.md`.
 
-Use the Task tool to launch the backend architect for implementation:
+Use the subagent tool to launch the backend architect for implementation:
 
 ```
 Task:
-  subagent_type: "backend-development-backend-architect"
+  agent: "backend-developer"
   description: "Implement backend for $FEATURE"
   prompt: |
     Implement the backend for this feature based on the approved architecture.
@@ -221,11 +223,11 @@ Update `state.json`: set `current_step` to 4, add step 3 to `completed_steps`.
 
 Read `.feature-dev/01-requirements.md`, `.feature-dev/02-architecture.md`, and `.feature-dev/03-backend.md`.
 
-Use the Task tool:
+Use the subagent tool:
 
 ```
 Task:
-  subagent_type: "general-purpose"
+  agent: "researcher"
   description: "Implement frontend for $FEATURE"
   prompt: |
     You are a frontend developer. Implement the frontend components for this feature.
@@ -259,13 +261,13 @@ Update `state.json`: set `current_step` to 5, add step 4 to `completed_steps`.
 
 Read `.feature-dev/03-backend.md` and `.feature-dev/04-frontend.md`.
 
-Launch three agents in parallel using multiple Task tool calls in a single response:
+Launch three agents in parallel using multiple subagent tool calls in a single response:
 
 **5a. Test Suite Creation:**
 
 ```
 Task:
-  subagent_type: "backend-development-test-automator"
+  agent: "test-engineer"
   description: "Create test suite for $FEATURE"
   prompt: |
     Create a comprehensive test suite for this feature.
@@ -292,7 +294,7 @@ Task:
 
 ```
 Task:
-  subagent_type: "backend-development-security-auditor"
+  agent: "security-reviewer"
   description: "Security review of $FEATURE"
   prompt: |
     Perform a security review of this feature implementation.
@@ -316,7 +318,7 @@ Task:
 
 ```
 Task:
-  subagent_type: "backend-development-performance-engineer"
+  agent: "performance-analyst"
   description: "Performance review of $FEATURE"
   prompt: |
     Review the performance of this feature implementation.
@@ -390,11 +392,11 @@ Do NOT proceed to Phase 3 until the user approves.
 
 Read `.feature-dev/02-architecture.md` and `.feature-dev/05-testing.md`.
 
-Use the Task tool:
+Use the subagent tool:
 
 ```
 Task:
-  subagent_type: "general-purpose"
+  agent: "researcher"
   description: "Create deployment config for $FEATURE"
   prompt: |
     You are a deployment engineer. Create the deployment and monitoring configuration for this feature.
@@ -424,11 +426,11 @@ Update `state.json`: set `current_step` to 7, add step 6 to `completed_steps`.
 
 Read all previous `.feature-dev/*.md` files.
 
-Use the Task tool:
+Use the subagent tool:
 
 ```
 Task:
-  subagent_type: "general-purpose"
+  agent: "researcher"
   description: "Write documentation for $FEATURE"
   prompt: |
     You are a technical writer. Create documentation for this feature.

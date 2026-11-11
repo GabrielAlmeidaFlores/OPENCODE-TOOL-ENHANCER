@@ -36,3 +36,4 @@ Repomix, jCodeMunch, Universal Ctags, Graphify, and Aider repository maps are do
 - [Serena](serena.md)
 - [CodeGraph](codegraph.md)
 - [Optional tools](optional-tools.md)
+- [MCP overhead](overhead.md)
