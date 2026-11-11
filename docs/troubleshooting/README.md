@@ -15,6 +15,7 @@
 
 | Symptom | Cause | Fix |
 | --- | --- | --- |
+| `mcp list` says "No MCP servers configured" but `.opencode/opencode.jsonc` exists | The directory is not a Git repository, so project discovery did not start there | Run from a Git worktree, or pass `OPENCODE_CONFIG=/abs/path/.opencode/opencode.jsonc` |
 | Server stays `needs authentication` | OAuth not completed | Run `opencode mcp auth <name>` |
 | Server disconnected | Binary not on `PATH` | Use an absolute command path |
 | Startup timeout | Slow language server or index | Raise `mcp.servers.<name>.timeout.startup` |

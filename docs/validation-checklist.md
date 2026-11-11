@@ -40,7 +40,7 @@ Then complete the manual checks for your environment.
 ## Ralph
 
 - [ ] `ralph --version` reports `2.10.x`.
-- [ ] `ralph preflight --format human` passes or warnings are understood.
+- [ ] `ralph preflight -c .ralph/ralph.yml --format human` passes or warnings are understood.
 - [ ] A dry run shows `opencode run --agent <role>`.
 - [ ] The `code-assist` workflow reaches `LOOP_COMPLETE` on a small task.
 - [ ] A deliberately failing test blocks completion.
