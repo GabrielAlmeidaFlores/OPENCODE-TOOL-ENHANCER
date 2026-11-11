@@ -1,0 +1,15 @@
+{
+  "id": "ts-security",
+  "title": "Fix a path traversal in file retrieval",
+  "commit": "HEAD",
+  "prompt": "The example file endpoint joins a user-supplied name to a base directory. Fix the path traversal without changing the response shape for valid names. Add tests for valid, traversal, and encoded traversal inputs.",
+  "acceptance": [
+    "Traversal inputs are rejected",
+    "Encoded traversal is rejected",
+    "Valid names still resolve",
+    "Tests cover all three cases"
+  ],
+  "verification": "npm test",
+  "areas": ["examples/typescript/src"],
+  "max_wall_time_seconds": 900
+}

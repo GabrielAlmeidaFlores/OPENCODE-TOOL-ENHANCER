@@ -1,0 +1,60 @@
+# Ralph core configuration.
+# Usage:
+#   ralph run -c configs/ralph/ralph.yml -H configs/ralph/hats/code-assist.yml -p "your task"
+#
+# The hats file supplies triggers, publishes, and per-hat instructions.
+# This file supplies the loop, backend, memory, and task settings.
+
+cli:
+  backend: "opencode"
+  prompt_mode: "arg"
+
+adapters:
+  default:
+    timeout: 600
+    enabled: true
+  opencode:
+    # OpenCode is slower to start than some backends because it loads
+    # configuration, skills, and MCP servers. Keep this above MCP startup.
+    timeout: 900
+
+event_loop:
+  completion_promise: "LOOP_COMPLETE"
+  max_iterations: 40
+  max_runtime_seconds: 14400
+  idle_timeout_secs: 1800
+  starting_event: "work.start"
+  checkpoint_interval: 5
+  prompt_file: "PROMPT.md"
+
+core:
+  scratchpad:
+    enabled: true
+    path: .ralph/agent/scratchpad.md
+  specs_dir: ".ralph/specs/"
+  guardrails:
+    - "Read AGENTS.md before changing code."
+    - "Do not modify files outside the requested scope."
+    - "Run the narrowest relevant tests before declaring success."
+    - "Never commit secrets, credentials, or environment values."
+    - "Do not claim a command passed unless it was executed."
+
+memories:
+  enabled: true
+  inject: auto
+  budget: 2000
+
+tasks:
+  enabled: true
+
+features:
+  # Worktree loops are opt-in. Enable only when tasks are truly independent.
+  parallel: false
+  auto_merge: false
+  preflight:
+    enabled: true
+    strict: false
+    skip: []
+
+hooks:
+  enabled: false

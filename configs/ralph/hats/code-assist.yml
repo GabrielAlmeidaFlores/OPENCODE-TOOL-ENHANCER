@@ -1,0 +1,99 @@
+# Implementation workflow with independent verification.
+# Use:
+#   ralph run -c configs/ralph/ralph.yml -H configs/ralph/hats/code-assist.yml -p "Implement <task>"
+#
+# Event flow:
+#   work.start -> plan.ready -> build.ready -> tests.passed -> review.approved -> LOOP_COMPLETE
+# Failure paths:
+#   build.ready -> tests.failed -> build.retry
+#   tests.passed -> review.rejected -> build.retry
+
+event_loop:
+  # Completion requires an approved review for this workflow only.
+  required_events: ["review.approved"]
+
+hats:
+  planner:
+    name: "Planner"
+    description: "Breaks the task into ordered, verifiable steps"
+    backend:
+      type: opencode
+      args: ["--agent", "planner", "--auto"]
+    triggers: ["work.start", "build.retry"]
+    publishes: ["plan.ready"]
+    max_activations: 3
+    instructions: |
+      Read AGENTS.md and the task. Produce an ordered plan where every step has a
+      verification command. Do not edit files. End your response with exactly one
+      line: <event topic="plan.ready">plan summary</event>
+
+  builder:
+    name: "Builder"
+    description: "Implements the plan and runs local checks"
+    backend:
+      type: opencode
+      args: ["--agent", "backend-developer", "--auto"]
+    triggers: ["plan.ready", "tests.failed", "review.rejected"]
+    publishes: ["build.ready", "build.retry"]
+    max_activations: 4
+    scratchpad:
+      enabled: true
+      path: .ralph/agent/builder.md
+    instructions: |
+      Implement the smallest coherent change for the current plan step. Follow the
+      existing project patterns. Add or update tests. Run the narrow checks named in
+      the plan. Do not refactor unrelated code.
+      If the task is frontend-only, still implement it; if the required change is
+      outside your tools, emit <event topic="build.retry">failure reason</event>.
+      End with <event topic="build.ready">build summary</event> only when the change is complete and checks pass.
+
+  validator:
+    name: "Validator"
+    description: "Runs the verification gates and rejects incomplete work"
+    backend:
+      type: opencode
+      args: ["--agent", "test-engineer", "--auto"]
+    triggers: ["build.ready"]
+    publishes: ["tests.passed", "tests.failed"]
+    max_activations: 3
+    scratchpad:
+      enabled: false
+    instructions: |
+      Run the project's tests, lint, and typecheck using the commands in AGENTS.md.
+      Do not trust the builder's claim; execute the commands yourself.
+      If any gate fails, report the exact failing command and output, then emit
+      <event topic="tests.failed">failing command and output</event>. Otherwise emit <event topic="tests.passed">verification summary</event>.
+      Never mark passed on skipped or unrun tests.
+
+  reviewer:
+    name: "Reviewer"
+    description: "Independent adversarial review of the diff"
+    backend:
+      type: opencode
+      args: ["--agent", "code-reviewer", "--auto"]
+    triggers: ["tests.passed"]
+    publishes: ["review.approved", "review.rejected"]
+    max_activations: 3
+    scratchpad:
+      enabled: false
+    instructions: |
+      Review the current diff against the task. Look for incorrect behavior,
+      unhandled errors, missing tests, and unrelated changes. Do not restate the diff.
+      Emit <event topic="review.rejected">findings</event> for any blocker or major finding; otherwise emit
+      <event topic="review.approved">verdict</event>.
+
+  finalizer:
+    name: "Finalizer"
+    description: "Confirms the acceptance criteria and closes the loop"
+    backend:
+      type: opencode
+      args: ["--agent", "coordinator", "--auto"]
+    triggers: ["review.approved"]
+    publishes: ["LOOP_COMPLETE"]
+    max_activations: 1
+    scratchpad:
+      enabled: false
+    instructions: |
+      Confirm each acceptance criterion against the diff and the recorded evidence.
+      Summarize changed files, verification commands, and residual risks.
+      Emit <event topic="LOOP_COMPLETE">completion summary</event> only if every criterion is met and no review finding is open.

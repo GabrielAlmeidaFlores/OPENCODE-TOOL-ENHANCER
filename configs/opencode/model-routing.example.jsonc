@@ -1,0 +1,24 @@
+{
+  // Optional model-routing overlay. Merge these entries into your
+  // .opencode/opencode.jsonc only after setting the environment variables.
+  //
+  // Why an overlay: OpenCode substitutes an unset {env:...} with an empty
+  // string, which is not a valid model reference. Do not enable this file
+  // until every referenced variable is set.
+  "$schema": "https://opencode.ai/config.json",
+  "agents": {
+    // Strong reasoning for planning and architecture.
+    "planner": { "model": "{env:OPENCODE_MODEL_PLANNER}" },
+    "architect": { "model": "{env:OPENCODE_MODEL_ARCHITECT}" },
+    // Balanced models for implementation.
+    "backend-developer": { "model": "{env:OPENCODE_MODEL_IMPLEMENT}" },
+    "frontend-developer": { "model": "{env:OPENCODE_MODEL_IMPLEMENT}" },
+    "database-specialist": { "model": "{env:OPENCODE_MODEL_IMPLEMENT}" },
+    // Quality roles benefit from a reasoning-capable model.
+    "code-reviewer": { "model": "{env:OPENCODE_MODEL_REVIEW}" },
+    "security-reviewer": { "model": "{env:OPENCODE_MODEL_REVIEW}" },
+    "performance-analyst": { "model": "{env:OPENCODE_MODEL_REVIEW}" },
+    // Mechanical and documentation work can use a cheaper model.
+    "documentation-engineer": { "model": "{env:OPENCODE_MODEL_DOCS}" }
+  }
+}

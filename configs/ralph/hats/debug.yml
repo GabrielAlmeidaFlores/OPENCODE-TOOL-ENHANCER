@@ -1,0 +1,64 @@
+# Debug workflow with reproduction and regression evidence.
+# Use:
+#   ralph run -c configs/ralph/ralph.yml -H configs/ralph/hats/debug.yml -p "Debug <symptom>"
+
+hats:
+  investigator:
+    name: "Investigator"
+    description: "Reproduces and localizes the defect"
+    backend:
+      type: opencode
+      args: ["--agent", "researcher", "--auto"]
+    triggers: ["work.start", "fix.failed"]
+    publishes: ["repro.ready"]
+    default_publishes: "repro.ready"
+    max_activations: 3
+    instructions: |
+      Reproduce the defect with the smallest command and input. Record observed and
+      expected behavior. Localize the failure boundary. Do not change code.
+      End with <event topic="repro.ready">reproduction details</event>
+
+  tester:
+    name: "Tester"
+    description: "Captures the defect in a failing regression test"
+    backend:
+      type: opencode
+      args: ["--agent", "test-engineer", "--auto"]
+    triggers: ["repro.ready"]
+    publishes: ["test.ready", "test.blocked"]
+    default_publishes: "test.ready"
+    max_activations: 3
+    instructions: |
+      Add a regression test that fails for the reproduced reason. Run it and capture
+      the failure. If the defect cannot be captured, explain why and emit test.blocked.
+      Otherwise emit <event topic="test.ready">failing test evidence</event>
+
+  fixer:
+    name: "Fixer"
+    description: "Fixes the root cause and keeps the regression test green"
+    backend:
+      type: opencode
+      args: ["--agent", "backend-developer", "--auto"]
+    triggers: ["test.ready"]
+    publishes: ["fix.done", "fix.failed"]
+    default_publishes: "fix.done"
+    max_activations: 3
+    instructions: |
+      Fix the cause, not the symptom. Do not weaken or delete the regression test.
+      Run the narrow test and the surrounding suite. Emit fix.failed if the cause is
+      outside the current scope. Otherwise emit <event topic="fix.done">fix summary</event>
+
+  verifier:
+    name: "Verifier"
+    description: "Confirms the regression test and full suite pass"
+    backend:
+      type: opencode
+      args: ["--agent", "test-engineer", "--auto"]
+    triggers: ["fix.done"]
+    publishes: ["LOOP_COMPLETE", "fix.failed"]
+    default_publishes: "LOOP_COMPLETE"
+    max_activations: 2
+    instructions: |
+      Run the regression test and the full suite yourself. Confirm the test failed
+      before the fix from the recorded evidence. Emit <event topic="LOOP_COMPLETE">verification summary</event> only when both
+      are green.

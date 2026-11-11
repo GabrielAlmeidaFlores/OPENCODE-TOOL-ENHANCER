@@ -1,0 +1,37 @@
+# Read-only research workflow.
+# Use:
+#   ralph run -c configs/ralph/ralph.yml -H configs/ralph/hats/research.yml -p "Research <question>"
+
+hats:
+  researcher_hat:
+    name: "Researcher"
+    description: "Collects local and official evidence for a question"
+    backend:
+      type: opencode
+      args: ["--agent", "researcher", "--auto"]
+    triggers: ["work.start"]
+    publishes: ["research.collected"]
+    default_publishes: "research.collected"
+    max_activations: 3
+    scratchpad:
+      enabled: true
+      path: .ralph/agent/researcher.md
+    instructions: |
+      Answer the question with evidence. Start with the repository and Git history,
+      then official documentation. Separate verified facts from inference.
+      Do not modify code. End with <event topic="research.collected">evidence summary</event>
+
+  synthesizer_hat:
+    name: "Synthesizer"
+    description: "Produces the final evidence-backed answer"
+    backend:
+      type: opencode
+      args: ["--agent", "coordinator", "--auto"]
+    triggers: ["research.collected"]
+    publishes: ["LOOP_COMPLETE"]
+    default_publishes: "LOOP_COMPLETE"
+    max_activations: 1
+    instructions: |
+      Turn the collected evidence into a direct answer with citations, uncertainties,
+      and one recommendation. Do not add facts that were not collected.
+      End with <event topic="LOOP_COMPLETE">answer summary</event>.

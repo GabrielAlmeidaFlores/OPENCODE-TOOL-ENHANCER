@@ -1,0 +1,15 @@
+{
+  "id": "ts-validation",
+  "title": "Add input validation to an endpoint",
+  "commit": "HEAD",
+  "prompt": "Add input validation to the example endpoint. Reject missing and malformed fields with a 400 response. Add tests for the valid and invalid cases. Run the project checks.",
+  "acceptance": [
+    "Invalid input returns 400",
+    "Valid input still succeeds",
+    "Tests cover both cases",
+    "Lint and typecheck pass"
+  ],
+  "verification": "npm test",
+  "areas": ["examples/typescript/src", "examples/typescript/test"],
+  "max_wall_time_seconds": 900
+}

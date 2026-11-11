@@ -1,0 +1,48 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# OpenCode local state
+.opencode/node_modules/
+.opencode/cache/
+.opencode/state/
+
+# Ralph state
+.agent/
+.ralph/agent/
+.ralph/runs/
+.ralph/*.lock
+
+# Code intelligence indexes
+.codegraph/
+.cache/
+.serena/
+
+# Node
+node_modules/
+dist/
+build/
+coverage/
+.next/
+.turbo/
+
+# .NET
+bin/
+obj/
+*.user
+
+# Rust
+target/
+
+# Python
+__pycache__/
+.venv/
+*.pyc
+
+# Generated context
+repomix-output.*
+
+# Secrets and machine-local overrides
+.env
+.env.*
+!.env.example

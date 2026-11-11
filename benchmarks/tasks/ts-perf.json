@@ -1,0 +1,15 @@
+{
+  "id": "ts-perf",
+  "title": "Fix an N+1 query in the example service",
+  "commit": "HEAD",
+  "prompt": "The example service issues one query per item. Replace it with a batched query while preserving ordering and error semantics. Add a test that fails if the query count exceeds one per request.",
+  "acceptance": [
+    "Query count is constant per request",
+    "Ordering is preserved",
+    "Errors are unchanged",
+    "A regression test protects the query count"
+  ],
+  "verification": "npm test",
+  "areas": ["examples/typescript/src"],
+  "max_wall_time_seconds": 900
+}

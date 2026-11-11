@@ -1,0 +1,15 @@
+{
+  "id": "ts-refactor",
+  "title": "Extract duplicated logic without behavior change",
+  "commit": "HEAD",
+  "prompt": "Extract the duplicated pricing logic in the example TypeScript project into a single function. Do not change behavior. Ensure the existing tests still pass and add one characterization test if coverage is missing.",
+  "acceptance": [
+    "No duplicated pricing branch remains",
+    "Public behavior is unchanged",
+    "Existing tests pass",
+    "No unrelated formatting changes"
+  ],
+  "verification": "npm test",
+  "areas": ["examples/typescript/src"],
+  "max_wall_time_seconds": 900
+}

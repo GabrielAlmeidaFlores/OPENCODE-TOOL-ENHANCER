@@ -1,0 +1,37 @@
+{
+  // Minimal profile: native tools + ripgrep + ast-grep, no MCP servers.
+  // Use this for small repositories or when MCP startup cost is not justified.
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "coordinator",
+  "permissions": [
+    { "action": "external_directory", "resource": "*", "effect": "ask" },
+    { "action": "external_directory", "resource": "**/.tmp*", "effect": "allow" },
+    // Ralph writes large prompts to a temp file and asks the agent to read it.
+    // These rules allow only transient temp directories, not arbitrary paths.
+    { "action": "external_directory", "resource": "/var/folders/**", "effect": "allow" },
+    { "action": "external_directory", "resource": "/private/var/folders/**", "effect": "allow" },
+    { "action": "external_directory", "resource": "/tmp/**", "effect": "allow" },
+    { "action": "shell", "resource": "*", "effect": "allow" },
+    { "action": "shell", "resource": "sudo *", "effect": "deny" },
+    { "action": "shell", "resource": "rm -rf *", "effect": "deny" },
+    { "action": "shell", "resource": "git push --force*", "effect": "deny" },
+    { "action": "edit", "resource": ".env*", "effect": "deny" },
+    { "action": "read", "resource": ".env*", "effect": "deny" }
+  ],
+  "mcp": {
+    "servers": {}
+  },
+  "compaction": {
+    "auto": true,
+    "keep": { "tokens": 10000 },
+    "buffer": "15%"
+  },
+  "tool_output": {
+    "max_lines": 2000,
+    "max_bytes": 51200
+  },
+  "experimental": {
+    "todo": true,
+    "subagent_depth": 1
+  }
+}

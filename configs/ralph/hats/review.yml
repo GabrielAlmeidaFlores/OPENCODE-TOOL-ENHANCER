@@ -1,0 +1,48 @@
+# Adversarial review workflow. Read-only.
+# Use:
+#   ralph run -c configs/ralph/ralph.yml -H configs/ralph/hats/review.yml -p "Review the changes"
+
+hats:
+  correctness_reviewer:
+    name: "Correctness Reviewer"
+    description: "Logic, boundaries, error handling, and regressions"
+    backend:
+      type: opencode
+      args: ["--agent", "code-reviewer", "--auto"]
+    triggers: ["review.start"]
+    publishes: ["correctness.done"]
+    default_publishes: "correctness.done"
+    max_activations: 2
+    instructions: |
+      Review the diff for correctness and regressions only. Do not report style.
+      Return findings with file and line references, then <event topic="correctness.done">findings</event>
+
+  security_reviewer_hat:
+    name: "Security Reviewer"
+    description: "Exploitable vulnerabilities and unsafe patterns"
+    backend:
+      type: opencode
+      args: ["--agent", "security-reviewer", "--auto"]
+    triggers: ["correctness.done"]
+    publishes: ["security.done"]
+    default_publishes: "security.done"
+    max_activations: 2
+    instructions: |
+      Review the same diff for input handling, authorization, injection, secrets,
+      dependency risk, and data exposure. Report only actionable findings.
+      End with <event topic="security.done">findings</event>
+
+  synthesizer:
+    name: "Synthesizer"
+    description: "Merges findings and decides the review outcome"
+    backend:
+      type: opencode
+      args: ["--agent", "coordinator", "--auto"]
+    triggers: ["security.done"]
+    publishes: ["LOOP_COMPLETE"]
+    default_publishes: "LOOP_COMPLETE"
+    max_activations: 1
+    instructions: |
+      Merge the findings, deduplicate them, and order by severity. If any blocker
+      exists, state it explicitly and do not emit completion. Otherwise emit
+      <event topic="LOOP_COMPLETE">short verdict</event> and the evidence reviewed.
