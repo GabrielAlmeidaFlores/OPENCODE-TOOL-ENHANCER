@@ -7,6 +7,7 @@ on:
 
 jobs:
   static:
+    timeout-minutes: 15
     name: static (${{ matrix.os }})
     strategy:
       fail-fast: false
@@ -34,6 +35,7 @@ jobs:
           scandir: ./scripts
 
   examples:
+    timeout-minutes: 20
     name: examples
     runs-on: ubuntu-latest
     steps:
@@ -54,6 +56,7 @@ jobs:
         run: dotnet test Example.Tests/Example.Tests.csproj
 
   opencode-profile:
+    timeout-minutes: 15
     name: opencode profile
     runs-on: ubuntu-latest
     steps:
@@ -71,6 +74,8 @@ jobs:
           target="$RUNNER_TEMP/profile-project"
           mkdir -p "$target"
           ./scripts/installation/install.sh --apply --only opencode,agents,commands,skills,ralph --target "$target"
+      - name: Use the minimal profile for deterministic discovery
+        run: cp configs/opencode/minimal.jsonc "$RUNNER_TEMP/profile-project/.opencode/opencode.jsonc"
       - name: Verify agent discovery
         env:
           OPENCODE_CONFIG: ${{ runner.temp }}/profile-project/.opencode/opencode.jsonc
@@ -96,6 +101,7 @@ jobs:
           PY
 
   harness:
+    timeout-minutes: 10
     name: harness dry-run
     runs-on: ubuntu-latest
     steps:
