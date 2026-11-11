@@ -131,8 +131,8 @@ clean_dir() {
 copy_file() {
   local src="$1" dst="$2"
   if [[ -f "$dst" && "$MODE" == "apply" ]]; then
-    mkdir -p "$(dirname "$BACKUP/${dst#$TARGET/}")"
-    cp "$dst" "$BACKUP/${dst#$TARGET/}"
+    mkdir -p "$(dirname "$BACKUP/${dst#"$TARGET"/}")"
+    cp "$dst" "$BACKUP/${dst#"$TARGET"/}"
   fi
   run cp "$src" "$dst"
 }
@@ -145,8 +145,8 @@ copy_file() {
 copy_dir() {
   local src="$1" dst="$2"
   if [[ -d "$dst" && "$MODE" == "apply" ]]; then
-    mkdir -p "$BACKUP/${dst#$TARGET/}"
-    cp -R "$dst/." "$BACKUP/${dst#$TARGET/}/"
+    mkdir -p "$BACKUP/${dst#"$TARGET"/}"
+    cp -R "$dst/." "$BACKUP/${dst#"$TARGET"/}/"
   fi
   run mkdir -p "$dst"
   run cp -R "$src/." "$dst/"
