@@ -129,7 +129,16 @@ Expected: OpenCode 2.2.x and `coordinator` plus eleven subagents. After Serena a
 opencode run --agent coordinator "Summarize this repository and propose the next task"
 ```
 
-For a multi-step feature with review gates, use Ralph in a **separate disposable clone**. Ralph 2.10.1 auto-commits during landing and has no switch to disable it, so do not run it in a repository that must remain uncommitted. See [Ralph orchestration](docs/orchestration/ralph.md#git-safety) for the isolated workflow.
+For a multi-step feature with review gates, use Ralph through the isolated runner. Ralph 2.10.1 auto-commits during landing and has no switch to disable it, so do not run it directly in a repository that must remain uncommitted.
+
+```bash
+./scripts/maintenance/run-ralph-isolated.sh -- \
+  -c configs/ralph/ralph.yml \
+  -H configs/ralph/hats/research.yml \
+  -p "Research <question>"
+```
+
+The runner keeps Ralph's commits inside a separate clone and exports the result as an unstaged patch. See [Ralph orchestration](docs/orchestration/ralph.md#git-safety).
 
 ## Installation reference
 
@@ -578,6 +587,8 @@ The benchmark harness is reproducible, but **no results are published yet**. Thi
 | [Ralph installation](docs/installation/ralph.md) | Install, preflight, first run |
 | [OpenCode V2 configuration](docs/configuration/opencode-v2.md) | Agents, permissions, MCP, compaction, model routing |
 | [Agent roles](docs/agents/roles.md) | Responsibilities and delegation rules |
+| [Artifact compatibility](docs/agents/compatibility.md) | OpenCode compatibility and runtime status |
+| [Real-repository pilots](docs/pilots/README.md) | Selected repositories and pilot procedure |
 | [Ralph orchestration](docs/orchestration/ralph.md) | Collections, events, gates, safety |
 | [Code intelligence](docs/code-intelligence/README.md) | Retrieval strategy and tool guides |
 | [Cost optimization](docs/cost-optimization/README.md) | Levers, anti-patterns, metrics |

@@ -51,6 +51,7 @@ Then complete the manual checks for your environment.
 - [ ] A dry run shows `opencode run --agent <role>`.
 - [ ] The `research` workflow reaches `RESEARCH_COMPLETE` on a small question.
 - [ ] `code-assist` runs with a sufficient iteration budget for multi-wave work.
+- [ ] `scripts/maintenance/run-ralph-isolated.sh --dry-run` prints the isolated plan.
 - [ ] A deliberately failing test blocks completion.
 - [ ] `.ralph/agent/scratchpad.md` contains the iteration state.
 

@@ -120,12 +120,18 @@ For deterministic gates, record the exact commands in `AGENTS.md`. Do not gate o
 
 Ralph Orchestrator 2.10.1 auto-commits during its landing sequence (`LandingConfig::default().auto_commit = true`) and exposes no configuration switch. This violates this repository's no-auto-commit rule.
 
-Do not run Ralph directly in a repository that must remain uncommitted. Use one of these options:
+Do not run Ralph directly in a repository that must remain uncommitted. Use the isolated runner:
 
-1. Run it in a **separate disposable clone** and copy the resulting changes back unstaged.
-2. Do not use a linked worktree; it shares `.git` and writes commits and refs into the same repository.
-3. Wait for upstream support for disabling landing auto-commit.
-4. Use the native OpenCode agents for tasks that must not create commits.
+```bash
+./scripts/maintenance/run-ralph-isolated.sh -- \
+  -c configs/ralph/ralph.yml \
+  -H configs/ralph/hats/research.yml \
+  -p "Research <question>"
+```
+
+The runner copies the working tree to a separate clone, creates a baseline commit there, runs Ralph, exports the result to `.ralph-isolated/<timestamp>.patch`, and leaves the clone for inspection. Add `--apply` to apply the patch to the current checkout unstaged; add `--cleanup` to remove the clone.
+
+Do not use a linked worktree as a substitute; it shares `.git` and writes commits and refs into the same repository. Use the native OpenCode agents for tasks that must not create commits.
 
 `features.auto_merge` is already `false`, but it does not disable landing auto-commit.
 

@@ -48,6 +48,14 @@ All notable changes to this repository are documented here.
 - Removed inline and field-level comments from configuration files; explanations live in `docs/`.
 - Moved Ralph hat provenance and preset notes into a single standardized header block.
 
+### Stabilization and validation (2026-11-11)
+
+- Added `scripts/maintenance/run-ralph-isolated.sh` so Ralph runs in a separate clone and exports an unstaged patch.
+- Added a macOS/Linux CI matrix for static validation, examples, OpenCode agent discovery, and harness dry-runs.
+- Added the artifact compatibility matrix.
+- Added the real-repository pilot index with pinned repositories and acceptance criteria.
+- Extended command validation to require a valid target agent.
+
 ### Git safety (2026-11-11)
 
 - Added AGENTS.md Section 2B: no automatic staging or commits by any agent, skill, command, hat, script, hook, orchestrator, or CI job.

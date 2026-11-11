@@ -9,6 +9,7 @@ Thumbs.db
 .opencode/state/
 
 # Ralph state
+.ralph-isolated/
 .agent/
 .ralph/agent/
 .ralph/runs/

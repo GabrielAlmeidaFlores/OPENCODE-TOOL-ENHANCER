@@ -402,4 +402,9 @@ original_artifacts:
     kind: "original-artwork"
     author: "OPENCODE-TOOL-ENHANCER contributors"
     justification: "Original project logo created at the repository owner's request. Not adapted from an upstream artifact."
+  - id: ralph-isolated-runner
+    local: "scripts/maintenance/run-ralph-isolated.sh"
+    kind: "glue"
+    author: "OPENCODE-TOOL-ENHANCER contributors"
+    justification: "Isolated runner required because Ralph 2.10.1 auto-commits during landing; keeps the main checkout untouched and exports an unstaged patch."
 

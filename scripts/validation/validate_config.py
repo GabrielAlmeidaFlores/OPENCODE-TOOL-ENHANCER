@@ -240,13 +240,18 @@ def check_skills() -> None:
 
 
 def check_commands() -> None:
-    """Validate that every command file has a description."""
+    """Validate every command file and its target agent."""
     global checked
     for path in sorted((ROOT / "commands").glob("*.md")):
         checked += 1
         metadata = frontmatter(path)
         if not metadata.get("description"):
             fail(f"{path.relative_to(ROOT)}: missing description")
+        agent = metadata.get("agent")
+        if not agent:
+            fail(f"{path.relative_to(ROOT)}: missing agent")
+        elif agent not in AGENT_ROLES:
+            fail(f"{path.relative_to(ROOT)}: unknown agent: {agent}")
 
 
 def check_provenance() -> None:
