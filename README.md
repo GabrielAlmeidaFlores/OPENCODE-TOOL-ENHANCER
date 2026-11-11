@@ -374,8 +374,8 @@ See [Ralph workflows](#ralph-workflows) and [docs/orchestration/ralph.md](docs/o
 ### Benchmark a setup
 
 ```bash
-./benchmarks/harness/run.sh --arm baseline --task benchmarks/tasks/ts-validation.json
-./benchmarks/harness/run.sh --arm optimized --task benchmarks/tasks/ts-validation.json
+OPENCODE_BENCH_MODEL=provider/model ./benchmarks/harness/run.sh --arm baseline --task benchmarks/tasks/ts-validation.json
+OPENCODE_BENCH_MODEL=provider/model ./benchmarks/harness/run.sh --arm optimized --task benchmarks/tasks/ts-validation.json
 ```
 
 Each task declares its own working directory and verification command. Results are recorded under `benchmarks/results/`.

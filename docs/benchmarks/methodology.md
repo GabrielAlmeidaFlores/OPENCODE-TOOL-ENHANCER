@@ -66,8 +66,8 @@ Start with 5 tasks covering: a small bug fix, a feature with tests, a refactor, 
 ## Harness
 
 ```bash
-./benchmarks/harness/run.sh --arm baseline --task benchmarks/tasks/ts-validation.json
-./benchmarks/harness/run.sh --arm optimized --task benchmarks/tasks/ts-validation.json
+OPENCODE_BENCH_MODEL=provider/model ./benchmarks/harness/run.sh --arm baseline --task benchmarks/tasks/ts-validation.json
+OPENCODE_BENCH_MODEL=provider/model ./benchmarks/harness/run.sh --arm optimized --task benchmarks/tasks/ts-validation.json
 ```
 
 For an agent-assisted run, use the sourced `perf` command (`commands/perf.md`) or run the harness directly.

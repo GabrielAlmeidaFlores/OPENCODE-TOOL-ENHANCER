@@ -35,6 +35,7 @@ All notable changes to this repository are documented here.
 - Added validation for benchmark task working directories and required task fields.
 - Fixed the C# benchmark verification command to target the test project explicitly.
 - Scoped `--clean` to the selected components and included `.ralph/hats`, while preserving `.ralph/agent` runtime state.
+- Made `OPENCODE_BENCH_MODEL` required and passed it explicitly to `opencode run`, so both arms use the same model and avoid provider-default incompatibilities.
 - Clarified completion promises for Ralph collections.
 - Updated ast-grep version references to the verified 0.51.1 environment.
 

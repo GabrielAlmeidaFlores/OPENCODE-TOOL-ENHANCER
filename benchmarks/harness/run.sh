@@ -3,7 +3,7 @@
 # Purpose: Runs one baseline or optimized benchmark arm, records session and statistics artifacts, and executes the task verification command.
 # Usage: ./benchmarks/harness/run.sh --arm baseline|optimized --task <file.json> [--run-id ID] [--dry-run]
 # Arguments: --arm selects the configuration, --task selects the task definition, --run-id sets the output directory name, --dry-run prints the command.
-# Environment: Requires bash, opencode, python3, and git. OPENCODE_BENCH_MODEL records the model label.
+# Environment: Requires bash, opencode, python3, and git. OPENCODE_BENCH_MODEL must be a provider/model#variant identifier.
 # Outputs: Writes meta.json, session.jsonl, stats.json, export.json, verification.log, and notes.md under benchmarks/results/<run-id>.
 # Side effects: Executes opencode with --auto in a non-interactive session; use a disposable checkout.
 # References: docs/benchmarks/methodology.md, benchmarks/tasks/*.json
@@ -22,6 +22,7 @@ DRY=0
 # Side effects: Writes to standard output.
 usage() {
   echo "usage: $0 --arm baseline|optimized --task <file.json> [--run-id ID] [--dry-run]"
+  echo "environment: OPENCODE_BENCH_MODEL=provider/model#variant is required for execution"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -87,13 +88,17 @@ case "$ARM" in
 esac
 
 COMMIT="$(git -C "$ROOT" rev-parse HEAD 2>/dev/null || echo unknown)"
-MODEL="${OPENCODE_BENCH_MODEL:-user-selected}"
+MODEL="${OPENCODE_BENCH_MODEL:-}"
+if [[ "$DRY" != "1" && -z "$MODEL" ]]; then
+  echo "OPENCODE_BENCH_MODEL is required, for example provider/model or provider/model#variant"
+  exit 2
+fi
 
 echo "arm=$ARM task=$TASK_ID run=$RUN_ID"
 echo "config=$CONFIG agent=$AGENT commit=$COMMIT workdir=$WORKDIR max_wall=${MAX_WALL}s"
 
 if [[ "$DRY" == "1" ]]; then
-  echo "would run: OPENCODE_CONFIG=$CONFIG opencode run --agent $AGENT --auto --format json <prompt>"
+  echo "would run: OPENCODE_CONFIG=$CONFIG opencode run --agent $AGENT --model ${MODEL:-<provider/model>} --auto --format json <prompt>"
   exit 0
 fi
 
@@ -131,7 +136,7 @@ cd "$PROJECT_DIR"
 
 START=$(date +%s)
 set +e
-OPENCODE_CONFIG="$CONFIG" opencode run --agent "$AGENT" --auto --format json "$PROMPT" \
+OPENCODE_CONFIG="$CONFIG" opencode run --agent "$AGENT" --model "$MODEL" --auto --format json "$PROMPT" \
   > "$OUT/session.jsonl" 2> "$OUT/session.err"
 RUN_RC=$?
 set -e

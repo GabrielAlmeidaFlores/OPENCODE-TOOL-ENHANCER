@@ -15,6 +15,6 @@ Token counts without correctness and rework outcomes are not a result.
 Run the harness:
 
 ```bash
-./benchmarks/harness/run.sh --arm baseline  --task benchmarks/tasks/ts-validation.json
-./benchmarks/harness/run.sh --arm optimized --task benchmarks/tasks/ts-validation.json
+OPENCODE_BENCH_MODEL=provider/model ./benchmarks/harness/run.sh --arm baseline  --task benchmarks/tasks/ts-validation.json
+OPENCODE_BENCH_MODEL=provider/model ./benchmarks/harness/run.sh --arm optimized --task benchmarks/tasks/ts-validation.json
 ```
