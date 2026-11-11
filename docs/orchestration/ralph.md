@@ -44,28 +44,45 @@ ralph run -c configs/ralph/ralph.yml -H configs/ralph/hats/debug.yml    -p "Debu
 
 ## How hats map to OpenCode agents
 
-Each hat sets `backend.args`:
+The collections are extracted from Ralph's official presets. Each hat adds only a `backend` block:
 
 ```yaml
 hats:
   planner:
     backend:
       type: opencode
-      args: ["--agent", "planner"]
+      args: ["--agent", "planner", "--auto"]
 ```
 
 Ralph launches `opencode run --agent <role> "<prompt>"`. OpenCode applies that agent's prompt, permissions, steps, and tools.
 
+| Collection | Hats | OpenCode agents |
+| --- | --- | --- |
+| `code-assist` | planner, builder, critic, finalizer | planner, backend-developer, code-reviewer, coordinator |
+| `review` | reviewer, analyzer, closer | code-reviewer, security-reviewer, coordinator |
+| `research` | researcher, synthesizer | researcher, coordinator |
+| `debug` | investigator, tester, fixer, verifier | researcher, test-engineer, backend-developer, test-engineer |
+
+For frontend-only work, change the `builder` backend to `frontend-developer` in a local copy and record the modification in the provenance registry.
+
 ## Event flow
 
+`code-assist` (official preset):
+
 ```text
-work.start
-  -> plan.ready        (planner)
-  -> build.ready       (builder)       tests.failed / review.rejected -> builder
-  -> tests.passed      (validator)     tests.failed -> builder
-  -> review.approved   (reviewer)      review.rejected -> builder
-  -> LOOP_COMPLETE     (finalizer)
+build.start
+  -> tasks.ready      (planner)
+  -> review.ready     (builder)        review.rejected / finalization.failed -> builder
+  -> review.passed    (critic)         review.rejected -> builder
+  -> queue.advance    (finalizer)      next wave -> planner
+  -> LOOP_COMPLETE    (finalizer)
 ```
+
+- `review`: `review.start -> review.section -> analysis.complete -> review.followup / REVIEW_COMPLETE`
+- `research`: `research.start -> research.finding -> research.followup / RESEARCH_COMPLETE`
+- `debug`: `debug.start -> hypothesis.test -> hypothesis.confirmed / fix.propose -> fix.applied -> fix.verified / DEBUG_COMPLETE`
+
+Each collection sets its own `starting_event` and `required_events`; `configs/ralph/ralph.yml` provides the shared loop, backend, memory, and task settings.
 
 ## Headless permissions
 
@@ -87,16 +104,14 @@ This is narrow: it does not allow arbitrary external paths. Destructive commands
 
 ## Quality gates
 
-The `code-assist` collection sets `event_loop.required_events: ["review.approved"]`, so completion is gated on review. Other collections are not gated by that event.
-
-Gates are enforced by the `validator` and `reviewer` hats:
-
-- The validator executes tests, lint, and typecheck itself; it does not trust the builder's claim.
-- A non-zero exit produces `tests.failed` and returns work to the builder.
-- The reviewer can reject on blocker or major findings.
-- The finalizer checks each acceptance criterion before completion.
+The `code-assist` collection sets `event_loop.required_events: ["review.passed"]`. Completion is gated on an approved review. The `critic` can reject with `review.rejected`; the `finalizer` checks acceptance criteria before emitting `LOOP_COMPLETE`.
 
 For deterministic gates, record the exact commands in `AGENTS.md`. Do not gate on prose.
+
+## Verified workflows
+
+- `research` completed in **2 iterations** with `RESEARCH_COMPLETE` in the test project.
+- `code-assist` is a longer multi-wave workflow. In the same test project it required more than 8 iterations for a small change; raise `--max-iterations` for real features, or use `research`/`review` for smaller scopes.
 
 ## Memory and tasks
 
@@ -122,5 +137,5 @@ For deterministic gates, record the exact commands in `AGENTS.md`. Do not gate o
 | `No AI agents detected` | `opencode --version`; ensure it is on `PATH` |
 | Hangs on first iteration | Run `opencode run --agent planner "test"` directly |
 | Loop never completes | The finalizer did not emit `LOOP_COMPLETE`; inspect `.ralph/agent/scratchpad.md` |
-| Tests pass in Ralph but not locally | The validator used a different command or working directory |
+| Tests pass in Ralph but not locally | The builder or critic used a different command or working directory |
 | MCP startup timeout | Raise `adapters.opencode.timeout` and the MCP `startup` timeout |

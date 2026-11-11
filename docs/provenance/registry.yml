@@ -1,0 +1,329 @@
+# Provenance registry for every reusable artifact.
+# Required by AGENTS.md Section 2A. Keep this file in sync with frontmatter/comments.
+version: 1
+updated: "2026-11-11"
+
+sources:
+  volt:
+    repository: "https://github.com/VoltAgent/awesome-claude-code-subagents"
+    commit: "ed74d115b7fb7026a22a4f816a8e3250f425e3b4"
+    license: "MIT"
+    owner: "VoltAgent"
+  wshobson:
+    repository: "https://github.com/wshobson/agents"
+    commit: "9c61ab243def98f72da12abd41cfcf5bcd91af9d"
+    license: "MIT"
+    owner: "wshobson"
+  superpowers:
+    repository: "https://github.com/obra/superpowers"
+    commit: "22f0b463e7a5e579904dd6211a520321035526f7"
+    license: "MIT"
+    owner: "obra"
+  ralph:
+    repository: "https://github.com/mikeyobrien/ralph-orchestrator"
+    commit: "64040fd0cda4d83386e4d1d1aa65571dadfe00b3"
+    license: "MIT"
+    owner: "mikeyobrien"
+
+agents:
+  - id: coordinator
+    local: "agents/coordinator/AGENT.md"
+    source: wshobson
+    upstream_path: "plugins/agent-teams/agents/team-lead.md"
+    upstream_commit: "9c61ab243def98f72da12abd41cfcf5bcd91af9d"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: planner
+    local: "agents/planner/AGENT.md"
+    source: volt
+    upstream_path: "categories/08-business-product/project-manager.md"
+    upstream_commit: "ed74d115b7fb7026a22a4f816a8e3250f425e3b4"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: researcher
+    local: "agents/researcher/AGENT.md"
+    source: volt
+    upstream_path: "categories/10-research-analysis/research-analyst.md"
+    upstream_commit: "ed74d115b7fb7026a22a4f816a8e3250f425e3b4"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: architect
+    local: "agents/architect/AGENT.md"
+    source: wshobson
+    upstream_path: "plugins/comprehensive-review/agents/architect-review.md"
+    upstream_commit: "9c61ab243def98f72da12abd41cfcf5bcd91af9d"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: backend-developer
+    local: "agents/backend-developer/AGENT.md"
+    source: volt
+    upstream_path: "categories/01-core-development/backend-developer.md"
+    upstream_commit: "ed74d115b7fb7026a22a4f816a8e3250f425e3b4"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: frontend-developer
+    local: "agents/frontend-developer/AGENT.md"
+    source: volt
+    upstream_path: "categories/01-core-development/frontend-developer.md"
+    upstream_commit: "ed74d115b7fb7026a22a4f816a8e3250f425e3b4"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: database-specialist
+    local: "agents/database-specialist/AGENT.md"
+    source: wshobson
+    upstream_path: "plugins/database-design/agents/database-architect.md"
+    upstream_commit: "9c61ab243def98f72da12abd41cfcf5bcd91af9d"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: code-reviewer
+    local: "agents/code-reviewer/AGENT.md"
+    source: volt
+    upstream_path: "categories/04-quality-security/code-reviewer.md"
+    upstream_commit: "ed74d115b7fb7026a22a4f816a8e3250f425e3b4"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: test-engineer
+    local: "agents/test-engineer/AGENT.md"
+    source: volt
+    upstream_path: "categories/04-quality-security/test-automator.md"
+    upstream_commit: "ed74d115b7fb7026a22a4f816a8e3250f425e3b4"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: security-reviewer
+    local: "agents/security-reviewer/AGENT.md"
+    source: volt
+    upstream_path: "categories/04-quality-security/security-auditor.md"
+    upstream_commit: "ed74d115b7fb7026a22a4f816a8e3250f425e3b4"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: performance-analyst
+    local: "agents/performance-analyst/AGENT.md"
+    source: volt
+    upstream_path: "categories/04-quality-security/performance-engineer.md"
+    upstream_commit: "ed74d115b7fb7026a22a4f816a8e3250f425e3b4"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: documentation-engineer
+    local: "agents/documentation-engineer/AGENT.md"
+    source: volt
+    upstream_path: "categories/06-developer-experience/documentation-engineer.md"
+    upstream_commit: "ed74d115b7fb7026a22a4f816a8e3250f425e3b4"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+skills:
+  - id: test-driven-development
+    local: "skills/test-driven-development/SKILL.md"
+    source: superpowers
+    upstream_path: "skills/test-driven-development/SKILL.md"
+    upstream_commit: "22f0b463e7a5e579904dd6211a520321035526f7"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: systematic-debugging
+    local: "skills/systematic-debugging/SKILL.md"
+    source: superpowers
+    upstream_path: "skills/systematic-debugging/SKILL.md"
+    upstream_commit: "22f0b463e7a5e579904dd6211a520321035526f7"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: writing-plans
+    local: "skills/writing-plans/SKILL.md"
+    source: superpowers
+    upstream_path: "skills/writing-plans/SKILL.md"
+    upstream_commit: "22f0b463e7a5e579904dd6211a520321035526f7"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: verification-before-completion
+    local: "skills/verification-before-completion/SKILL.md"
+    source: superpowers
+    upstream_path: "skills/verification-before-completion/SKILL.md"
+    upstream_commit: "22f0b463e7a5e579904dd6211a520321035526f7"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: requesting-code-review
+    local: "skills/requesting-code-review/SKILL.md"
+    source: superpowers
+    upstream_path: "skills/requesting-code-review/SKILL.md"
+    upstream_commit: "22f0b463e7a5e579904dd6211a520321035526f7"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: api-design-principles
+    local: "skills/api-design-principles/SKILL.md"
+    source: wshobson
+    upstream_path: "plugins/backend-development/skills/api-design-principles/SKILL.md"
+    upstream_commit: "9c61ab243def98f72da12abd41cfcf5bcd91af9d"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: database-migration
+    local: "skills/database-migration/SKILL.md"
+    source: wshobson
+    upstream_path: "plugins/framework-migration/skills/database-migration/SKILL.md"
+    upstream_commit: "9c61ab243def98f72da12abd41cfcf5bcd91af9d"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: code-review-excellence
+    local: "skills/code-review-excellence/SKILL.md"
+    source: wshobson
+    upstream_path: "plugins/developer-essentials/skills/code-review-excellence/SKILL.md"
+    upstream_commit: "9c61ab243def98f72da12abd41cfcf5bcd91af9d"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: auth-implementation-patterns
+    local: "skills/auth-implementation-patterns/SKILL.md"
+    source: wshobson
+    upstream_path: "plugins/developer-essentials/skills/auth-implementation-patterns/SKILL.md"
+    upstream_commit: "9c61ab243def98f72da12abd41cfcf5bcd91af9d"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: changelog-automation
+    local: "skills/changelog-automation/SKILL.md"
+    source: wshobson
+    upstream_path: "plugins/documentation-generation/skills/changelog-automation/SKILL.md"
+    upstream_commit: "9c61ab243def98f72da12abd41cfcf5bcd91af9d"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+commands:
+  - id: implement
+    local: "commands/implement.md"
+    source: wshobson
+    upstream_path: "plugins/backend-development/commands/feature-development.md"
+    upstream_commit: "9c61ab243def98f72da12abd41cfcf5bcd91af9d"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: review
+    local: "commands/review.md"
+    source: wshobson
+    upstream_path: "plugins/comprehensive-review/commands/full-review.md"
+    upstream_commit: "9c61ab243def98f72da12abd41cfcf5bcd91af9d"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: debug
+    local: "commands/debug.md"
+    source: wshobson
+    upstream_path: "plugins/debugging-toolkit/commands/smart-debug.md"
+    upstream_commit: "9c61ab243def98f72da12abd41cfcf5bcd91af9d"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: security
+    local: "commands/security.md"
+    source: wshobson
+    upstream_path: "plugins/security-scanning/commands/security-sast.md"
+    upstream_commit: "9c61ab243def98f72da12abd41cfcf5bcd91af9d"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: docs
+    local: "commands/docs.md"
+    source: wshobson
+    upstream_path: "plugins/documentation-generation/commands/doc-generate.md"
+    upstream_commit: "9c61ab243def98f72da12abd41cfcf5bcd91af9d"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: refactor
+    local: "commands/refactor.md"
+    source: wshobson
+    upstream_path: "plugins/code-refactoring/commands/refactor-clean.md"
+    upstream_commit: "9c61ab243def98f72da12abd41cfcf5bcd91af9d"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: db
+    local: "commands/db.md"
+    source: wshobson
+    upstream_path: "plugins/database-migrations/commands/sql-migrations.md"
+    upstream_commit: "9c61ab243def98f72da12abd41cfcf5bcd91af9d"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: perf
+    local: "commands/perf.md"
+    source: wshobson
+    upstream_path: "plugins/application-performance/commands/performance-optimization.md"
+    upstream_commit: "9c61ab243def98f72da12abd41cfcf5bcd91af9d"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+hats:
+  - id: code-assist
+    local: "configs/ralph/hats/code-assist.yml"
+    source: ralph
+    upstream_path: "presets/code-assist.yml"
+    upstream_commit: "64040fd0cda4d83386e4d1d1aa65571dadfe00b3"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: review
+    local: "configs/ralph/hats/review.yml"
+    source: ralph
+    upstream_path: "presets/review.yml"
+    upstream_commit: "64040fd0cda4d83386e4d1d1aa65571dadfe00b3"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: research
+    local: "configs/ralph/hats/research.yml"
+    source: ralph
+    upstream_path: "presets/research.yml"
+    upstream_commit: "64040fd0cda4d83386e4d1d1aa65571dadfe00b3"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+  - id: debug
+    local: "configs/ralph/hats/debug.yml"
+    source: ralph
+    upstream_path: "presets/debug.yml"
+    upstream_commit: "64040fd0cda4d83386e4d1d1aa65571dadfe00b3"
+    license: "MIT"
+    retrieved: "2026-11-11"
+    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+
+original_artifacts:
+  - id: benchmark-harness
+    local: "benchmarks/harness/run.sh, benchmarks/tasks/*.json"
+    kind: "fixture"
+    justification: "Project-specific measurement harness and fixtures; no maintained upstream provides these exact tasks. Not reusable agents/skills."
+  - id: installation-and-validation
+    local: "scripts/**, .github/workflows/**"
+    kind: "glue"
+    justification: "Repository-specific glue that composes documented OpenCode, Ralph, Serena, CodeGraph, and ast-grep commands. No upstream equivalent."
+  - id: examples
+    local: "examples/typescript/**, examples/csharp/**"
+    kind: "fixture"
+    justification: "Minimal fixtures used by the benchmark tasks; they contain deliberate defects. Not presented as reusable agents or skills."
+  - id: ralph-core-config
+    local: "configs/ralph/ralph.yml"
+    kind: "configuration-composition"
+    justification: "Composes documented Ralph options (backend, loop limits, memories, tasks). Not an agent, skill, command, or hat."
+  - id: opencode-model-routing
+    local: "configs/opencode/model-routing.example.jsonc"
+    kind: "configuration-composition"
+    justification: "Documents optional per-agent model routing without hardcoding provider IDs."
+  - id: opencode-config
+    local: "configs/opencode/**"
+    kind: "configuration-composition"
+    justification: "Composes only documented OpenCode V2 options. Not an agent, skill, or command."

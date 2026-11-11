@@ -59,7 +59,7 @@ ralph run \
 | Auth failure | Run OpenCode directly once |
 | Hangs on first iteration | Raise `adapters.opencode.timeout` |
 | Never completes | Check the finalizer hat emits `LOOP_COMPLETE` |
-| Gate passes incorrectly | The validator must run commands itself |
+| Gate passes incorrectly | The critic must run the verification commands itself |
 
 ## Uninstall
 

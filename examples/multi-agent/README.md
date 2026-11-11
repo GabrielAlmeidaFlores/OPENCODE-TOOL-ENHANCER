@@ -18,9 +18,13 @@ ralph run \
 
 ## Expected event flow
 
+The `code-assist` collection is Ralph's official preset:
+
 ```text
-work.start -> plan.ready -> build.ready -> tests.passed -> review.approved -> LOOP_COMPLETE
+build.start -> tasks.ready -> review.ready -> review.passed -> queue.advance -> LOOP_COMPLETE
 ```
+
+It is a multi-wave workflow. For a first run, use `--max-iterations 20` or try the shorter `research` collection.
 
 ## Inspect
 

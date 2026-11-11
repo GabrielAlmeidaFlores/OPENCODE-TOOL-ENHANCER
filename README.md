@@ -88,6 +88,7 @@ Then start OpenCode and select the `coordinator` agent.
 ├── README.md
 ├── AGENTS.md                     # project brief (source requirements)
 ├── docs/
+│   ├── provenance/               # registry + sourcing rules
 │   ├── decisions/                # architecture decision records
 │   ├── research/                 # evidence, compatibility, comparisons
 │   ├── installation/             # per-component install guides
@@ -98,6 +99,7 @@ Then start OpenCode and select the `coordinator` agent.
 │   ├── cost-optimization/
 │   ├── benchmarks/
 │   └── troubleshooting/
+├── THIRD_PARTY_NOTICES.md
 ├── configs/
 │   ├── opencode/                 # V2 config profiles
 │   └── ralph/                    # core config + hat collections
@@ -108,6 +110,17 @@ Then start OpenCode and select the `coordinator` agent.
 └── benchmarks/                   # methodology, tasks, harness, results
 ```
 
+## Provenance
+
+Every agent, skill, command, and Ralph hat is sourced from a maintained upstream repository, pinned to a commit, attributed, and modified minimally. Sources:
+
+- [VoltAgent/awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) — MIT
+- [wshobson/agents](https://github.com/wshobson/agents) — MIT, native OpenCode support
+- [obra/superpowers](https://github.com/obra/superpowers) — MIT
+- [mikeyobrien/ralph-orchestrator](https://github.com/mikeyobrien/ralph-orchestrator) — MIT
+
+See [docs/provenance/registry.yml](docs/provenance/registry.yml) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Locally authored work is limited to configuration composition, glue scripts, and labeled fixtures.
+
 ## Core principles
 
 1. **Quality first.** Token savings do not count if correctness or rework gets worse.
@@ -115,6 +128,7 @@ Then start OpenCode and select the `coordinator` agent.
 3. **Minimal context by default.** MCP servers are added only with a documented reason and an overhead control.
 4. **No hardcoded models.** Routing is configuration, not source code.
 5. **Human approval for destructive operations.** Installers default to check/dry-run.
+6. **No greenfield artifacts.** Reuse a consolidated upstream artifact or justify an exception in the provenance registry.
 
 ## Documentation
 

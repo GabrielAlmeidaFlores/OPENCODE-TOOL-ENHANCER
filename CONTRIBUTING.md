@@ -2,11 +2,13 @@
 
 ## Principles
 
-1. Every recommendation must be reproducible with a command.
+1. **Source before writing.** No agent, skill, command, hat, prompt, template, example, or benchmark task may be authored from scratch when a maintained upstream exists. See `AGENTS.md` Section 2A and `docs/provenance/registry.yml`.
+2. Every recommendation must be reproducible with a command.
 2. Label vendor claims as vendor claims.
 3. Do not add a tool without documenting its token, runtime, license, and failure modes.
 4. Do not commit credentials or machine-specific absolute paths.
 5. Do not modify a user's existing OpenCode configuration automatically.
+6. Record provenance before opening a pull request.
 
 ## Local checks
 
@@ -32,10 +34,11 @@ The validator checks JSON/JSONC/YAML syntax, required files, schema keys, and do
 
 ## Adding a Ralph hat
 
-1. Add or extend a collection under `configs/ralph/hats/`.
-2. Give each hat explicit `triggers`, `publishes`, and `instructions`.
-3. Route to an OpenCode agent with `backend.args`.
-4. Keep the number of hats small; do not duplicate responsibilities.
+1. Start from an official Ralph preset under `presets/`.
+2. Extract only the `event_loop` and `hats` sections.
+3. Add per-hat `backend.args` for OpenCode agent routing.
+4. Keep the upstream instructions unchanged; record the diff in the file header and registry.
+5. Validate with `ralph preflight` and `ralph run --dry-run`.
 
 ## Changing configuration
 

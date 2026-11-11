@@ -14,7 +14,9 @@ Then complete the manual checks for your environment.
 - [ ] JSON/JSONC files parse and contain `$schema`.
 - [ ] Ralph YAML files parse.
 - [ ] All 12 agent files exist with valid `mode`.
-- [ ] All 10 skills exist with a matching `name`.
+- [ ] All 10 skills exist with a matching `name` and provenance metadata.
+- [ ] Every agent, command, and hat has a provenance header.
+- [ ] `docs/provenance/registry.yml` points only to existing local paths.
 - [ ] Relative documentation links resolve.
 - [ ] External links use maintained sources (run `--links` when useful).
 
@@ -42,7 +44,8 @@ Then complete the manual checks for your environment.
 - [ ] `ralph --version` reports `2.10.x`.
 - [ ] `ralph preflight -c .ralph/ralph.yml --format human` passes or warnings are understood.
 - [ ] A dry run shows `opencode run --agent <role>`.
-- [ ] The `code-assist` workflow reaches `LOOP_COMPLETE` on a small task.
+- [ ] The `research` workflow reaches `RESEARCH_COMPLETE` on a small question.
+- [ ] `code-assist` runs with a sufficient iteration budget for multi-wave work.
 - [ ] A deliberately failing test blocks completion.
 - [ ] `.ralph/agent/scratchpad.md` contains the iteration state.
 

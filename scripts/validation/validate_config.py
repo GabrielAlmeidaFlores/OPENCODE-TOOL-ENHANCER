@@ -42,9 +42,10 @@ AGENT_ROLES = [
 ]
 
 SKILLS = [
-    "codebase-navigation", "tdd-workflow", "api-contract",
-    "security-review", "db-migration", "refactor-safely",
-    "debug-repro", "performance-profile", "release-notes", "docs-sync",
+    "test-driven-development", "systematic-debugging", "writing-plans",
+    "verification-before-completion", "requesting-code-review",
+    "api-design-principles", "database-migration", "code-review-excellence",
+    "auth-implementation-patterns", "changelog-automation",
 ]
 
 errors: list[str] = []
@@ -217,6 +218,55 @@ def check_commands() -> None:
             fail(f"{path.relative_to(ROOT)}: missing description")
 
 
+def check_provenance() -> None:
+    """Enforce AGENTS.md Section 2A."""
+    global checked
+    registry = ROOT / "docs/provenance/registry.yml"
+    checked += 1
+    if not registry.exists():
+        fail("missing docs/provenance/registry.yml")
+        return
+    text = registry.read_text(encoding="utf-8")
+
+    # Every registered local path must exist.
+    for rel in re.findall(r'^\s+local:\s*"([^"]+)"', text, re.M):
+        for part in [p.strip() for p in rel.split(",")]:
+            if not part:
+                continue
+            # allow glob-ish entries used by original_artifacts
+            if "*" in part:
+                continue
+            checked += 1
+            if not (ROOT / part).exists():
+                fail(f"provenance registry points to missing path: {part}")
+
+    # Agents and commands: provenance block in frontmatter comments.
+    for sub in ("agents", "commands"):
+        for path in sorted((ROOT / sub).rglob("*.md")):
+            if path.name == "README.md":
+                continue
+            checked += 1
+            head = path.read_text(encoding="utf-8")[:1200]
+            if "# source:" not in head or "# upstream_commit:" not in head:
+                fail(f"{path.relative_to(ROOT)}: missing provenance header (source/upstream_commit)")
+
+    # Skills: structured metadata (OpenCode-supported field).
+    for path in sorted((ROOT / "skills").rglob("SKILL.md")):
+        checked += 1
+        head = path.read_text(encoding="utf-8")[:1600]
+        for key in ("source:", "upstream_path:", "upstream_commit:", "license:"):
+            if key not in head:
+                fail(f"{path.relative_to(ROOT)}: missing metadata.{key}")
+                break
+
+    # Ralph hats: provenance header comments.
+    for path in sorted((ROOT / "configs/ralph/hats").glob("*.yml")):
+        checked += 1
+        head = path.read_text(encoding="utf-8")[:1200]
+        if "# source:" not in head or "# upstream_commit:" not in head:
+            fail(f"{path.relative_to(ROOT)}: missing provenance header")
+
+
 def check_links() -> None:
     import urllib.request
 
@@ -259,6 +309,7 @@ def main() -> int:
     check_agents()
     check_skills()
     check_commands()
+    check_provenance()
 
     if args.links:
         check_links()

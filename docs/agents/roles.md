@@ -1,5 +1,9 @@
 # Agent Roles and Delegation
 
+## Provenance
+
+All twelve role definitions are adapted from maintained MIT-licensed collections. The role-to-source mapping is in [docs/provenance/registry.yml](../provenance/registry.yml). Do not add a role without a source and a registry entry.
+
 ## Custom primary agent
 
 `coordinator` is the primary agent. It is not OpenCode's default Build agent.
@@ -49,15 +53,22 @@ implementation -> code-reviewer -> test-engineer -> (security-reviewer) -> coord
 
 ## Ralph mapping
 
-Ralph hats route to these agents with `backend.args`:
+The official Ralph collections route to these agents with `backend.args`:
 
-| Hat | Agent |
-| --- | --- |
-| `planner` | `planner` |
-| `builder` | `backend-developer` or `frontend-developer` |
-| `validator` | `test-engineer` |
-| `reviewer` | `code-reviewer` |
-| `security` | `security-reviewer` |
-| `finalizer` | `coordinator` |
+| Collection | Hat | Agent |
+| --- | --- | --- |
+| `code-assist` | planner | `planner` |
+| `code-assist` | builder | `backend-developer` (or `frontend-developer` in a local copy) |
+| `code-assist` | critic | `code-reviewer` |
+| `code-assist` | finalizer | `coordinator` |
+| `review` | reviewer | `code-reviewer` |
+| `review` | analyzer | `security-reviewer` |
+| `review` | closer | `coordinator` |
+| `research` | researcher | `researcher` |
+| `research` | synthesizer | `coordinator` |
+| `debug` | investigator | `researcher` |
+| `debug` | tester | `test-engineer` |
+| `debug` | fixer | `backend-developer` |
+| `debug` | verifier | `test-engineer` |
 
 Ralph owns the loop and gates; OpenCode owns the agent behavior and tools.

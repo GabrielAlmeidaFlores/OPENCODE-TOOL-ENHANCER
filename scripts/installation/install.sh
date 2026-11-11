@@ -12,6 +12,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 MODE="check"
 ONLY=""
 TARGET="$ROOT"
+CLEAN=0
 
 usage() {
   cat <<'EOF'
@@ -22,6 +23,7 @@ Options:
   --all                Select all components
   --only LIST          Comma-separated: opencode,agents,commands,skills,ralph,ast-grep,serena,codegraph
   --target DIR         Project directory for .opencode files (default: repo root)
+  --clean              Back up and remove existing .opencode agents/commands/skills before copying
   -h, --help
 EOF
 }
@@ -34,6 +36,7 @@ while [[ $# -gt 0 ]]; do
     --all) ONLY="opencode,agents,commands,skills,ralph,ast-grep,serena,codegraph"; shift ;;
     --only) ONLY="${2:-}"; shift 2 ;;
     --target) TARGET="${2:-}"; shift 2 ;;
+    --clean) CLEAN=1; shift ;;
     -h|--help) usage; exit 0 ;;
     *) echo "unknown option: $1"; usage; exit 2 ;;
   esac
@@ -75,6 +78,21 @@ STAMP="$(date +%Y%m%d-%H%M%S)"
 BACKUP="$TARGET/.opencode-backup-$STAMP"
 mkdir -p "$BACKUP"
 
+clean_dir() {
+  local dir="$1"
+  if [[ ! -d "$dir" ]]; then
+    return 0
+  fi
+  if [[ "$MODE" == "apply" ]]; then
+    mkdir -p "$BACKUP"
+    cp -R "$dir" "$BACKUP/$(basename "$dir")"
+    rm -rf "$dir"
+    echo "  cleaned (backed up): $dir"
+  else
+    echo "  would clean: $dir"
+  fi
+}
+
 copy_file() {
   local src="$1" dst="$2"
   if [[ -f "$dst" && "$MODE" == "apply" ]]; then
@@ -83,6 +101,13 @@ copy_file() {
   fi
   run cp "$src" "$dst"
 }
+
+if [[ "$CLEAN" == "1" ]]; then
+  echo "== clean managed directories =="
+  clean_dir "$TARGET/.opencode/agents"
+  clean_dir "$TARGET/.opencode/commands"
+  clean_dir "$TARGET/.opencode/skills"
+fi
 
 if selected opencode; then
   echo "== opencode config =="

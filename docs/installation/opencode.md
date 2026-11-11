@@ -21,6 +21,12 @@ If you have a V1 install, back up `~/.config/opencode` first:
 ./scripts/maintenance/backup-config.sh
 ```
 
+If you already have an installation, add `--clean` to replace managed agents, commands, and skills without leaving removed files behind:
+
+```bash
+./scripts/installation/install.sh --apply --clean --only opencode,agents,commands,skills
+```
+
 ## 2. Add the project configuration
 
 ```bash
