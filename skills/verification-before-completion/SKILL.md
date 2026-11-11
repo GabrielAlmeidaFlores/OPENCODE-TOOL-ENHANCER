@@ -3,6 +3,9 @@ name: verification-before-completion
 description: Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification commands and confirming output before making any success claims; evidence before assertions always
 
 metadata:
+  author: "Jesse Vincent"
+  author_url: "https://github.com/obra"
+  author_email: "jesse@fsck.com"
   source: "https://github.com/obra/superpowers"
   upstream_path: "skills/verification-before-completion/SKILL.md"
   upstream_commit: "22f0b463e7a5e579904dd6211a520321035526f7"

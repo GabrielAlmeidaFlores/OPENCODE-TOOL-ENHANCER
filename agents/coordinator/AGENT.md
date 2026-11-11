@@ -1,6 +1,9 @@
 ---
 # provenance (required by AGENTS.md Section 2A)
 # source: https://github.com/wshobson/agents
+# author: Seth Hobson
+# author_url: https://github.com/wshobson
+# author_email: seth@major7apps.com
 # upstream_path: plugins/agent-teams/agents/team-lead.md
 # upstream_commit: 9c61ab243def98f72da12abd41cfcf5bcd91af9d
 # retrieved: 2026-11-11

@@ -3,6 +3,9 @@ name: api-design-principles
 description: Master REST and GraphQL API design principles to build intuitive, scalable, and maintainable APIs that delight developers. Use when designing new APIs, reviewing API specifications, or establishing API design standards.
 
 metadata:
+  author: "Seth Hobson"
+  author_url: "https://github.com/wshobson"
+  author_email: "seth@major7apps.com"
   source: "https://github.com/wshobson/agents"
   upstream_path: "plugins/backend-development/skills/api-design-principles/SKILL.md"
   upstream_commit: "9c61ab243def98f72da12abd41cfcf5bcd91af9d"

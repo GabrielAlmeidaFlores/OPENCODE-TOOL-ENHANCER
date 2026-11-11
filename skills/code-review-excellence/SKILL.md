@@ -3,6 +3,9 @@ name: code-review-excellence
 description: Master effective code review practices to provide constructive feedback, catch bugs early, and foster knowledge sharing while maintaining team morale. Use when reviewing pull requests, establishing review standards, or mentoring developers.
 
 metadata:
+  author: "Seth Hobson"
+  author_url: "https://github.com/wshobson"
+  author_email: "seth@major7apps.com"
   source: "https://github.com/wshobson/agents"
   upstream_path: "plugins/developer-essentials/skills/code-review-excellence/SKILL.md"
   upstream_commit: "9c61ab243def98f72da12abd41cfcf5bcd91af9d"

@@ -112,12 +112,12 @@ Then start OpenCode and select the `coordinator` agent.
 
 ## Provenance
 
-Every agent, skill, command, and Ralph hat is sourced from a maintained upstream repository, pinned to a commit, attributed, and modified minimally. Sources:
+Every agent, skill, command, and Ralph hat is sourced from a maintained upstream repository, pinned to a commit, attributed to its original author, and modified minimally. No skill or agent in this repository is original work. Sources and authors:
 
-- [VoltAgent/awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) — MIT
-- [wshobson/agents](https://github.com/wshobson/agents) — MIT, native OpenCode support
-- [obra/superpowers](https://github.com/obra/superpowers) — MIT
-- [mikeyobrien/ralph-orchestrator](https://github.com/mikeyobrien/ralph-orchestrator) — MIT
+- [VoltAgent/awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) — author VoltAgent — MIT
+- [wshobson/agents](https://github.com/wshobson/agents) — author Seth Hobson — MIT, native OpenCode support
+- [obra/superpowers](https://github.com/obra/superpowers) — author Jesse Vincent — MIT
+- [mikeyobrien/ralph-orchestrator](https://github.com/mikeyobrien/ralph-orchestrator) — author Ralph Orchestrator Contributors — MIT
 
 See [docs/provenance/registry.yml](docs/provenance/registry.yml) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Locally authored work is limited to configuration composition, glue scripts, and labeled fixtures.
 

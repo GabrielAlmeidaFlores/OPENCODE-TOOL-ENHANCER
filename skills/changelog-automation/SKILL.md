@@ -3,6 +3,9 @@ name: changelog-automation
 description: Automate changelog generation from commits, PRs, and releases following Keep a Changelog format. Use when setting up release workflows, generating release notes, or standardizing commit conventions.
 
 metadata:
+  author: "Seth Hobson"
+  author_url: "https://github.com/wshobson"
+  author_email: "seth@major7apps.com"
   source: "https://github.com/wshobson/agents"
   upstream_path: "plugins/documentation-generation/skills/changelog-automation/SKILL.md"
   upstream_commit: "9c61ab243def98f72da12abd41cfcf5bcd91af9d"

@@ -3,6 +3,9 @@ name: database-migration
 description: Execute database migrations across ORMs and platforms with zero-downtime strategies, data transformation, and rollback procedures. Use when migrating databases, changing schemas, performing data transformations, or implementing zero-downtime deployment strategies.
 
 metadata:
+  author: "Seth Hobson"
+  author_url: "https://github.com/wshobson"
+  author_email: "seth@major7apps.com"
   source: "https://github.com/wshobson/agents"
   upstream_path: "plugins/framework-migration/skills/database-migration/SKILL.md"
   upstream_commit: "9c61ab243def98f72da12abd41cfcf5bcd91af9d"

@@ -1,5 +1,7 @@
 # Provenance: adapted from the official Ralph Orchestrator preset.
 # source: https://github.com/mikeyobrien/ralph-orchestrator
+# author: Ralph Orchestrator Contributors
+# author_url: https://github.com/mikeyobrien
 # upstream_path: presets/research.yml
 # upstream_commit: 64040fd0cda4d83386e4d1d1aa65571dadfe00b3
 # retrieved: 2026-11-11

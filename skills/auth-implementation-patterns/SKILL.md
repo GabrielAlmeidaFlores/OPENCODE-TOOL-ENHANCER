@@ -3,6 +3,9 @@ name: auth-implementation-patterns
 description: Master authentication and authorization patterns including JWT, OAuth2, session management, and RBAC to build secure, scalable access control systems. Use when implementing auth systems, securing APIs, or debugging security issues.
 
 metadata:
+  author: "Seth Hobson"
+  author_url: "https://github.com/wshobson"
+  author_email: "seth@major7apps.com"
   source: "https://github.com/wshobson/agents"
   upstream_path: "plugins/developer-essentials/skills/auth-implementation-patterns/SKILL.md"
   upstream_commit: "9c61ab243def98f72da12abd41cfcf5bcd91af9d"

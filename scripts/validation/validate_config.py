@@ -249,12 +249,14 @@ def check_provenance() -> None:
             head = path.read_text(encoding="utf-8")[:1200]
             if "# source:" not in head or "# upstream_commit:" not in head:
                 fail(f"{path.relative_to(ROOT)}: missing provenance header (source/upstream_commit)")
+            if "# author:" not in head or "# author_url:" not in head:
+                fail(f"{path.relative_to(ROOT)}: missing author attribution (author/author_url)")
 
     # Skills: structured metadata (OpenCode-supported field).
     for path in sorted((ROOT / "skills").rglob("SKILL.md")):
         checked += 1
         head = path.read_text(encoding="utf-8")[:1600]
-        for key in ("source:", "upstream_path:", "upstream_commit:", "license:"):
+        for key in ("author:", "author_url:", "source:", "upstream_path:", "upstream_commit:", "license:"):
             if key not in head:
                 fail(f"{path.relative_to(ROOT)}: missing metadata.{key}")
                 break
@@ -265,6 +267,8 @@ def check_provenance() -> None:
         head = path.read_text(encoding="utf-8")[:1200]
         if "# source:" not in head or "# upstream_commit:" not in head:
             fail(f"{path.relative_to(ROOT)}: missing provenance header")
+        if "# author:" not in head or "# author_url:" not in head:
+            fail(f"{path.relative_to(ROOT)}: missing author attribution")
 
 
 def check_links() -> None:

@@ -3,6 +3,9 @@ name: test-driven-development
 description: Use when implementing any feature or bugfix, before writing implementation code
 
 metadata:
+  author: "Jesse Vincent"
+  author_url: "https://github.com/obra"
+  author_email: "jesse@fsck.com"
   source: "https://github.com/obra/superpowers"
   upstream_path: "skills/test-driven-development/SKILL.md"
   upstream_commit: "22f0b463e7a5e579904dd6211a520321035526f7"

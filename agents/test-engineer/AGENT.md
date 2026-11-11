@@ -1,6 +1,8 @@
 ---
 # provenance (required by AGENTS.md Section 2A)
 # source: https://github.com/VoltAgent/awesome-claude-code-subagents
+# author: VoltAgent
+# author_url: https://github.com/VoltAgent
 # upstream_path: categories/04-quality-security/test-automator.md
 # upstream_commit: ed74d115b7fb7026a22a4f816a8e3250f425e3b4
 # retrieved: 2026-11-11

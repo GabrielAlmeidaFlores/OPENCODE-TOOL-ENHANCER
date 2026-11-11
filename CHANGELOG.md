@@ -23,6 +23,14 @@ All notable changes to this repository are documented here.
 - Ralph hats support `backend_args` (alias `args`), enabling per-hat OpenCode agent routing.
 - CodeGraph is MIT licensed and exposes `codegraph serve --mcp`.
 
+### Author attribution (2026-11-11)
+
+- Every skill now records `metadata.author`, `metadata.author_url`, and `metadata.author_email` when published.
+- Every agent, command, and Ralph hat records `# author:`, `# author_url:`, and `# author_email:` in its provenance header.
+- `docs/provenance/registry.yml` records the author for every artifact and source.
+- The validator fails when author attribution is missing.
+- No skill or agent is presented as original work; all are adapted from public repositories.
+
 ### Provenance remediation (2026-11-11)
 
 - Added AGENTS.md Section 2A and engineering rule 15: no greenfield agents, skills, commands, hats, prompts, templates, examples, or benchmark tasks when a maintained upstream exists.

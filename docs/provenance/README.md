@@ -2,16 +2,22 @@
 
 This directory implements **AGENTS.md Section 2A**: no reusable artifact is authored from scratch when a maintained upstream exists.
 
-## Sources
+## Sources and authors
 
-All sources are pinned to a commit. Versions were retrieved on **2026-11-11**.
+All sources are pinned to a commit. Versions were retrieved on **2026-11-11**. **No skill or agent in this repository is original work**; each is adapted from the public repositories below.
 
-| ID | Repository | Commit | License | Used for |
+| ID | Repository | Author | Commit | License |
 | --- | --- | --- | --- | --- |
-| `volt` | https://github.com/VoltAgent/awesome-claude-code-subagents | `ed74d115b7fb7026a22a4f816a8e3250f425e3b4` | MIT | Generic role agents |
-| `wshobson` | https://github.com/wshobson/agents | `9c61ab243def98f72da12abd41cfcf5bcd91af9d` | MIT | Coordinator, architect, database, skills, commands |
-| `superpowers` | https://github.com/obra/superpowers | `22f0b463e7a5e579904dd6211a520321035526f7` | MIT | TDD, debugging, planning, verification, review skills |
-| `ralph` | https://github.com/mikeyobrien/ralph-orchestrator | `64040fd0cda4d83386e4d1d1aa65571dadfe00b3` | MIT | Official hat presets |
+| `volt` | https://github.com/VoltAgent/awesome-claude-code-subagents | VoltAgent | `ed74d115b7fb7026a22a4f816a8e3250f425e3b4` | MIT |
+| `wshobson` | https://github.com/wshobson/agents | Seth Hobson (`seth@major7apps.com`) | `9c61ab243def98f72da12abd41cfcf5bcd91af9d` | MIT |
+| `superpowers` | https://github.com/obra/superpowers | Jesse Vincent (`jesse@fsck.com`) | `22f0b463e7a5e579904dd6211a520321035526f7` | MIT |
+| `ralph` | https://github.com/mikeyobrien/ralph-orchestrator | Ralph Orchestrator Contributors | `64040fd0cda4d83386e4d1d1aa65571dadfe00b3` | MIT |
+
+Every artifact records its author in three places:
+
+1. The skill's `metadata.author`, `metadata.author_url`, and `metadata.author_email` (when published).
+2. The agent, command, or hat header (`# author:`, `# author_url:`, `# author_email:`).
+3. The `author` and `author_url` fields in `registry.yml`.
 
 `wshobson/agents` is the primary consolidated source: it explicitly supports OpenCode, publishes an OpenCode adapter, and contains 202 agents, 185 skills, and 105 commands. `VoltAgent` supplies the generic role agents that `wshobson` does not publish under the required names. `superpowers` supplies the methodology skills. Ralph supplies its own official presets.
 
@@ -20,6 +26,7 @@ All sources are pinned to a commit. Versions were retrieved on **2026-11-11**.
 `registry.yml` is the source of truth. Every artifact entry records:
 
 - local path
+- author, author URL, and email when published
 - source repository
 - exact upstream path
 - upstream commit

@@ -79,6 +79,7 @@ Evaluate sources in this order:
 
 Every agent, skill, command, hat, prompt, template, example, and benchmark task must record:
 
+- **Author(s)** of the upstream artifact, with URL and email when published.
 - Upstream repository URL.
 - Exact upstream path and commit, tag, or version.
 - Retrieval date.
@@ -86,6 +87,8 @@ Every agent, skill, command, hat, prompt, template, example, and benchmark task 
 - Local path.
 - What was modified and why (minimal diff).
 - Verification performed after modification.
+
+No skill, agent, command, or hat may be presented as authored by the maintainer of this repository. The original authors must be named in the artifact metadata, the file header, and the provenance registry.
 
 Store this in frontmatter and in the central provenance registry.
 
@@ -119,8 +122,8 @@ Each exception must be registered as `original` with a justification and must no
 
 ## Enforcement
 
-1. `provenance` frontmatter is required on agents, skills, commands, and Ralph hats.
-2. `docs/provenance/registry.yml` is the source of truth for all artifacts.
+1. `provenance` frontmatter and **author attribution** are required on agents, skills, commands, and Ralph hats.
+2. `docs/provenance/registry.yml` is the source of truth for all artifacts and their authors.
 3. `scripts/validation/validate_config.py` must fail when provenance is missing or points to a non-existent local source.
 4. Code review must reject any new artifact that bypasses this rule.
 5. When upstream changes, update the pinned version and the minimal diff; do not let local copies drift silently.

@@ -3,6 +3,9 @@ name: requesting-code-review
 description: Use when completing tasks, implementing major features, or before merging to verify work meets requirements
 
 metadata:
+  author: "Jesse Vincent"
+  author_url: "https://github.com/obra"
+  author_email: "jesse@fsck.com"
   source: "https://github.com/obra/superpowers"
   upstream_path: "skills/requesting-code-review/SKILL.md"
   upstream_commit: "22f0b463e7a5e579904dd6211a520321035526f7"

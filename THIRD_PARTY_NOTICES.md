@@ -6,6 +6,7 @@ This repository redistributes adapted MIT-licensed artifacts. The MIT license an
 
 - Repository: https://github.com/VoltAgent/awesome-claude-code-subagents
 - Commit: `ed74d115b7fb7026a22a4f816a8e3250f425e3b4`
+- Author: VoltAgent (`https://github.com/VoltAgent`)
 - Used in: `agents/planner`, `agents/researcher`, `agents/backend-developer`, `agents/frontend-developer`, `agents/code-reviewer`, `agents/test-engineer`, `agents/security-reviewer`, `agents/performance-analyst`, `agents/documentation-engineer`
 
 ```text
@@ -36,6 +37,7 @@ SOFTWARE.
 
 - Repository: https://github.com/wshobson/agents
 - Commit: `9c61ab243def98f72da12abd41cfcf5bcd91af9d`
+- Author: Seth Hobson (`seth@major7apps.com`, `https://github.com/wshobson`)
 - Used in: `agents/coordinator`, `agents/architect`, `agents/database-specialist`, five skills, eight commands
 
 ```text
@@ -66,6 +68,7 @@ SOFTWARE.
 
 - Repository: https://github.com/obra/superpowers
 - Commit: `22f0b463e7a5e579904dd6211a520321035526f7`
+- Author: Jesse Vincent (`jesse@fsck.com`, `https://github.com/obra`)
 - Used in: `skills/test-driven-development`, `skills/systematic-debugging`, `skills/writing-plans`, `skills/verification-before-completion`, `skills/requesting-code-review`
 
 ```text
@@ -96,6 +99,7 @@ SOFTWARE.
 
 - Repository: https://github.com/mikeyobrien/ralph-orchestrator
 - Commit: `64040fd0cda4d83386e4d1d1aa65571dadfe00b3`
+- Author: Ralph Orchestrator Contributors (`https://github.com/mikeyobrien`)
 - Used in: `configs/ralph/hats/code-assist.yml`, `review.yml`, `research.yml`, `debug.yml`
 
 ```text

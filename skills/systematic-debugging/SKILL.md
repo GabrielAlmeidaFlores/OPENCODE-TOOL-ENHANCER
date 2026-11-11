@@ -3,6 +3,9 @@ name: systematic-debugging
 description: Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes
 
 metadata:
+  author: "Jesse Vincent"
+  author_url: "https://github.com/obra"
+  author_email: "jesse@fsck.com"
   source: "https://github.com/obra/superpowers"
   upstream_path: "skills/systematic-debugging/SKILL.md"
   upstream_commit: "22f0b463e7a5e579904dd6211a520321035526f7"
