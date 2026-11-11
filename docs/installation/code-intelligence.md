@@ -1,3 +1,5 @@
+Repository: https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER
+
 # Install Code Intelligence
 
 Install in this order. Each step has a verification command.

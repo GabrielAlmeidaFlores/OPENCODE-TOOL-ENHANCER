@@ -64,7 +64,7 @@ Classification: independently verified by source reading and documentation, not 
 
 ### ast-grep
 
-- Version 0.51.2, released 2026-11-11; MIT.
+- Version 0.51.1 installed; 0.51.2 was released 2026-11-11. MIT.
 - Tree-sitter structural search and rewrite; YAML rules; no MCP required.
 - Best for deterministic "find this syntax shape" queries and lint-style rules.
 - Not a symbol resolver; cannot replace semantic navigation.

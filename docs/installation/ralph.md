@@ -1,3 +1,5 @@
+Repository: https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER
+
 # Install Ralph Orchestrator
 
 ## Prerequisites
@@ -65,7 +67,7 @@ ralph run \
 | Backend not found | `which opencode`; it must be on `PATH` |
 | Auth failure | Run OpenCode directly once |
 | Hangs on first iteration | Raise `adapters.opencode.timeout` |
-| Never completes | Check the finalizer hat emits `LOOP_COMPLETE` |
+| Never completes | Check that the collection emitted its completion promise |
 | Gate passes incorrectly | The critic must run the verification commands itself |
 
 ## Uninstall

@@ -32,7 +32,7 @@ Verified on 2026-11-11 against a standalone OpenCode 2.2.7 binary and repository
 | Tool | Integration | Requires | License | Default |
 | --- | --- | --- | --- | --- |
 | ripgrep | CLI/native search | none | MIT/Unlicense | Yes |
-| ast-grep 0.51.2 | CLI | `ast-grep` binary | MIT | Yes |
+| ast-grep 0.51.1 | CLI | `ast-grep` binary | MIT | Yes |
 | Serena 2.1.0 | MCP stdio | `uv`, language servers | GPL-3.0-or-later | Yes |
 | CodeGraph | MCP stdio | `codegraph` binary, `codegraph init` | MIT | Yes |
 | Repomix | CLI/MCP | Node or Docker | MIT | Optional |

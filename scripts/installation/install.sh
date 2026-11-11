@@ -137,11 +137,35 @@ copy_file() {
   run cp "$src" "$dst"
 }
 
+# Function: copy_dir
+# Description: Copies a directory tree and backs up an existing destination in apply mode.
+# Arguments: $1 is the source directory, $2 is the destination directory.
+# Returns: Zero on success.
+# Side effects: May overwrite the destination and write a backup copy.
+copy_dir() {
+  local src="$1" dst="$2"
+  if [[ -d "$dst" && "$MODE" == "apply" ]]; then
+    mkdir -p "$BACKUP/${dst#$TARGET/}"
+    cp -R "$dst/." "$BACKUP/${dst#$TARGET/}/"
+  fi
+  run mkdir -p "$dst"
+  run cp -R "$src/." "$dst/"
+}
+
 if [[ "$CLEAN" == "1" ]]; then
   echo "== clean managed directories =="
-  clean_dir "$TARGET/.opencode/agents"
-  clean_dir "$TARGET/.opencode/commands"
-  clean_dir "$TARGET/.opencode/skills"
+  if selected agents; then
+    clean_dir "$TARGET/.opencode/agents"
+  fi
+  if selected commands; then
+    clean_dir "$TARGET/.opencode/commands"
+  fi
+  if selected skills; then
+    clean_dir "$TARGET/.opencode/skills"
+  fi
+  if selected ralph; then
+    clean_dir "$TARGET/.ralph/hats"
+  fi
 fi
 
 if selected opencode; then
@@ -172,8 +196,7 @@ if selected skills; then
   run mkdir -p "$TARGET/.opencode/skills"
   for d in "$ROOT"/skills/*/; do
     name="$(basename "$d")"
-    run mkdir -p "$TARGET/.opencode/skills/$name"
-    copy_file "${d}SKILL.md" "$TARGET/.opencode/skills/$name/SKILL.md"
+    copy_dir "$d" "$TARGET/.opencode/skills/$name"
   done
 fi
 

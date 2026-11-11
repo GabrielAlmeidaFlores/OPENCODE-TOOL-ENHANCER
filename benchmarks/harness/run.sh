@@ -40,15 +40,28 @@ done
 command -v opencode >/dev/null || { echo "opencode not found"; exit 2; }
 command -v python3 >/dev/null || { echo "python3 not found"; exit 2; }
 
-read -r TASK_ID PROMPT VERIFY MAX_WALL < <(python3 - "$TASK" <<'PY'
+IFS=$'\t' read -r TASK_ID PROMPT VERIFY MAX_WALL WORKDIR < <(python3 - "$TASK" <<'PY'
 import json
 import sys
 
 with open(sys.argv[1], encoding="utf-8") as handle:
     task = json.load(handle)
-print(task["id"], task["prompt"].replace("\n", " "), task["verification"], task.get("max_wall_time_seconds", 900))
+print(
+    "\t".join(
+        [
+            str(task["id"]),
+            task["prompt"].replace("\n", " "),
+            task["verification"],
+            str(task.get("max_wall_time_seconds", 900)),
+            task.get("working_directory", "."),
+        ]
+    )
+)
 PY
 )
+
+PROJECT_DIR="$ROOT/$WORKDIR"
+[[ -d "$PROJECT_DIR" ]] || { echo "working directory not found: $PROJECT_DIR"; exit 2; }
 
 RUN_ID="${RUN_ID:-$ARM-$TASK_ID-$(date +%Y%m%d-%H%M%S)}"
 OUT="$ROOT/benchmarks/results/$RUN_ID"
@@ -77,7 +90,7 @@ COMMIT="$(git -C "$ROOT" rev-parse HEAD 2>/dev/null || echo unknown)"
 MODEL="${OPENCODE_BENCH_MODEL:-user-selected}"
 
 echo "arm=$ARM task=$TASK_ID run=$RUN_ID"
-echo "config=$CONFIG agent=$AGENT commit=$COMMIT max_wall=${MAX_WALL}s"
+echo "config=$CONFIG agent=$AGENT commit=$COMMIT workdir=$WORKDIR max_wall=${MAX_WALL}s"
 
 if [[ "$DRY" == "1" ]]; then
   echo "would run: OPENCODE_CONFIG=$CONFIG opencode run --agent $AGENT --auto --format json <prompt>"
@@ -86,19 +99,20 @@ fi
 
 mkdir -p "$OUT"
 
-python3 - "$OUT/meta.json" "$RUN_ID" "$ARM" "$TASK" "$TASK_ID" "$COMMIT" "$MODEL" "$AGENT" "$MAX_WALL" <<'PY'
+python3 - "$OUT/meta.json" "$RUN_ID" "$ARM" "$TASK" "$TASK_ID" "$COMMIT" "$MODEL" "$AGENT" "$MAX_WALL" "$WORKDIR" <<'PY'
 import datetime
 import json
 import subprocess
 import sys
 
-out, run_id, arm, task, task_id, commit, model, agent, max_wall = sys.argv[1:]
+out, run_id, arm, task, task_id, commit, model, agent, max_wall, workdir = sys.argv[1:]
 json.dump(
     {
         "run_id": run_id,
         "arm": arm,
         "task_file": task,
         "task_id": task_id,
+        "working_directory": workdir,
         "commit": commit,
         "model": model,
         "agent": agent,
@@ -112,6 +126,8 @@ json.dump(
     indent=2,
 )
 PY
+
+cd "$PROJECT_DIR"
 
 START=$(date +%s)
 set +e
@@ -177,6 +193,7 @@ cat > "$OUT/notes.md" <<EOF
 - arm: $ARM
 - task: $TASK_ID
 - agent: $AGENT
+- working directory: $WORKDIR
 - run exit: $RUN_RC
 - verification exit: $VERIFY_RC
 - wall time: $((END-START))s

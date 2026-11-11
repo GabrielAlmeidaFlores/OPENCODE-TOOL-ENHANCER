@@ -43,7 +43,7 @@
 4. The agent uses native tools, ripgrep, ast-grep, Serena, or CodeGraph as needed.
 5. The agent runs deterministic checks (tests, lint, typecheck).
 6. Ralph parses completion and gate outcomes. Incomplete work loops back.
-7. On success Ralph emits `LOOP_COMPLETE` and optionally commits.
+7. On success Ralph emits the collection completion promise and runs its landing sequence. Ralph 2.10.1 commits during landing; see the Git safety section in the Ralph guide.
 
 ## Data and state
 

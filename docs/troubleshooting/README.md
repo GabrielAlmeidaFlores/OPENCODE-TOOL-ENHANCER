@@ -54,6 +54,7 @@ OpenCode ships Windows binaries, but the scripts in this repository target POSIX
 
 ## Getting help
 
+- This repository: https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/issues
 - OpenCode issues: https://github.com/anomalyco/opencode/issues
 - Ralph issues: https://github.com/mikeyobrien/ralph-orchestrator/issues
 - Serena issues: https://github.com/oraios/serena/issues

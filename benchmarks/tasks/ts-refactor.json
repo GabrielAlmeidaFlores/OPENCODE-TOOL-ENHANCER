@@ -10,6 +10,9 @@
     "No unrelated formatting changes"
   ],
   "verification": "npm test",
-  "areas": ["examples/typescript/src"],
-  "max_wall_time_seconds": 900
+  "areas": [
+    "examples/typescript/src"
+  ],
+  "max_wall_time_seconds": 900,
+  "working_directory": "examples/typescript"
 }

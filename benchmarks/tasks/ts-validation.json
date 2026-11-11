@@ -10,6 +10,10 @@
     "Lint and typecheck pass"
   ],
   "verification": "npm test",
-  "areas": ["examples/typescript/src", "examples/typescript/test"],
-  "max_wall_time_seconds": 900
+  "areas": [
+    "examples/typescript/src",
+    "examples/typescript/test"
+  ],
+  "max_wall_time_seconds": 900,
+  "working_directory": "examples/typescript"
 }

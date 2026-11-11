@@ -3,7 +3,7 @@
 Structural search and rewrite over an abstract syntax tree. Use when the shape of the code matters more than the text.
 
 - Repository: https://github.com/ast-grep/ast-grep
-- Version used: 0.51.2
+- Version used: 0.51.1 (0.51.2 was available at retrieval)
 - License: MIT
 - Integration: CLI (no MCP)
 

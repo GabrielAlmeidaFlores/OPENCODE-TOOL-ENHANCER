@@ -25,6 +25,7 @@ Task definitions live in `benchmarks/tasks/`. Each task declares:
 - prompt
 - acceptance criteria
 - verification command
+- working directory
 - expected changed areas
 - maximum allowed wall time
 
@@ -32,7 +33,7 @@ Start with 5 tasks covering: a small bug fix, a feature with tests, a refactor, 
 
 ## Procedure
 
-1. Freeze the repository at a commit. Record it.
+1. Freeze the repository at a commit. Record it. Run each task from its declared `working_directory`.
 2. Record model ID, variant, and provider.
 3. Run the baseline arm. Capture `opencode stats --json --cost` and `opencode session export`.
 4. Reset the working tree. Run the optimized arm.

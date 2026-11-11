@@ -162,14 +162,24 @@ def check_yaml(path: Path) -> None:
         fail(f"{path.relative_to(ROOT)}: invalid YAML: {exc}")
 
 
-def check_json(path: Path) -> None:
-    """Validate a JSON file."""
+def check_tasks() -> None:
+    """Validate benchmark task definitions and their working directories."""
     global checked
-    checked += 1
-    try:
-        json.loads(path.read_text(encoding="utf-8"))
-    except Exception as exc:  # noqa: BLE001 - report any parser failure as a validation error
-        fail(f"{path.relative_to(ROOT)}: invalid JSON: {exc}")
+    for path in sorted((ROOT / "benchmarks/tasks").glob("*.json")):
+        checked += 1
+        try:
+            task = json.loads(path.read_text(encoding="utf-8"))
+        except Exception as exc:  # noqa: BLE001 - report any parser failure as a validation error
+            fail(f"{path.relative_to(ROOT)}: invalid JSON: {exc}")
+            continue
+        for field in ("id", "prompt", "verification", "working_directory"):
+            value = task.get(field)
+            if not isinstance(value, str) or not value.strip():
+                fail(f"{path.relative_to(ROOT)}: missing or empty {field}")
+        working_directory = task.get("working_directory")
+        if isinstance(working_directory, str) and working_directory.strip():
+            if not (ROOT / working_directory).is_dir():
+                fail(f"{path.relative_to(ROOT)}: working_directory does not exist: {working_directory}")
 
 
 def frontmatter(path: Path) -> dict[str, str]:
@@ -535,8 +545,7 @@ def main() -> int:
         check_jsonc(path)
     for path in sorted((ROOT / "configs").rglob("*.yml")):
         check_yaml(path)
-    for path in sorted((ROOT / "benchmarks/tasks").glob("*.json")):
-        check_json(path)
+    check_tasks()
 
     check_agents()
     check_skills()

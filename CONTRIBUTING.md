@@ -10,6 +10,10 @@
 5. Do not modify a user's existing OpenCode configuration automatically.
 6. Record provenance before opening a pull request.
 
+## Repository
+
+https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER
+
 ## Local checks
 
 ```bash

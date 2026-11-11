@@ -11,7 +11,7 @@ Verified facts:
 
 | Tool | Version | License | Integration |
 | --- | --- | --- | --- |
-| ast-grep | 0.51.2 (2026-11-11) | MIT | CLI |
+| ast-grep | 0.51.1 (0.51.2 available 2026-11-11) | MIT | CLI |
 | Serena | 2.1.0 (2026-10-19) | GPL-3.0-or-later (SolidLSP MIT) | MCP |
 | CodeGraph | active, MIT | MIT | MCP (`codegraph serve --mcp`) |
 | ripgrep | installed | MIT/Unlicense | CLI/native |

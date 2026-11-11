@@ -23,6 +23,21 @@ All notable changes to this repository are documented here.
 - Ralph hats support `backend_args` (alias `args`), enabling per-hat OpenCode agent routing.
 - CodeGraph is MIT licensed and exposes `codegraph serve --mcp`.
 
+### Repository readiness (2026-11-11)
+
+- Expanded the README with installation references, configuration guidance, daily workflows, prompt patterns, cost optimization, FAQ, and a documentation index.
+- Added light, dark, and mark logo variants under `assets/`.
+
+- Updated all documentation with the public repository URL.
+- Copied complete skill directories, including references, assets, and supporting scripts.
+- Updated the installer to copy complete skill directories and back up existing skill trees.
+- Added `working_directory` to benchmark tasks and made the harness execute tasks from the correct project directory.
+- Added validation for benchmark task working directories and required task fields.
+- Fixed the C# benchmark verification command to target the test project explicitly.
+- Scoped `--clean` to the selected components and included `.ralph/hats`, while preserving `.ralph/agent` runtime state.
+- Clarified completion promises for Ralph collections.
+- Updated ast-grep version references to the verified 0.51.1 environment.
+
 ### Documentation comments (2026-11-11)
 
 - Added AGENTS.md Section 2C and engineering rule 17: comments are documentation only.

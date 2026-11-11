@@ -45,7 +45,7 @@ agents:
     author: "Seth Hobson"
     author_url: "https://github.com/wshobson"
     retrieved: "2026-11-11"
-    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+    modified: "SKILL.md metadata only; supporting files copied as-is"
   - id: planner
     local: "agents/planner/AGENT.md"
     source: volt
@@ -55,7 +55,7 @@ agents:
     author: "VoltAgent"
     author_url: "https://github.com/VoltAgent"
     retrieved: "2026-11-11"
-    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+    modified: "SKILL.md metadata only; supporting files copied as-is"
   - id: researcher
     local: "agents/researcher/AGENT.md"
     source: volt
@@ -65,7 +65,7 @@ agents:
     author: "VoltAgent"
     author_url: "https://github.com/VoltAgent"
     retrieved: "2026-11-11"
-    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+    modified: "SKILL.md metadata only; supporting files copied as-is"
   - id: architect
     local: "agents/architect/AGENT.md"
     source: wshobson
@@ -75,7 +75,7 @@ agents:
     author: "Seth Hobson"
     author_url: "https://github.com/wshobson"
     retrieved: "2026-11-11"
-    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+    modified: "SKILL.md metadata only; supporting files copied as-is"
   - id: backend-developer
     local: "agents/backend-developer/AGENT.md"
     source: volt
@@ -85,7 +85,7 @@ agents:
     author: "VoltAgent"
     author_url: "https://github.com/VoltAgent"
     retrieved: "2026-11-11"
-    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+    modified: "SKILL.md metadata only; supporting files copied as-is"
   - id: frontend-developer
     local: "agents/frontend-developer/AGENT.md"
     source: volt
@@ -95,7 +95,7 @@ agents:
     author: "VoltAgent"
     author_url: "https://github.com/VoltAgent"
     retrieved: "2026-11-11"
-    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+    modified: "SKILL.md metadata only; supporting files copied as-is"
   - id: database-specialist
     local: "agents/database-specialist/AGENT.md"
     source: wshobson
@@ -105,7 +105,7 @@ agents:
     author: "Seth Hobson"
     author_url: "https://github.com/wshobson"
     retrieved: "2026-11-11"
-    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+    modified: "SKILL.md metadata only; supporting files copied as-is"
   - id: code-reviewer
     local: "agents/code-reviewer/AGENT.md"
     source: volt
@@ -115,7 +115,7 @@ agents:
     author: "VoltAgent"
     author_url: "https://github.com/VoltAgent"
     retrieved: "2026-11-11"
-    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+    modified: "SKILL.md metadata only; supporting files copied as-is"
   - id: test-engineer
     local: "agents/test-engineer/AGENT.md"
     source: volt
@@ -125,7 +125,7 @@ agents:
     author: "VoltAgent"
     author_url: "https://github.com/VoltAgent"
     retrieved: "2026-11-11"
-    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+    modified: "SKILL.md metadata only; supporting files copied as-is"
   - id: security-reviewer
     local: "agents/security-reviewer/AGENT.md"
     source: volt
@@ -135,7 +135,7 @@ agents:
     author: "VoltAgent"
     author_url: "https://github.com/VoltAgent"
     retrieved: "2026-11-11"
-    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+    modified: "SKILL.md metadata only; supporting files copied as-is"
   - id: performance-analyst
     local: "agents/performance-analyst/AGENT.md"
     source: volt
@@ -145,7 +145,7 @@ agents:
     author: "VoltAgent"
     author_url: "https://github.com/VoltAgent"
     retrieved: "2026-11-11"
-    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+    modified: "SKILL.md metadata only; supporting files copied as-is"
   - id: documentation-engineer
     local: "agents/documentation-engineer/AGENT.md"
     source: volt
@@ -155,7 +155,7 @@ agents:
     author: "VoltAgent"
     author_url: "https://github.com/VoltAgent"
     retrieved: "2026-11-11"
-    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+    modified: "SKILL.md metadata only; supporting files copied as-is"
 skills:
   - id: test-driven-development
     local: "skills/test-driven-development/SKILL.md"
@@ -166,7 +166,7 @@ skills:
     author: "Jesse Vincent"
     author_url: "https://github.com/obra"
     retrieved: "2026-11-11"
-    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+    modified: "SKILL.md metadata only; supporting files copied as-is"
   - id: systematic-debugging
     local: "skills/systematic-debugging/SKILL.md"
     source: superpowers
@@ -176,7 +176,7 @@ skills:
     author: "Jesse Vincent"
     author_url: "https://github.com/obra"
     retrieved: "2026-11-11"
-    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+    modified: "SKILL.md metadata only; supporting files copied as-is"
   - id: writing-plans
     local: "skills/writing-plans/SKILL.md"
     source: superpowers
@@ -186,7 +186,7 @@ skills:
     author: "Jesse Vincent"
     author_url: "https://github.com/obra"
     retrieved: "2026-11-11"
-    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+    modified: "SKILL.md metadata only; supporting files copied as-is"
   - id: verification-before-completion
     local: "skills/verification-before-completion/SKILL.md"
     source: superpowers
@@ -196,7 +196,7 @@ skills:
     author: "Jesse Vincent"
     author_url: "https://github.com/obra"
     retrieved: "2026-11-11"
-    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+    modified: "SKILL.md metadata only; supporting files copied as-is"
   - id: requesting-code-review
     local: "skills/requesting-code-review/SKILL.md"
     source: superpowers
@@ -206,7 +206,7 @@ skills:
     author: "Jesse Vincent"
     author_url: "https://github.com/obra"
     retrieved: "2026-11-11"
-    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+    modified: "SKILL.md metadata only; supporting files copied as-is"
   - id: api-design-principles
     local: "skills/api-design-principles/SKILL.md"
     source: wshobson
@@ -216,7 +216,7 @@ skills:
     author: "Seth Hobson"
     author_url: "https://github.com/wshobson"
     retrieved: "2026-11-11"
-    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+    modified: "SKILL.md metadata only; supporting files copied as-is"
   - id: database-migration
     local: "skills/database-migration/SKILL.md"
     source: wshobson
@@ -226,7 +226,7 @@ skills:
     author: "Seth Hobson"
     author_url: "https://github.com/wshobson"
     retrieved: "2026-11-11"
-    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+    modified: "SKILL.md metadata only; supporting files copied as-is"
   - id: code-review-excellence
     local: "skills/code-review-excellence/SKILL.md"
     source: wshobson
@@ -236,7 +236,7 @@ skills:
     author: "Seth Hobson"
     author_url: "https://github.com/wshobson"
     retrieved: "2026-11-11"
-    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+    modified: "SKILL.md metadata only; supporting files copied as-is"
   - id: auth-implementation-patterns
     local: "skills/auth-implementation-patterns/SKILL.md"
     source: wshobson
@@ -246,7 +246,7 @@ skills:
     author: "Seth Hobson"
     author_url: "https://github.com/wshobson"
     retrieved: "2026-11-11"
-    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+    modified: "SKILL.md metadata only; supporting files copied as-is"
   - id: changelog-automation
     local: "skills/changelog-automation/SKILL.md"
     source: wshobson
@@ -256,7 +256,7 @@ skills:
     author: "Seth Hobson"
     author_url: "https://github.com/wshobson"
     retrieved: "2026-11-11"
-    modified: "minimal adaptation for OpenCode/Ralph format; see file header"
+    modified: "SKILL.md metadata only; supporting files copied as-is"
 commands:
   - id: implement
     local: "commands/implement.md"

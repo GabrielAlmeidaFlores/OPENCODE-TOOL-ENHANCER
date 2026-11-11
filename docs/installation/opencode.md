@@ -1,3 +1,5 @@
+Repository: https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER
+
 # Install OpenCode V2 and this configuration
 
 ## Prerequisites
@@ -21,10 +23,10 @@ If you have a V1 install, back up `~/.config/opencode` first:
 ./scripts/maintenance/backup-config.sh
 ```
 
-If you already have an installation, add `--clean` to replace managed agents, commands, and skills without leaving removed files behind:
+If you already have an installation, add `--clean` to replace managed agents, commands, skills, and hat collections without leaving removed files behind:
 
 ```bash
-./scripts/installation/install.sh --apply --clean --only opencode,agents,commands,skills
+./scripts/installation/install.sh --apply --clean --only opencode,agents,commands,skills,ralph
 ```
 
 ## 2. Add the project configuration
@@ -60,7 +62,7 @@ opencode debug agents      # lists effective agents and permissions
 opencode mcp list
 ```
 
-Expected: `coordinator` and eleven subagents are listed; MCP servers show `connected`.
+Expected: `coordinator` and eleven subagents are listed; configured MCP servers show `connected`, or `disabled` when intentionally opted out.
 
 ## 5. Select the agent
 

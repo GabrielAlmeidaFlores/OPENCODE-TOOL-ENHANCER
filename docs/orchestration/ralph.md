@@ -35,7 +35,7 @@ ralph run \
   -p "Implement <task with acceptance criteria>"
 ```
 
-Ralph iterates until the finalizer emits `LOOP_COMPLETE` or a limit is reached.
+Ralph iterates until the collection emits its completion promise (`LOOP_COMPLETE`, `RESEARCH_COMPLETE`, `REVIEW_COMPLETE`, or `DEBUG_COMPLETE`) or a limit is reached.
 
 ## Run review, research, or debug
 
@@ -152,6 +152,6 @@ Do not run Ralph directly in a repository that must remain uncommitted. Use one 
 | --- | --- |
 | `No AI agents detected` | `opencode --version`; ensure it is on `PATH` |
 | Hangs on first iteration | Run `opencode run --agent planner "test"` directly |
-| Loop never completes | The finalizer did not emit `LOOP_COMPLETE`; inspect `.ralph/agent/scratchpad.md` |
+| Loop never completes | The collection did not emit its completion promise; inspect `.ralph/agent/scratchpad.md` |
 | Tests pass in Ralph but not locally | The builder or critic used a different command or working directory |
 | MCP startup timeout | Raise `adapters.opencode.timeout` and the MCP `startup` timeout |

@@ -2,14 +2,17 @@
   "id": "cs-validation",
   "title": "Add validation and tests in the C# example",
   "commit": "HEAD",
-  "prompt": "Add validation to the example C# endpoint. Return a problem response for invalid input. Add tests for valid, missing, and malformed payloads. Run dotnet test.",
+  "prompt": "Add validation to the example C# endpoint. Return a problem response for invalid input. Add tests for valid, missing, and malformed payloads. Run dotnet test Example.Tests/Example.Tests.csproj.",
   "acceptance": [
     "Invalid payloads produce a problem response",
     "Valid payloads succeed",
     "Tests cover three cases",
-    "dotnet test passes"
+    "dotnet test Example.Tests/Example.Tests.csproj passes"
   ],
-  "verification": "dotnet test",
-  "areas": ["examples/csharp"],
-  "max_wall_time_seconds": 1200
+  "verification": "dotnet test Example.Tests/Example.Tests.csproj",
+  "areas": [
+    "examples/csharp"
+  ],
+  "max_wall_time_seconds": 1200,
+  "working_directory": "examples/csharp"
 }
