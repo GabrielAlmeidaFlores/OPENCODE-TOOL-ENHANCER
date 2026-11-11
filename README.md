@@ -129,6 +129,8 @@ See [docs/provenance/registry.yml](docs/provenance/registry.yml) and [THIRD_PART
 4. **No hardcoded models.** Routing is configuration, not source code.
 5. **Human approval for destructive operations.** Installers default to check/dry-run.
 6. **No greenfield artifacts.** Reuse a consolidated upstream artifact or justify an exception in the provenance registry.
+7. **No automatic staging or commits.** Agents leave changes unstaged and return the diff.
+8. **Comments are documentation.** File headers and function docs only; no inline comments.
 
 ## Documentation
 

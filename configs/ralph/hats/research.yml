@@ -1,4 +1,9 @@
-# Provenance: adapted from the official Ralph Orchestrator preset.
+# Name: Research hat collection
+# Purpose: Collects evidence and synthesizes an answer without modifying code.
+# Usage: ralph run -c configs/ralph/ralph.yml -H configs/ralph/hats/research.yml -p "<task>"
+# Validation: ralph preflight -c configs/ralph/ralph.yml --format human; ralph run --dry-run -c configs/ralph/ralph.yml -H configs/ralph/hats/research.yml -p "test"
+# References: https://mikeyobrien.github.io/ralph-orchestrator/guide/presets/
+# Provenance
 # source: https://github.com/mikeyobrien/ralph-orchestrator
 # author: Ralph Orchestrator Contributors
 # author_url: https://github.com/mikeyobrien
@@ -6,20 +11,8 @@
 # upstream_commit: 64040fd0cda4d83386e4d1d1aa65571dadfe00b3
 # retrieved: 2026-11-11
 # license: MIT
-# modified: extracted only event_loop + hats; added per-hat OpenCode backend/agent routing and --auto.
-# Original header:
-# # Research Preset
-# #
-# # For deep exploration tasks: codebase analysis, architecture review,
-# # technology evaluation, competitive analysis.
-# #
-# # Key behavior: NO code changes, NO commits. Pure information gathering.
-# #
-# # Usage:
-# #   ralph run --config presets/research.yml --prompt "Analyze the authentication flow"
-# 
-# event_loop:
-#   prompt_file: "PROMPT.md"
+# modified: extracted event_loop and hats; added per-hat OpenCode backend routing and --auto.
+
 event_loop:
   completion_promise: "RESEARCH_COMPLETE"
   starting_event: "research.start"

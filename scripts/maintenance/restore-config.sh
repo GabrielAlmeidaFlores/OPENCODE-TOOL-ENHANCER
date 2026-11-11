@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
-# Restore a backup produced by backup-config.sh.
+# Name: Configuration restore
+# Purpose: Restores archives produced by backup-config.sh.
 # Usage: ./scripts/maintenance/restore-config.sh <backup-dir> [global|project]
+# Arguments: $1 is the backup directory; $2 selects the global or project scope and defaults to project.
+# Environment: Requires bash and tar.
+# Outputs: Prints each restored archive and the destination.
+# Side effects: Overwrites files under ~/.config or the current project directory.
+# References: scripts/maintenance/backup-config.sh, docs/troubleshooting/README.md
 set -euo pipefail
 
 SRC="${1:-}"
@@ -10,6 +16,11 @@ if [[ -z "$SRC" || ! -d "$SRC" ]]; then
   exit 2
 fi
 
+# Function: restore
+# Description: Extracts one archive into a destination directory.
+# Arguments: $1 is the archive path, $2 is the destination directory.
+# Returns: Zero on success or when the archive is missing.
+# Side effects: Writes extracted files under the destination.
 restore() {
   local archive="$1" dest="$2"
   [[ -f "$archive" ]] || { echo "missing: $archive"; return 0; }

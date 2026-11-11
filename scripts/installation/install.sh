@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# Selective installer. Defaults to check-only. Never edits ~/.config/opencode.
-#
-# Usage:
-#   ./scripts/installation/install.sh --check
-#   ./scripts/installation/install.sh --dry-run --all
-#   ./scripts/installation/install.sh --apply --only opencode
-#   ./scripts/installation/install.sh --apply --only ast-grep,serena,codegraph
+# Name: Selective installer
+# Purpose: Installs the repository's OpenCode, agent, command, skill, and Ralph configuration into a target project, and optionally installs the external tool binaries.
+# Usage: ./scripts/installation/install.sh [--check|--dry-run|--apply] [--all|--only LIST] [--target DIR] [--clean]
+# Arguments: --check prints status, --dry-run prints actions, --apply executes them, --only selects components, --target selects the destination, --clean backs up and removes managed directories first.
+# Environment: Requires bash, git, node, python3, and ripgrep for status checks. Tool installation uses brew, uv, or npm when available.
+# Outputs: Prints planned or executed actions, a backup path, and verification commands.
+# Side effects: With --apply, writes into TARGET/.opencode and TARGET/.ralph, may install global tools, and never edits ~/.config/opencode.
+# References: docs/installation/opencode.md, docs/installation/code-intelligence.md, docs/installation/ralph.md
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -14,6 +15,11 @@ ONLY=""
 TARGET="$ROOT"
 CLEAN=0
 
+# Function: usage
+# Description: Prints the command-line options.
+# Arguments: None.
+# Returns: None.
+# Side effects: Writes to standard output.
 usage() {
   cat <<'EOF'
 Options:
@@ -47,8 +53,25 @@ if [[ -z "$ONLY" && "$MODE" != "check" ]]; then
   exit 2
 fi
 
+# Function: has
+# Description: Reports whether a command exists on PATH.
+# Arguments: $1 is the command name.
+# Returns: Zero when the command exists, non-zero otherwise.
+# Side effects: None.
 has() { command -v "$1" >/dev/null 2>&1; }
+
+# Function: selected
+# Description: Reports whether a component was selected by --only or --all.
+# Arguments: $1 is the component name.
+# Returns: Zero when selected, non-zero otherwise.
+# Side effects: None.
 selected() { [[ ",$ONLY," == *",$1,"* ]]; }
+
+# Function: run
+# Description: Executes a command in apply mode or prints it in dry-run mode.
+# Arguments: The command and its arguments.
+# Returns: The command's exit status in apply mode, zero otherwise.
+# Side effects: May execute the supplied command.
 run() {
   if [[ "$MODE" == "apply" ]]; then
     "$@"
@@ -76,8 +99,15 @@ fi
 
 STAMP="$(date +%Y%m%d-%H%M%S)"
 BACKUP="$TARGET/.opencode-backup-$STAMP"
-mkdir -p "$BACKUP"
+if [[ "$MODE" == "apply" ]]; then
+  mkdir -p "$BACKUP"
+fi
 
+# Function: clean_dir
+# Description: Backs up and removes a managed directory when --clean is active.
+# Arguments: $1 is the directory path.
+# Returns: Zero on success.
+# Side effects: Copies the directory into the backup path and deletes the original in apply mode.
 clean_dir() {
   local dir="$1"
   if [[ ! -d "$dir" ]]; then
@@ -93,6 +123,11 @@ clean_dir() {
   fi
 }
 
+# Function: copy_file
+# Description: Copies a file and backs up an existing destination in apply mode.
+# Arguments: $1 is the source path, $2 is the destination path.
+# Returns: Zero on success.
+# Side effects: May overwrite the destination and write a backup copy.
 copy_file() {
   local src="$1" dst="$2"
   if [[ -f "$dst" && "$MODE" == "apply" ]]; then

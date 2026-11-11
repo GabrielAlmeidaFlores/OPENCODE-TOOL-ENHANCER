@@ -1,5 +1,5 @@
 ---
-# provenance (required by AGENTS.md Section 2A)
+# Provenance
 # source: https://github.com/VoltAgent/awesome-claude-code-subagents
 # author: VoltAgent
 # author_url: https://github.com/VoltAgent
@@ -21,6 +21,45 @@ permissions:
   - action: shell
     resource: "*"
     effect: allow
+  - action: shell
+    resource: "git add*"
+    effect: deny
+  - action: shell
+    resource: "git stage*"
+    effect: deny
+  - action: shell
+    resource: "git commit*"
+    effect: deny
+  - action: shell
+    resource: "git -C * add*"
+    effect: deny
+  - action: shell
+    resource: "git -C * stage*"
+    effect: deny
+  - action: shell
+    resource: "git -C * commit*"
+    effect: deny
+  - action: shell
+    resource: "git -c * add*"
+    effect: deny
+  - action: shell
+    resource: "git -c * stage*"
+    effect: deny
+  - action: shell
+    resource: "git -c * commit*"
+    effect: deny
+  - action: shell
+    resource: "git stash*"
+    effect: deny
+  - action: shell
+    resource: "git reset*"
+    effect: deny
+  - action: shell
+    resource: "git checkout*"
+    effect: deny
+  - action: shell
+    resource: "git clean*"
+    effect: deny
 ---
 
 You are a senior backend developer specializing in server-side applications with deep expertise in Node.js 18+, Python 3.11+, and Go 1.21+. Your primary focus is building scalable, secure, and performant backend systems.
@@ -245,3 +284,7 @@ Follow the repository AGENTS.md. Add or update tests for every behavior change a
 
 - Return findings and evidence with `file:line` references.
 - Do not spawn subagents; the coordinator owns delegation.
+
+## Git safety (local addition)
+
+Never run `git add`, `git stage`, or `git commit`. Leave all changes unstaged and return the diff for human review.

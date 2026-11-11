@@ -1,5 +1,5 @@
 ---
-# provenance (required by AGENTS.md Section 2A)
+# Provenance
 # source: https://github.com/wshobson/agents
 # author: Seth Hobson
 # author_url: https://github.com/wshobson
@@ -55,6 +55,45 @@ permissions:
   - action: shell
     resource: "*"
     effect: allow
+  - action: shell
+    resource: "git add*"
+    effect: deny
+  - action: shell
+    resource: "git stage*"
+    effect: deny
+  - action: shell
+    resource: "git commit*"
+    effect: deny
+  - action: shell
+    resource: "git -C * add*"
+    effect: deny
+  - action: shell
+    resource: "git -C * stage*"
+    effect: deny
+  - action: shell
+    resource: "git -C * commit*"
+    effect: deny
+  - action: shell
+    resource: "git -c * add*"
+    effect: deny
+  - action: shell
+    resource: "git -c * stage*"
+    effect: deny
+  - action: shell
+    resource: "git -c * commit*"
+    effect: deny
+  - action: shell
+    resource: "git stash*"
+    effect: deny
+  - action: shell
+    resource: "git reset*"
+    effect: deny
+  - action: shell
+    resource: "git checkout*"
+    effect: deny
+  - action: shell
+    resource: "git clean*"
+    effect: deny
 ---
 
 You are an expert team orchestrator specializing in decomposing complex software engineering tasks into parallel workstreams with clear ownership boundaries.
@@ -148,3 +187,7 @@ Use the OpenCode subagent tool with the agent names in this repository. Ignore r
 
 - Return findings and evidence with `file:line` references.
 - Do not spawn subagents; the coordinator owns delegation.
+
+## Git safety (local addition)
+
+Never run `git add`, `git stage`, or `git commit`. Leave all changes unstaged and return the diff for human review.

@@ -6,15 +6,41 @@ A complete feature workflow using Ralph hats and OpenCode agents.
 
 Add request validation to `examples/typescript`, with tests and a review.
 
-## Run
+## Run (isolated)
+
+> **Auto-commit warning:** Ralph 2.10.1 commits its own changes during landing. Do not run it in this repository. Use a separate disposable clone; a linked worktree is not sufficient because it shares `.git`.
 
 ```bash
-# From the repository root, with Ralph installed
+# From the main checkout, capture any uncommitted work as a patch.
+git diff > /tmp/ote-work.patch
+
+# Create a separate clone and start from the same state.
+git clone . /tmp/ote-ralph
+cd /tmp/ote-ralph
+git apply /tmp/ote-work.patch
+
+# Record the starting point as a deliberate baseline commit in the disposable
+# clone, so Ralph's landing commit contains only its own changes.
+git add -A && git commit -m "baseline for isolated Ralph run"
+
+# Run Ralph only here. It will create its own commit in this clone.
 ralph run \
   -c configs/ralph/ralph.yml \
   -H configs/ralph/hats/code-assist.yml \
   -p "In examples/typescript, require age to be a non-negative integer in validateCreateUser, add tests, and run npm test"
 ```
+
+After the run, review the clone and export the change without touching the main checkout:
+
+```bash
+git -C /tmp/ote-ralph log --oneline -3
+git -C /tmp/ote-ralph format-patch -1 --stdout > /tmp/ralph-change.patch
+
+cd /path/to/OPENCODE-TOOL-ENHANCER
+git apply /tmp/ralph-change.patch   # applies unstaged
+```
+
+`git diff` does not include untracked files. Add them to the patch manually if your task creates new files.
 
 ## Expected event flow
 
@@ -36,10 +62,11 @@ It is a multi-wave workflow. For a first run, use `--max-iterations 20` or try t
 
 | Point | Action |
 | --- | --- |
-| No `plan.ready` | Check the planner emits `<event topic="plan.ready">...</event>` |
-| `tests.failed` repeatedly | Run `npm test` manually in the example |
+| No `tasks.ready` | Check that the planner created a runtime task and emitted the event |
+| `review.ready` loops | Inspect the builder output; it may be blocked |
 | `review.rejected` | Read the finding, fix, and re-run |
-| Never completes | Verify the finalizer can see the acceptance criteria |
+| `build.blocked` | Read the blocker payload and resolve the missing input |
+| Never completes | Verify the finalizer can see the acceptance criteria and that `review.passed` was emitted |
 
 ## Variant: native OpenCode
 

@@ -1,5 +1,5 @@
 ---
-# provenance (required by AGENTS.md Section 2A)
+# Provenance
 # source: https://github.com/VoltAgent/awesome-claude-code-subagents
 # author: VoltAgent
 # author_url: https://github.com/VoltAgent
@@ -33,6 +33,45 @@ permissions:
   - action: shell
     resource: "*"
     effect: allow
+  - action: shell
+    resource: "git add*"
+    effect: deny
+  - action: shell
+    resource: "git stage*"
+    effect: deny
+  - action: shell
+    resource: "git commit*"
+    effect: deny
+  - action: shell
+    resource: "git -C * add*"
+    effect: deny
+  - action: shell
+    resource: "git -C * stage*"
+    effect: deny
+  - action: shell
+    resource: "git -C * commit*"
+    effect: deny
+  - action: shell
+    resource: "git -c * add*"
+    effect: deny
+  - action: shell
+    resource: "git -c * stage*"
+    effect: deny
+  - action: shell
+    resource: "git -c * commit*"
+    effect: deny
+  - action: shell
+    resource: "git stash*"
+    effect: deny
+  - action: shell
+    resource: "git reset*"
+    effect: deny
+  - action: shell
+    resource: "git checkout*"
+    effect: deny
+  - action: shell
+    resource: "git clean*"
+    effect: deny
 ---
 
 You are a senior documentation engineer with expertise in creating comprehensive, maintainable, and developer-friendly documentation systems. Your focus spans API documentation, tutorials, architecture guides, and documentation automation with emphasis on clarity, searchability, and keeping docs in sync with code.
@@ -312,3 +351,7 @@ Every command must be executed before it is documented. Do not document unverifi
 
 - Return findings and evidence with `file:line` references.
 - Do not spawn subagents; the coordinator owns delegation.
+
+## Git safety (local addition)
+
+Never run `git add`, `git stage`, or `git commit`. Leave all changes unstaged and return the diff for human review.

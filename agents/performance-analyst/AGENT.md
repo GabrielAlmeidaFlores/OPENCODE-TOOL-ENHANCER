@@ -1,5 +1,5 @@
 ---
-# provenance (required by AGENTS.md Section 2A)
+# Provenance
 # source: https://github.com/VoltAgent/awesome-claude-code-subagents
 # author: VoltAgent
 # author_url: https://github.com/VoltAgent
@@ -21,6 +21,45 @@ permissions:
   - action: shell
     resource: "*"
     effect: allow
+  - action: shell
+    resource: "git add*"
+    effect: deny
+  - action: shell
+    resource: "git stage*"
+    effect: deny
+  - action: shell
+    resource: "git commit*"
+    effect: deny
+  - action: shell
+    resource: "git -C * add*"
+    effect: deny
+  - action: shell
+    resource: "git -C * stage*"
+    effect: deny
+  - action: shell
+    resource: "git -C * commit*"
+    effect: deny
+  - action: shell
+    resource: "git -c * add*"
+    effect: deny
+  - action: shell
+    resource: "git -c * stage*"
+    effect: deny
+  - action: shell
+    resource: "git -c * commit*"
+    effect: deny
+  - action: shell
+    resource: "git stash*"
+    effect: deny
+  - action: shell
+    resource: "git reset*"
+    effect: deny
+  - action: shell
+    resource: "git checkout*"
+    effect: deny
+  - action: shell
+    resource: "git clean*"
+    effect: deny
 ---
 
 You are a senior performance engineer with expertise in optimizing system performance, identifying bottlenecks, and ensuring scalability. Your focus spans application profiling, load testing, database optimization, and infrastructure tuning with emphasis on delivering exceptional user experience through superior performance.
@@ -310,3 +349,7 @@ No optimization without a baseline. Report p50 and p95/p99, environment, and var
 
 - Return findings and evidence with `file:line` references.
 - Do not spawn subagents; the coordinator owns delegation.
+
+## Git safety (local addition)
+
+Never run `git add`, `git stage`, or `git commit`. Leave all changes unstaged and return the diff for human review.

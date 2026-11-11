@@ -25,7 +25,10 @@ This creates a `ralph.yml`. The repository's configuration is in `configs/ralph/
 
 ## Run the implementation workflow
 
+> **Auto-commit warning:** Ralph 2.10.1 commits its own changes during landing. Run every command in this section only inside a **separate disposable clone**, never in a repository where an automatic commit is unacceptable. A linked worktree is not sufficient: it shares `.git` with your repository.
+
 ```bash
+# Inside a separate disposable clone
 ralph run \
   -c configs/ralph/ralph.yml \
   -H configs/ralph/hats/code-assist.yml \
@@ -113,6 +116,19 @@ For deterministic gates, record the exact commands in `AGENTS.md`. Do not gate o
 - `research` completed in **2 iterations** with `RESEARCH_COMPLETE` in the test project.
 - `code-assist` is a longer multi-wave workflow. In the same test project it required more than 8 iterations for a small change; raise `--max-iterations` for real features, or use `research`/`review` for smaller scopes.
 
+## Git safety
+
+Ralph Orchestrator 2.10.1 auto-commits during its landing sequence (`LandingConfig::default().auto_commit = true`) and exposes no configuration switch. This violates this repository's no-auto-commit rule.
+
+Do not run Ralph directly in a repository that must remain uncommitted. Use one of these options:
+
+1. Run it in a **separate disposable clone** and copy the resulting changes back unstaged.
+2. Do not use a linked worktree; it shares `.git` and writes commits and refs into the same repository.
+3. Wait for upstream support for disabling landing auto-commit.
+4. Use the native OpenCode agents for tasks that must not create commits.
+
+`features.auto_merge` is already `false`, but it does not disable landing auto-commit.
+
 ## Memory and tasks
 
 - `memories.budget: 2000` bounds injected context.
@@ -121,7 +137,7 @@ For deterministic gates, record the exact commands in `AGENTS.md`. Do not gate o
 
 ## Parallelism
 
-`features.parallel` is **false** by default. Enable worktree loops only when tasks touch disjoint files. CodeGraph permits one MCP writer per project, so two agents must not both run `codegraph serve --mcp` against the same tree.
+`features.parallel` is **false** by default. This is Ralph's parallel worktree feature, not a substitute for the separate clone required above. Enable it only when tasks touch disjoint files. CodeGraph permits one MCP writer per project, so two agents must not both run `codegraph serve --mcp` against the same tree.
 
 ## Known limitations
 

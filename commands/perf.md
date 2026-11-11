@@ -1,5 +1,5 @@
 ---
-# provenance (required by AGENTS.md Section 2A)
+# Provenance
 # source: https://github.com/wshobson/agents
 # author: Seth Hobson
 # author_url: https://github.com/wshobson

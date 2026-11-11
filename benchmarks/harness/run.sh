@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Benchmark runner. Records artifacts; does not publish results.
-#
-# Usage:
-#   ./benchmarks/harness/run.sh --arm baseline  --task benchmarks/tasks/ts-validation.json
-#   ./benchmarks/harness/run.sh --arm optimized --task benchmarks/tasks/ts-validation.json --run-id opt-1
-#
-# Requires: opencode (V2), python3, git. Runs with --auto because the harness is
-# non-interactive. Use a disposable checkout.
+# Name: Benchmark runner
+# Purpose: Runs one baseline or optimized benchmark arm, records session and statistics artifacts, and executes the task verification command.
+# Usage: ./benchmarks/harness/run.sh --arm baseline|optimized --task <file.json> [--run-id ID] [--dry-run]
+# Arguments: --arm selects the configuration, --task selects the task definition, --run-id sets the output directory name, --dry-run prints the command.
+# Environment: Requires bash, opencode, python3, and git. OPENCODE_BENCH_MODEL records the model label.
+# Outputs: Writes meta.json, session.jsonl, stats.json, export.json, verification.log, and notes.md under benchmarks/results/<run-id>.
+# Side effects: Executes opencode with --auto in a non-interactive session; use a disposable checkout.
+# References: docs/benchmarks/methodology.md, benchmarks/tasks/*.json
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -15,6 +15,11 @@ TASK=""
 RUN_ID=""
 DRY=0
 
+# Function: usage
+# Description: Prints the command-line usage.
+# Arguments: None.
+# Returns: None.
+# Side effects: Writes to standard output.
 usage() {
   echo "usage: $0 --arm baseline|optimized --task <file.json> [--run-id ID] [--dry-run]"
 }
@@ -36,9 +41,12 @@ command -v opencode >/dev/null || { echo "opencode not found"; exit 2; }
 command -v python3 >/dev/null || { echo "python3 not found"; exit 2; }
 
 read -r TASK_ID PROMPT VERIFY MAX_WALL < <(python3 - "$TASK" <<'PY'
-import json,sys
-d=json.load(open(sys.argv[1]))
-print(d["id"], d["prompt"].replace("\n"," "), d["verification"], d.get("max_wall_time_seconds", 900))
+import json
+import sys
+
+with open(sys.argv[1], encoding="utf-8") as handle:
+    task = json.load(handle)
+print(task["id"], task["prompt"].replace("\n", " "), task["verification"], task.get("max_wall_time_seconds", 900))
 PY
 )
 
@@ -79,20 +87,30 @@ fi
 mkdir -p "$OUT"
 
 python3 - "$OUT/meta.json" "$RUN_ID" "$ARM" "$TASK" "$TASK_ID" "$COMMIT" "$MODEL" "$AGENT" "$MAX_WALL" <<'PY'
-import json,sys,datetime
-out,run_id,arm,task,task_id,commit,model,agent,max_wall=sys.argv[1:]
-json.dump({
-  "run_id": run_id,
-  "arm": arm,
-  "task_file": task,
-  "task_id": task_id,
-  "commit": commit,
-  "model": model,
-  "agent": agent,
-  "max_wall_time_seconds": int(max_wall),
-  "started_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-  "opencode_version": __import__("subprocess").run(["opencode","--version"],capture_output=True,text=True).stdout.strip(),
-}, open(out,"w"), indent=2)
+import datetime
+import json
+import subprocess
+import sys
+
+out, run_id, arm, task, task_id, commit, model, agent, max_wall = sys.argv[1:]
+json.dump(
+    {
+        "run_id": run_id,
+        "arm": arm,
+        "task_file": task,
+        "task_id": task_id,
+        "commit": commit,
+        "model": model,
+        "agent": agent,
+        "max_wall_time_seconds": int(max_wall),
+        "started_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "opencode_version": subprocess.run(
+            ["opencode", "--version"], capture_output=True, text=True, check=False
+        ).stdout.strip(),
+    },
+    open(out, "w", encoding="utf-8"),
+    indent=2,
+)
 PY
 
 START=$(date +%s)
@@ -108,12 +126,14 @@ opencode stats --json --cost --project . > "$OUT/stats.json" 2> "$OUT/stats.err"
 STATS_RC=$?
 
 SID="$(python3 - "$OUT/session.jsonl" <<'PY2'
-import re,sys
+import re
+import sys
+
 try:
-    text=open(sys.argv[1],encoding="utf-8",errors="ignore").read()
+    text = open(sys.argv[1], encoding="utf-8", errors="ignore").read()
 except FileNotFoundError:
-    text=""
-ids=re.findall(r"ses_[A-Za-z0-9]+", text)
+    text = ""
+ids = re.findall(r"ses_[A-Za-z0-9]+", text)
 print(ids[-1] if ids else "")
 PY2
 )"
@@ -131,18 +151,24 @@ VERIFY_RC=$?
 set -e
 
 python3 - "$OUT/meta.json" "$RUN_RC" "$STATS_RC" "$EXPORT_RC" "$VERIFY_RC" "$START" "$END" <<'PY'
-import json,sys,datetime
-p,run_rc,stats_rc,export_rc,verify_rc,start,end=sys.argv[1:]
-d=json.load(open(p))
-d.update({
-  "run_exit": int(run_rc),
-  "stats_exit": int(stats_rc),
-  "export_exit": int(export_rc),
-  "verification_exit": int(verify_rc),
-  "wall_time_seconds": int(end)-int(start),
-  "finished_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-})
-json.dump(d, open(p,"w"), indent=2)
+import datetime
+import json
+import sys
+
+path, run_rc, stats_rc, export_rc, verify_rc, start, end = sys.argv[1:]
+with open(path, encoding="utf-8") as handle:
+    data = json.load(handle)
+data.update(
+    {
+        "run_exit": int(run_rc),
+        "stats_exit": int(stats_rc),
+        "export_exit": int(export_rc),
+        "verification_exit": int(verify_rc),
+        "wall_time_seconds": int(end) - int(start),
+        "finished_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    }
+)
+json.dump(data, open(path, "w", encoding="utf-8"), indent=2)
 PY
 
 cat > "$OUT/notes.md" <<EOF

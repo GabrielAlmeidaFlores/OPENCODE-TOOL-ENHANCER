@@ -1,41 +1,164 @@
+// Name: OpenCode V2 project configuration
+// Purpose: Defines the coordinator agent, safety permissions, MCP servers, context limits, and watcher exclusions for OpenCode 2.2.x.
+// Usage: Copy to <project>/.opencode/opencode.jsonc and install the agent, command, and skill files.
+// Validation: opencode debug config; opencode debug agents; ./scripts/validation/validate.sh
+// References: https://opencode.ai/docs/config, https://opencode.ai/docs/permissions, https://opencode.ai/docs/mcp-servers
+
 {
-  // OpenCode V2 project configuration.
-  // Validated against https://opencode.ai/config.json (OpenCode 2.2.7).
-  // Copy to <project>/.opencode/opencode.jsonc.
   "$schema": "https://opencode.ai/config.json",
-
-  // The custom primary agent. Agent files live in .opencode/agents/.
-  // It must exist and be primary-capable; otherwise OpenCode falls back to build.
   "default_agent": "coordinator",
-
-  // No root model is set on purpose. OpenCode uses the user's selected model.
-  // Use model-routing.example.jsonc to add per-agent routing with your own IDs.
-
-  // Global safety rules. Rules are evaluated in order; the last match wins.
   "permissions": [
-    { "action": "external_directory", "resource": "*", "effect": "ask" },
-    { "action": "external_directory", "resource": "**/.tmp*", "effect": "allow" },
-    // Ralph writes large prompts to a temp file and asks the agent to read it.
-    // These rules allow only transient temp directories, not arbitrary paths.
-    { "action": "external_directory", "resource": "/var/folders/**", "effect": "allow" },
-    { "action": "external_directory", "resource": "/private/var/folders/**", "effect": "allow" },
-    { "action": "external_directory", "resource": "/tmp/**", "effect": "allow" },
-    { "action": "shell", "resource": "*", "effect": "allow" },
-    { "action": "shell", "resource": "sudo *", "effect": "deny" },
-    { "action": "shell", "resource": "rm -rf *", "effect": "deny" },
-    { "action": "shell", "resource": "git push --force*", "effect": "deny" },
-    { "action": "shell", "resource": "git push -f*", "effect": "deny" },
-    { "action": "edit", "resource": "*", "effect": "allow" },
-    { "action": "read", "resource": "*", "effect": "allow" },
-    { "action": "read", "resource": ".env*", "effect": "deny" },
-    { "action": "edit", "resource": ".env*", "effect": "deny" },
-    { "action": "webfetch", "resource": "*", "effect": "allow" },
-    { "action": "websearch", "resource": "*", "effect": "allow" },
-    { "action": "skill", "resource": "*", "effect": "allow" }
+    {
+      "action": "external_directory",
+      "resource": "*",
+      "effect": "ask"
+    },
+    {
+      "action": "external_directory",
+      "resource": "**/.tmp*",
+      "effect": "allow"
+    },
+    {
+      "action": "external_directory",
+      "resource": "/var/folders/**",
+      "effect": "allow"
+    },
+    {
+      "action": "external_directory",
+      "resource": "/private/var/folders/**",
+      "effect": "allow"
+    },
+    {
+      "action": "external_directory",
+      "resource": "/tmp/**",
+      "effect": "allow"
+    },
+    {
+      "action": "shell",
+      "resource": "*",
+      "effect": "allow"
+    },
+    {
+      "action": "shell",
+      "resource": "sudo *",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "git add*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "git stage*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "git commit*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "git -C * add*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "git -C * stage*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "git -C * commit*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "git -c * add*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "git -c * stage*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "git -c * commit*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "git stash*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "git reset*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "git checkout*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "git clean*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "rm -rf *",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "git push --force*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "git push -f*",
+      "effect": "deny"
+    },
+    {
+      "action": "edit",
+      "resource": "*",
+      "effect": "allow"
+    },
+    {
+      "action": "read",
+      "resource": "*",
+      "effect": "allow"
+    },
+    {
+      "action": "read",
+      "resource": ".env*",
+      "effect": "deny"
+    },
+    {
+      "action": "edit",
+      "resource": ".env*",
+      "effect": "deny"
+    },
+    {
+      "action": "webfetch",
+      "resource": "*",
+      "effect": "allow"
+    },
+    {
+      "action": "websearch",
+      "resource": "*",
+      "effect": "allow"
+    },
+    {
+      "action": "skill",
+      "resource": "*",
+      "effect": "allow"
+    }
   ],
-
-  // MCP servers. Code Mode is the V2 default and groups tools to reduce
-  // schema overhead. Optional servers stay configured but disabled.
   "mcp": {
     "timeout": {
       "startup": 45000,
@@ -59,7 +182,11 @@
       },
       "codegraph": {
         "type": "local",
-        "command": ["codegraph", "serve", "--mcp"],
+        "command": [
+          "codegraph",
+          "serve",
+          "--mcp"
+        ],
         "codemode": true,
         "timeout": {
           "startup": 60000
@@ -67,20 +194,27 @@
       },
       "repomix": {
         "type": "local",
-        "command": ["npx", "-y", "repomix", "--mcp", "--sandbox"],
+        "command": [
+          "npx",
+          "-y",
+          "repomix",
+          "--mcp",
+          "--sandbox"
+        ],
         "codemode": true,
         "disabled": true
       },
       "jcodemunch": {
         "type": "local",
-        "command": ["uvx", "jcodemunch-mcp"],
+        "command": [
+          "uvx",
+          "jcodemunch-mcp"
+        ],
         "codemode": true,
         "disabled": true
       }
     }
   },
-
-  // Retain a bounded recent-context tail instead of relying on turn counts.
   "compaction": {
     "auto": true,
     "keep": {
@@ -88,14 +222,10 @@
     },
     "buffer": "15%"
   },
-
-  // Cap tool output so a single command cannot flood the context.
   "tool_output": {
     "max_lines": 2000,
     "max_bytes": 51200
   },
-
-  // Avoid waking the agent for generated or indexed files.
   "watcher": {
     "ignore": [
       "**/node_modules/**",
@@ -113,11 +243,8 @@
       "repomix-output.*"
     ]
   },
-
   "experimental": {
-    // Todo tracking helps multi-step work stay bounded.
     "todo": true,
-    // Prevent subagents from recursively spawning more subagents.
     "subagent_depth": 1
   }
 }

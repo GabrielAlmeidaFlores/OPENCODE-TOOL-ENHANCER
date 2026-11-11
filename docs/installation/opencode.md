@@ -30,7 +30,7 @@ If you already have an installation, add `--clean` to replace managed agents, co
 ## 2. Add the project configuration
 
 ```bash
-mkdir -p .opencode/agents .opencode/commands .opencode/skills .opencode/prompts
+mkdir -p .opencode/agents .opencode/commands .opencode/skills
 cp configs/opencode/opencode.jsonc .opencode/opencode.jsonc
 ```
 

@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
-# Repository validation entry point.
+# Name: Repository validation entry point
+# Purpose: Checks required files, JSONC and YAML syntax, agent and skill frontmatter, provenance, git permission ordering, links, and shell syntax.
 # Usage: ./scripts/validation/validate.sh [--links]
+# Arguments: --links enables external link reachability checks.
+# Environment: Requires bash and python3; uses opencode when available.
+# Outputs: Prints check results and exits non-zero on failure.
+# Side effects: Performs read-only checks; --links makes outbound HTTP requests.
+# References: docs/validation-checklist.md, scripts/validation/validate_config.py
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"

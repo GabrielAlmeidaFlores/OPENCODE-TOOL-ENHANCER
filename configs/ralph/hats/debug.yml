@@ -1,4 +1,9 @@
-# Provenance: adapted from the official Ralph Orchestrator preset.
+# Name: Debug hat collection
+# Purpose: Reproduces a defect, tests hypotheses, applies a fix, and verifies it.
+# Usage: ralph run -c configs/ralph/ralph.yml -H configs/ralph/hats/debug.yml -p "<task>"
+# Validation: ralph preflight -c configs/ralph/ralph.yml --format human; ralph run --dry-run -c configs/ralph/ralph.yml -H configs/ralph/hats/debug.yml -p "test"
+# References: https://mikeyobrien.github.io/ralph-orchestrator/guide/presets/
+# Provenance
 # source: https://github.com/mikeyobrien/ralph-orchestrator
 # author: Ralph Orchestrator Contributors
 # author_url: https://github.com/mikeyobrien
@@ -6,20 +11,8 @@
 # upstream_commit: 64040fd0cda4d83386e4d1d1aa65571dadfe00b3
 # retrieved: 2026-11-11
 # license: MIT
-# modified: extracted only event_loop + hats; added per-hat OpenCode backend/agent routing and --auto.
-# Original header:
-# # Debug Preset
-# #
-# # For bug investigation and root cause analysis.
-# # Follows scientific method: hypothesize, test, narrow down.
-# #
-# # Usage:
-# #   ralph run --config presets/debug.yml --prompt "Tests fail intermittently in CI"
-# 
-# event_loop:
-#   prompt_file: "PROMPT.md"
-#   completion_promise: "DEBUG_COMPLETE"
-#   required_events: ["hypothesis.test", "hypothesis.confirmed", "fix.applied", "fix.verified"]
+# modified: extracted event_loop and hats; added per-hat OpenCode backend routing and --auto.
+
 event_loop:
   completion_promise: "DEBUG_COMPLETE"
   starting_event: "debug.start"

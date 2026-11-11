@@ -1,4 +1,9 @@
-# Provenance: adapted from the official Ralph Orchestrator preset.
+# Name: Code-assist hat collection
+# Purpose: Implements a task through planning, building, adversarial review, and final completion.
+# Usage: ralph run -c configs/ralph/ralph.yml -H configs/ralph/hats/code-assist.yml -p "<task>"
+# Validation: ralph preflight -c configs/ralph/ralph.yml --format human; ralph run --dry-run -c configs/ralph/ralph.yml -H configs/ralph/hats/code-assist.yml -p "test"
+# References: https://mikeyobrien.github.io/ralph-orchestrator/guide/presets/
+# Provenance
 # source: https://github.com/mikeyobrien/ralph-orchestrator
 # author: Ralph Orchestrator Contributors
 # author_url: https://github.com/mikeyobrien
@@ -6,20 +11,8 @@
 # upstream_commit: 64040fd0cda4d83386e4d1d1aa65571dadfe00b3
 # retrieved: 2026-11-11
 # license: MIT
-# modified: extracted only event_loop + hats; added per-hat OpenCode backend/agent routing and --auto.
-# Original header:
-# # Code-Assist: Flexible TDD Implementation from Any Starting Point
-# # Pattern: Adaptive Implementation Entry Point
-# # Implements from PDD output, code tasks, or rough descriptions using TDD
-# #
-# # Extracted from idea-to-commit.yml - this preset handles the implementation phase only.
-# # Use idea-to-commit.yml for full idea→design→implement→commit flow.
-# #
-# # 4 Hats:
-# # - Planner: Detects input type and bootstraps the implementation context
-# # - Builder: TDD implementation (RED → GREEN → REFACTOR)
-# # - Critic: Fresh-eyes adversarial review of each increment
-# # - Finalizer: Final gate that decides whether to continue, repair, or finish
+# modified: extracted event_loop and hats; added per-hat OpenCode backend routing and --auto.
+
 event_loop:
   completion_promise: "LOOP_COMPLETE"
   starting_event: "build.start"

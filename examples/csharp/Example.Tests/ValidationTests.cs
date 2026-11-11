@@ -3,8 +3,10 @@ using Xunit;
 
 namespace Example.Tests;
 
+/// <summary>Tests for <see cref="Validator"/> and <see cref="FileResolver"/>.</summary>
 public class ValidationTests
 {
+    /// <summary>Verifies that a valid request produces no errors.</summary>
     [Fact]
     public void AcceptsValidRequest()
     {
@@ -12,20 +14,23 @@ public class ValidationTests
         Assert.Empty(errors);
     }
 
+    /// <summary>Verifies that a missing email is rejected.</summary>
     [Fact]
     public void RejectsMissingEmail()
     {
         var errors = Validator.Validate(new CreateUserRequest(null, "Ada", 30));
-        Assert.Contains(errors, e => e.Contains("email"));
+        Assert.Contains(errors, error => error.Contains("email"));
     }
 
+    /// <summary>Verifies that a negative age is rejected.</summary>
     [Fact]
     public void RejectsNegativeAge()
     {
         var errors = Validator.Validate(new CreateUserRequest("a@b.co", "Ada", -1));
-        Assert.Contains(errors, e => e.Contains("age"));
+        Assert.Contains(errors, error => error.Contains("age"));
     }
 
+    /// <summary>Verifies that a normal file name resolves under the base directory.</summary>
     [Fact]
     public void ResolvesNormalFileName()
     {

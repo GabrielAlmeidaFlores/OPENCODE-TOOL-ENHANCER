@@ -17,6 +17,8 @@ Then complete the manual checks for your environment.
 - [ ] All 10 skills exist with a matching `name` and provenance metadata.
 - [ ] Every agent, command, and hat has a provenance header.
 - [ ] `docs/provenance/registry.yml` points only to existing local paths.
+- [ ] Comments follow AGENTS.md Section 2C: file headers and function documentation only.
+- [ ] No inline comments or commented-out code in scripts, configs, or examples.
 - [ ] Relative documentation links resolve.
 - [ ] External links use maintained sources (run `--links` when useful).
 
@@ -30,6 +32,9 @@ Then complete the manual checks for your environment.
 - [ ] Every subagent denies `subagent` (no recursion).
 - [ ] `opencode mcp list` shows Serena and CodeGraph connected, or they are disabled.
 - [ ] A denied action (for example `sudo`) is actually blocked.
+- [ ] `git add`, `git stage`, `git commit`, and the `git -C`/`git -c`/stash/reset/checkout/clean variants resolve to `deny` at the end of every agent permission list (agent rules override global rules).
+- [ ] No workflow stages or commits automatically.
+- [ ] Ralph examples run only in a separate disposable clone, not a linked worktree.
 
 ## Tooling
 

@@ -23,6 +23,28 @@ All notable changes to this repository are documented here.
 - Ralph hats support `backend_args` (alias `args`), enabling per-hat OpenCode agent routing.
 - CodeGraph is MIT licensed and exposes `codegraph serve --mcp`.
 
+### Documentation comments (2026-11-11)
+
+- Added AGENTS.md Section 2C and engineering rule 17: comments are documentation only.
+- Standardized file headers for shell, Python, JSONC, YAML, agents, commands, and hats.
+- Added function documentation blocks for shell functions and docstrings for Python functions.
+- Added JSDoc for TypeScript exports and XML documentation for public C# types and members.
+- Removed inline and field-level comments from configuration files; explanations live in `docs/`.
+- Moved Ralph hat provenance and preset notes into a single standardized header block.
+
+### Git safety (2026-11-11)
+
+- Added AGENTS.md Section 2B: no automatic staging or commits by any agent, skill, command, hat, script, hook, orchestrator, or CI job.
+- OpenCode permissions now deny `git add`, `git stage`, and `git commit` for agents.
+- Every agent has an explicit local Git safety rule.
+- Documented Ralph 2.10.1's landing auto-commit limitation and the separate-clone workaround.
+- Removed the unimplemented `checkpoint_interval` key and documented the future default risk.
+- Fixed the installer so `--dry-run` does not create backup directories.
+- Ignored `.opencode-backup-*` directories in Git.
+- Added validator enforcement that every agent resolves `git add`, `git stage`, and `git commit` to `deny` as the last matching rule.
+- Extended deny patterns to `git -C`/`git -c` forms and to `git stash`, `git reset`, `git checkout`, and `git clean`.
+- Updated Ralph examples to run only inside a separate disposable clone; worktrees are explicitly rejected.
+
 ### Author attribution (2026-11-11)
 
 - Every skill now records `metadata.author`, `metadata.author_url`, and `metadata.author_email` when published.

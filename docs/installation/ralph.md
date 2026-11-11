@@ -32,9 +32,16 @@ ralph preflight --format human
 
 `ralph preflight` checks config, hooks, backend, git, paths, tools, and specs. Treat warnings as actionable, not decorative.
 
+## Auto-commit warning
+
+Ralph 2.10.1 runs a git commit during landing even when `features.auto_merge` is `false`. Do not point it at a repository that must remain uncommitted, regardless of whether the tree is clean before the run. Use a **separate disposable clone** (not a linked worktree, which shares `.git`), or use the native OpenCode agents instead.
+
 ## First run
 
+Run this only inside a separate disposable clone:
+
 ```bash
+# Inside /tmp/ote-ralph or another disposable clone
 ralph run \
   -c configs/ralph/ralph.yml \
   -H configs/ralph/hats/code-assist.yml \

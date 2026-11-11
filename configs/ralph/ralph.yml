@@ -1,9 +1,9 @@
-# Ralph core configuration.
-# Usage:
-#   ralph run -c configs/ralph/ralph.yml -H configs/ralph/hats/code-assist.yml -p "your task"
-#
-# The hats file supplies triggers, publishes, and per-hat instructions.
-# This file supplies the loop, backend, memory, and task settings.
+# Name: Ralph core configuration
+# Purpose: Shared loop, backend, adapter, memory, task, and guardrail settings for the official hat collections.
+# Usage: ralph run -c configs/ralph/ralph.yml -H configs/ralph/hats/<collection>.yml -p "<task>"
+# Validation: ralph preflight -c configs/ralph/ralph.yml --format human; ralph run --dry-run -c configs/ralph/ralph.yml -H configs/ralph/hats/code-assist.yml -p "test"
+# References: https://mikeyobrien.github.io/ralph-orchestrator/guide/configuration/
+# Notes: checkpoint_interval is omitted because Ralph 2.10.1 does not implement it. If upstream enables it, the default value of 5 may create automatic checkpoints; verify upstream behavior before enabling it. See AGENTS.md Section 2B.
 
 cli:
   backend: "opencode"
@@ -14,8 +14,6 @@ adapters:
     timeout: 600
     enabled: true
   opencode:
-    # OpenCode is slower to start than some backends because it loads
-    # configuration, skills, and MCP servers. Keep this above MCP startup.
     timeout: 900
 
 event_loop:
@@ -24,7 +22,6 @@ event_loop:
   max_runtime_seconds: 14400
   idle_timeout_secs: 1800
   starting_event: "work.start"
-  checkpoint_interval: 5
   prompt_file: "PROMPT.md"
 
 core:
@@ -48,7 +45,6 @@ tasks:
   enabled: true
 
 features:
-  # Worktree loops are opt-in. Enable only when tasks are truly independent.
   parallel: false
   auto_merge: false
   preflight:

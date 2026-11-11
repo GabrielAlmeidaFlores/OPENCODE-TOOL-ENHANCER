@@ -46,6 +46,15 @@ The validator checks JSON/JSONC/YAML syntax, required files, schema keys, and do
 - Do not hardcode model identifiers. Use the routing overlay or environment variables.
 - Run the validator before opening a pull request.
 
+## Comment style
+
+Follow `AGENTS.md` Section 2C.
+
+- Use one file header block with purpose, usage, validation, and references.
+- Document every function with the native format: Python docstring, shell function block, JSDoc, or XML documentation.
+- Do not use inline comments, commented-out code, decorative separators, or field-level comments in configuration.
+- Move decision explanations to `docs/` instead of leaving them beside code.
+
 ## Commit style
 
 Conventional Commits: `docs:`, `feat:`, `fix:`, `chore:`, `ci:`.

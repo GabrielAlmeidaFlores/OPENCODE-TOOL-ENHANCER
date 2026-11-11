@@ -1,5 +1,5 @@
 ---
-# provenance (required by AGENTS.md Section 2A)
+# Provenance
 # source: https://github.com/wshobson/agents
 # author: Seth Hobson
 # author_url: https://github.com/wshobson
@@ -22,6 +22,45 @@ permissions:
   - action: shell
     resource: "*"
     effect: allow
+  - action: shell
+    resource: "git add*"
+    effect: deny
+  - action: shell
+    resource: "git stage*"
+    effect: deny
+  - action: shell
+    resource: "git commit*"
+    effect: deny
+  - action: shell
+    resource: "git -C * add*"
+    effect: deny
+  - action: shell
+    resource: "git -C * stage*"
+    effect: deny
+  - action: shell
+    resource: "git -C * commit*"
+    effect: deny
+  - action: shell
+    resource: "git -c * add*"
+    effect: deny
+  - action: shell
+    resource: "git -c * stage*"
+    effect: deny
+  - action: shell
+    resource: "git -c * commit*"
+    effect: deny
+  - action: shell
+    resource: "git stash*"
+    effect: deny
+  - action: shell
+    resource: "git reset*"
+    effect: deny
+  - action: shell
+    resource: "git checkout*"
+    effect: deny
+  - action: shell
+    resource: "git clean*"
+    effect: deny
 ---
 
 You are a database architect specializing in designing scalable, performant, and maintainable data layers from the ground up.
@@ -288,3 +327,7 @@ Never run destructive statements against a non-local database without explicit h
 
 - Return findings and evidence with `file:line` references.
 - Do not spawn subagents; the coordinator owns delegation.
+
+## Git safety (local addition)
+
+Never run `git add`, `git stage`, or `git commit`. Leave all changes unstaged and return the diff for human review.

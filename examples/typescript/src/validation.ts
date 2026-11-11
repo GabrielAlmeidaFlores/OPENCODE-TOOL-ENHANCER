@@ -1,14 +1,22 @@
+/** Input accepted by {@link validateCreateUser}. */
 export interface CreateUserInput {
   email?: unknown;
   name?: unknown;
   age?: unknown;
 }
 
+/** Outcome of {@link validateCreateUser}. */
 export interface ValidationResult {
   ok: boolean;
   errors: string[];
 }
 
+/**
+ * Validates a create-user request at the API boundary.
+ *
+ * @param input - Untrusted request data.
+ * @returns Whether the input is valid and the list of validation errors.
+ */
 export function validateCreateUser(input: CreateUserInput): ValidationResult {
   const errors: string[] = [];
 

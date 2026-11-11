@@ -60,7 +60,11 @@ V2 uses one ordered array. The last matching rule wins. Common actions:
 | `skill` | Skill loading |
 | `external_directory` | Paths outside the workspace |
 
-The repository's global rules allow normal work, ask before `rm -rf`, force-push, and external paths, and deny `sudo` and `.env` reads.
+The repository's global rules allow normal work, ask before `rm -rf`, force-push, and external paths, and deny `sudo`, `git add`, `git stage`, `git commit`, and `.env` reads.
+
+Agent-specific permissions are appended after the global list, so each agent repeats the git denies at the end of its own list. Otherwise an agent-level `shell "*": allow` would override the global deny. The validator checks the resolved last-match effect for `git add`, `git stage`, `git commit`, the `git -C`/`git -c` forms, and `git stash`/`git reset`/`git checkout`/`git clean`.
+
+The deny rules cover direct and `git -C`/`git -c` forms. They are not a security sandbox: wrappers such as `bash -c 'git commit ...'` can bypass textual command matching. The instruction in `AGENTS.md` Section 2B remains the primary control.
 
 > V2 default allows `external_directory`. We set it to `ask` to preserve V1 caution.
 
