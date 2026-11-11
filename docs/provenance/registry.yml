@@ -397,3 +397,9 @@ original_artifacts:
     local: "configs/opencode/**"
     kind: "configuration-composition"
     justification: "Composes only documented OpenCode V2 options. Not an agent, skill, or command."
+  - id: project-logo
+    local: "assets/logo.svg, assets/logo-dark.svg, assets/logo-mark.svg"
+    kind: "original-artwork"
+    author: "OPENCODE-TOOL-ENHANCER contributors"
+    justification: "Original project logo created at the repository owner's request. Not adapted from an upstream artifact."
+

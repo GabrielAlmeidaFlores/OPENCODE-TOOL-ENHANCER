@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 160" role="img" aria-labelledby="title desc">
+  <title id="title">OPENCODE-TOOL-ENHANCER</title>
+  <desc id="desc">A rounded indigo-to-cyan square containing a white terminal prompt mark and a spark, followed by the project wordmark for dark backgrounds.</desc>
+  <defs>
+    <linearGradient id="mark" x1="24" y1="24" x2="136" y2="136" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6366F1"/>
+      <stop offset="1" stop-color="#22D3EE"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="170" y1="120" x2="240" y2="120" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#818CF8"/>
+      <stop offset="1" stop-color="#22D3EE"/>
+    </linearGradient>
+  </defs>
+  <rect x="24" y="24" width="112" height="112" rx="28" fill="url(#mark)"/>
+  <rect x="25" y="25" width="110" height="110" rx="27" fill="none" stroke="#FFFFFF" stroke-opacity="0.2"/>
+  <path d="M48 46 L66 62 L48 78" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M78 78 H98" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round"/>
+  <path d="M104 38 C105.6 44.8 107.7 46.9 114.5 48.5 C107.7 50.1 105.6 52.2 104 59 C102.4 52.2 100.3 50.1 93.5 48.5 C100.3 46.9 102.4 44.8 104 38 Z" fill="#FFFFFF" fill-opacity="0.95"/>
+  <text x="168" y="76" font-family="Inter, 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="40" font-weight="700" letter-spacing="1.2" fill="#F8FAFC">OPENCODE</text>
+  <text x="170" y="106" font-family="Inter, 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="15" font-weight="600" letter-spacing="4.6" fill="#A7B5C9">TOOL ENHANCER</text>
+  <rect x="170" y="120" width="72" height="4" rx="2" fill="url(#accent)"/>
+</svg>

@@ -509,7 +509,7 @@ def check_links() -> None:
         for url in re.findall(r"https?://[^\s)\]>]+", text):
             if any(character in url for character in ("<", ">")) or url.endswith((".png", ".svg")):
                 continue
-            urls.add(url.rstrip(".,;:`"))
+            urls.add(url.rstrip(".,;:`\"'"))
     for url in sorted(urls):
         checked += 1
         request = urllib.request.Request(url, method="HEAD", headers={"User-Agent": "ote-validator"})
