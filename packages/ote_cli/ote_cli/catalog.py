@@ -134,4 +134,4 @@ def build_catalog(root: Path, check: bool = False) -> dict[str, Any]:
 
 
 def check_catalog_drift(root: Path) -> dict[str, Any]:
-    return build(root, check=True)
+    return build_catalog(root, check=True)

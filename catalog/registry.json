@@ -174,7 +174,7 @@
       "id": "api-design-principles",
       "license": "MIT",
       "local": "skills/api-design-principles/SKILL.md",
-      "modified": "SKILL.md metadata only; rest-api-template.py comments replaced with docstrings per AGENTS.md Section 2C; other supporting files copied as-is",
+      "modified": "SKILL.md metadata only; rest-api-template.py comments removed and names clarified per AGENTS.md Section 2C; other supporting files copied as-is",
       "retrieved": "2026-11-11",
       "section": "skills",
       "source": "wshobson",

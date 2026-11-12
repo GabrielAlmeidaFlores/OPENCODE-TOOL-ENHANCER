@@ -6,6 +6,7 @@ from __future__ import annotations
 import copy
 import json
 import unittest
+from unittest import mock
 from pathlib import Path
 
 from tests import support
@@ -76,6 +77,14 @@ class CatalogValidationTests(unittest.TestCase):
         document["counts"]["agent"] = 999
         results = catalog.verify_catalog(support.REPO_ROOT, document)
         self.assertTrue(any(result["check"] == "counts" and result["status"] == "fail" for result in results))
+
+
+class CatalogDriftTests(unittest.TestCase):
+    def test_drift_uses_the_builder(self) -> None:
+        with mock.patch.object(catalog, "run_catalog_builder", return_value=(0, "ok")) as builder:
+            result = catalog.check_catalog_drift(support.REPO_ROOT)
+        self.assertEqual(result["status"], "ok")
+        builder.assert_called_once()
 
 
 class CatalogJsonTests(unittest.TestCase):
