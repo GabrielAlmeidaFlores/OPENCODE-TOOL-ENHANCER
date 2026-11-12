@@ -135,7 +135,7 @@ HOME="$(mktemp -d)" OPENCODE_CONFIG="/abs/path/.opencode/opencode.jsonc" \
 
 ## Confirmed green
 
-Run [`43260145360`](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/actions/runs/43260145360)
+Run [`43273061721`](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/actions/runs/43273061721)
 completed on 2026-11-12 with every job successful:
 
 | Job | Result |

@@ -1,6 +1,6 @@
 # Governance
 
-> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally and in CI run 43252608149
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally and in CI run 43273061721
 
 Governance makes long agent runs auditable without adding a daemon or a second runtime. The CLI evaluates limits deterministically and reports violations; it does not intercept tool calls at runtime.
 
