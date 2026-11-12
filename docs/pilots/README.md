@@ -65,9 +65,9 @@ used. It never stages or commits in the main repository and never runs Ralph.
 
 | Pilot | Status |
 | --- | --- |
-| `honojs/hono` | Round 1 discovery: 3/5 passed; code-change tasks pending |
-| `ardalis/CleanArchitecture` | Round 1 discovery: 3/5 passed; code-change tasks pending |
-| `vercel/turborepo` | Round 1 discovery blocked by free-model quota; code-change tasks pending |
+| `honojs/hono` | Round 1 discovery complete: 5/5 passed; code-change tasks pending |
+| `ardalis/CleanArchitecture` | Round 1 discovery complete: 5/5 passed; code-change tasks pending |
+| `vercel/turborepo` | Round 1 discovery complete: 5/5 passed after funded rerun; code-change tasks pending |
 
 Runner capability is not evidence. The Hono smoke run proves the runner executes against a real
 repository, but it is not a pilot result. A pilot is complete only after the five tasks, artifacts,

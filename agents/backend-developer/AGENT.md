@@ -10,7 +10,7 @@
 # modified: adapted frontmatter (permissions/mode), removed model alias, added OpenCode integration section
 description: Implements backend functionality with tests and no unrelated changes.
 mode: subagent
-steps: 18
+steps: 60
 permissions:
   - action: edit
     resource: "*"

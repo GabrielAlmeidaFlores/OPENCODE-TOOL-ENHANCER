@@ -84,6 +84,7 @@ def run_pilot(
     keep: bool,
     dry_run: bool,
     model: str | None,
+    agent: str = "coordinator",
 ) -> dict[str, Any]:
     pilots = load_pilots(root)
     if name not in pilots:
@@ -99,7 +100,7 @@ def run_pilot(
         f"git -C {clone} fetch --depth 1 origin {pilot['commit']}",
         f"git -C {clone} checkout --detach FETCH_HEAD",
         f"ote install --profile {profile} --target {clone} --apply",
-        f"opencode --standalone run --agent coordinator --model {model or '<provider/model>'} --auto --format json <prompt>",
+        f"opencode --standalone run --agent {agent} --model {model or '<provider/model>'} --auto --format json <prompt>",
         f"bash -lc {verify_command or '<verification command>'}",
     ]
     if dry_run:
@@ -138,7 +139,7 @@ def run_pilot(
                 "--standalone",
                 "run",
                 "--agent",
-                "coordinator",
+                agent,
                 "--model",
                 model_value,
                 "--auto",
@@ -164,6 +165,7 @@ def run_pilot(
             "profile": profile,
             "components": components,
             "model": model_value,
+            "agent": agent,
             "prompt": prompt_value,
             "verification_command": verify_value,
             "verification_exit": verify_code,

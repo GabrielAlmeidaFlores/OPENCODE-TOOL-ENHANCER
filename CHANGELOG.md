@@ -4,6 +4,10 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-12
+
+Pilot round 1 discovery results, funded reruns, plugin live verification, release and policy documentation, step-budget tuning, and pilot agent selection.
+
 ### Added
 
 - Pilot round 1 discovery suite across Hono, CleanArchitecture, and turborepo: 6/15 structural tasks passed; failures and provider quota are recorded in `docs/pilots/results/round-1.md`.

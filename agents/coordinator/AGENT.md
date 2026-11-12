@@ -11,7 +11,7 @@
 # modified: adapted frontmatter (permissions/mode), removed model alias, added OpenCode integration section
 description: Primary orchestration agent. Understands the request, decomposes work, delegates to specialists, and verifies completion.
 mode: primary
-steps: 24
+steps: 40
 permissions:
   - action: edit
     resource: "*"
