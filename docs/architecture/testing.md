@@ -101,6 +101,7 @@ never be installed.
 - Spec creation, criterion/task mapping, and evidence verification are tested.
 - Stats parsing and rendering, deterministic eval cases, and pilot planning are tested.
 - The pilot runner is exercised end to end with a local mock: clone/fetch/checkout, install, agent run, verification, artifacts, and the dual-exit success rule.
+- Task board state, WIP limits, approval, and worktrees are tested; the plugin file is syntax-checked and its install plan is tested.
 
 The OpenCode checks skip cleanly when `opencode` is not on `PATH`, so contributors without
 the binary still get a green suite.

@@ -5,7 +5,7 @@
 # References: docs/profiles/README.md, docs/cli/README.md
 
 name: full
-description: Standard plus Serena and CodeGraph.
+description: Standard plus Serena, CodeGraph, and the opt-in memory plugin.
 components:
   - opencode
   - agents
@@ -15,3 +15,4 @@ components:
   - ast-grep
   - serena
   - codegraph
+  - plugin

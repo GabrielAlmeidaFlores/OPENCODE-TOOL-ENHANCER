@@ -27,3 +27,6 @@ max_bounces = 3
 [memory]
 token_budget = 2000
 ttl_days = 30
+
+[board]
+wip_limit = 3

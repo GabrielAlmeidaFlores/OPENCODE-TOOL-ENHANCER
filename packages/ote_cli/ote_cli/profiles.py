@@ -21,7 +21,8 @@ from .paths import OteError
 
 FILE_COMPONENTS = ("opencode", "agents", "commands", "skills", "ralph")
 TOOL_COMPONENTS = ("ast-grep", "serena", "codegraph")
-KNOWN_COMPONENTS = FILE_COMPONENTS + TOOL_COMPONENTS
+OPTIONAL_COMPONENTS = ("plugin",)
+KNOWN_COMPONENTS = FILE_COMPONENTS + TOOL_COMPONENTS + OPTIONAL_COMPONENTS
 DEFAULT_PROFILE = "standard"
 
 _KEY = re.compile(r"^([a-z_]+):(?:\s*(.*))?$")

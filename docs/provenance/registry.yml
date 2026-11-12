@@ -445,6 +445,11 @@ original_artifacts:
     kind: "glue"
     author: "OPENCODE-TOOL-ENHANCER contributors"
     justification: "Local reporting, deterministic evaluation, and isolated pilot runner. Reporting categories follow agenttrace (MIT); worktree isolation follows vibe-kanban (Apache-2.0). No upstream code was copied; the implementation is original Python."
+  - id: task-board-and-plugin
+    local: "packages/ote_cli/ote_cli/board.py, configs/opencode/plugins/ote-memory.js, .ote/board/**"
+    kind: "glue"
+    author: "OPENCODE-TOOL-ENHANCER contributors"
+    justification: "Optional Markdown board with Git worktrees and an opt-in memory-injection plugin. The worktree discipline follows vibe-kanban (Apache-2.0); the plugin context hook follows operator-memory (BSD-3-Clause). No upstream code was copied; the implementation is original."
   - id: project-documentation
     local: "docs/**"
     kind: "original-documentation"

@@ -6,6 +6,11 @@ All notable changes to this repository are documented here.
 
 ### Added
 
+- Optional Markdown task board (`ote task`) with a WIP limit, approval gate, and one Git worktree per task.
+- Opt-in OpenCode memory plugin that injects the bounded preamble only when `.ote/memory/plugin.enabled` exists.
+- `plugin` component, included only in the explicit `full` profile.
+- Task-board and plugin documentation, CI smoke checks, and tests.
+
 - MkDocs Material site with navigation for every guide and a strict build in CI.
 - `SECURITY.md`, `SUPPORT.md`, `ROADMAP.md`, `CODE_OF_CONDUCT.md`, and a security threat model with MCP trust levels.
 - Compatibility policy and release process documentation.

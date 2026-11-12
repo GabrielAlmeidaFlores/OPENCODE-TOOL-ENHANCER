@@ -10,7 +10,7 @@ Profiles are declarative manifests under `profiles/`. They replace the provision
 |---|---|---|
 | `minimal` | OpenCode config, agents, commands, skills, Ralph | You want no global tool installation |
 | `standard` | Minimal plus `ast-grep` | Default; structural search is useful |
-| `full` | Standard plus Serena and CodeGraph | You want symbol navigation and dependency graphs |
+| `full` | Standard plus Serena, CodeGraph, and the opt-in memory plugin | You want symbol navigation and dependency graphs |
 
 Tool components may install packages globally. `standard` and `full` print the tool step, and `minimal` avoids it.
 
@@ -49,7 +49,7 @@ Rules enforced by `ote profile verify`:
 - the file name must equal `name`;
 - `description` is required;
 - `components` is a non-empty list;
-- components must be one of `opencode`, `agents`, `commands`, `skills`, `ralph`, `ast-grep`, `serena`, `codegraph`;
+- components must be one of `opencode`, `agents`, `commands`, `skills`, `ralph`, `plugin`, `ast-grep`, `serena`, `codegraph`;
 - duplicate components are rejected;
 - nested mappings and block scalars are rejected.
 

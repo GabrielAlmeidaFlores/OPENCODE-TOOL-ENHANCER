@@ -102,6 +102,12 @@ jobs:
         run: |
           ote profile verify
           ote catalog verify --check-drift
+      - name: Check task board and plugin
+        run: |
+          ote task list > /dev/null
+          ote task status > /dev/null
+          node --check configs/opencode/plugins/ote-memory.js
+          ote install --only plugin --target "$RUNNER_TEMP/plugin-project" --dry-run > /dev/null
       - name: Check stats, eval, and pilots
         run: |
           ote stats --results benchmarks/results --format json > /dev/null

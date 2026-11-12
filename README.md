@@ -62,6 +62,8 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 | Specs | Requirements, design, tasks, evidence workflow | [`docs/specs/`](docs/specs) |
 | Observability | Cost, tokens, tool failures, arm comparison | [`docs/cost-optimization/observability.md`](docs/cost-optimization/observability.md) |
 | Evals and pilots | Deterministic checks and isolated real-repository runs | [`docs/evals/`](docs/evals), [`docs/pilots/`](docs/pilots) |
+| Task board | Optional Markdown board with worktrees | [`.ote/board/README.md`](.ote/board/README.md) |
+| Plugin | Opt-in memory injection for OpenCode | [`docs/plugin/README.md`](docs/plugin/README.md) |
 | Examples | TypeScript, C#, multi-agent workflows | [`examples/`](examples) |
 | Benchmarks | Methodology, tasks, harness, results | [`benchmarks/`](benchmarks) |
 | Documentation | Research, decisions, guides, provenance | [`docs/`](docs) |
@@ -80,12 +82,13 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 | Benchmarks | Deferred by decision; no published results |
 | Real-repository pilots | Repositories selected and pinned; execution pending |
 | CI | Green on Ubuntu and macOS for run [43275405166](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/actions/runs/43275405166); six jobs including `cli` |
-| Repository tests | 267 unit and integration tests; run with `make test` |
+| Repository tests | 279 unit and integration tests; run with `make test` |
 | `ote` CLI | Install, uninstall, update check, rollback, doctor verified locally and in the `cli` job |
 | Profiles and catalog | Three manifests and 34 catalog entries verified locally and in run 43275405166 |
 | Verification and governance | `ote verify` and `ote govern contracts` verified locally; CI runs both |
 | Memory and specs | Verified locally and in run 43275405166 |
 | Stats, eval, pilots | `ote stats` and `ote eval` verified locally; real Hono smoke run succeeded; full five-task pilots pending |
+| Task board and plugin | Board, worktree, and plugin install tests; plugin syntax checked; runtime hook not executed in CI |
 
 ## Architecture
 
@@ -662,6 +665,8 @@ The benchmark harness is reproducible, but **no results are published yet**. Thi
 | [Spec workflow](docs/specs/README.md) | Requirements, design, tasks, evidence |
 | [Deterministic evals](docs/evals/README.md) | Profile, catalog, governance, and validator checks |
 | [Pilot runner](docs/pilots/README.md) | Pinned repositories, isolation, artifacts |
+| [Task board](.ote/board/README.md) | Markdown tasks, WIP limit, worktrees |
+| [Memory plugin](docs/plugin/README.md) | Opt-in context injection, no telemetry |
 | [Install the CLI](docs/installation/ote-cli.md) | uv, pipx, wheel, verification |
 | [Agent roles](docs/agents/roles.md) | Responsibilities and delegation rules |
 | [Artifact compatibility](docs/agents/compatibility.md) | OpenCode compatibility and runtime status |

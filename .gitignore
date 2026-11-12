@@ -52,3 +52,4 @@ repomix-output.*
 .ote/backups/
 .ote/cache/
 .ote/memory/user/
+.ote/worktrees/

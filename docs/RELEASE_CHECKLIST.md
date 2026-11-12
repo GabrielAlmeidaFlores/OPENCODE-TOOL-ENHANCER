@@ -99,6 +99,13 @@ Use this checklist before tagging a release. A checked item must have reproducib
 - [ ] Known limitations and unsupported cases are documented.
 - [ ] No vendor benchmark is presented as an independent result.
 
+## Task board and plugin
+
+- [ ] Task board state is reviewable in Git; worktrees are gitignored.
+- [ ] No task is marked done without approval.
+- [ ] The memory plugin is opt-in and absent from default profiles.
+- [ ] Plugin file syntax passes `node --check`.
+
 ## Release
 - [ ] `CHANGELOG.md` has an entry for the release.
 - [ ] Version follows semantic versioning.

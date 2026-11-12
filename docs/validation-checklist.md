@@ -136,6 +136,17 @@ Then complete the manual checks for your environment.
 - [ ] `python3 scripts/benchmarking/report_costs.py` runs without error.
 - [ ] MCP overhead evidence is current.
 
+## Task board and plugin
+
+- [ ] `ote task add` creates a task and regenerates `BOARD.md`.
+- [ ] The WIP limit blocks a third in-progress task with the default configuration.
+- [ ] Moving to `done` requires `--approved`.
+- [ ] A worktree is created only on request and is gitignored.
+- [ ] Removing a worktree requires `--remove --yes`.
+- [ ] `node --check configs/opencode/plugins/ote-memory.js` passes.
+- [ ] The plugin is absent from the minimal and standard profiles.
+- [ ] The plugin does nothing without `.ote/memory/plugin.enabled`.
+
 ## Docs site and release
 
 - [ ] `mkdocs build --strict` passes.

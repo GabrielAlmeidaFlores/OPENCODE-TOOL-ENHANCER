@@ -27,7 +27,7 @@ Options:
   --dry-run            Print planned actions without executing
   --apply              Execute selected actions
   --all                Select all components
-  --only LIST          Comma-separated: opencode,agents,commands,skills,ralph,ast-grep,serena,codegraph
+  --only LIST          Comma-separated: opencode,agents,commands,skills,ralph,plugin,ast-grep,serena,codegraph
   --target DIR         Project directory for .opencode files (default: repo root)
   --clean              Back up and remove existing .opencode agents/commands/skills before copying
   -h, --help
@@ -163,7 +163,13 @@ if [[ "$CLEAN" == "1" ]]; then
   if selected skills; then
     clean_dir "$TARGET/.opencode/skills"
   fi
-  if selected ralph; then
+  if selected plugin; then
+  echo "== opencode plugin =="
+  run mkdir -p "$TARGET/.opencode/plugins"
+  copy_file "$ROOT/configs/opencode/plugins/ote-memory.js" "$TARGET/.opencode/plugins/ote-memory.js"
+fi
+
+if selected ralph; then
     clean_dir "$TARGET/.ralph/hats"
   fi
 fi
@@ -198,6 +204,12 @@ if selected skills; then
     name="$(basename "$d")"
     copy_dir "$d" "$TARGET/.opencode/skills/$name"
   done
+fi
+
+if selected plugin; then
+  echo "== opencode plugin =="
+  run mkdir -p "$TARGET/.opencode/plugins"
+  copy_file "$ROOT/configs/opencode/plugins/ote-memory.js" "$TARGET/.opencode/plugins/ote-memory.js"
 fi
 
 if selected ralph; then

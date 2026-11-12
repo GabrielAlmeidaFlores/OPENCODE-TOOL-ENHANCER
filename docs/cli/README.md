@@ -45,6 +45,7 @@ The package requires Python 3.11 or newer and has no runtime dependencies.
 | `ote stats` | Available | Cost, token, failure, and arm comparison reports |
 | `ote eval` | Available | Deterministic repository evaluations |
 | `ote pilot` | Available | Real-repository pilot runner |
+| `ote task` | Experimental | Optional Markdown task board and worktrees |
 
 Unknown commands are rejected by the argument parser with exit code 2.
 
@@ -111,6 +112,19 @@ ote govern check --record run.json
 ```
 
 Contracts are derived from agent permissions; budgets and limits come from the `[governance]` table. See `docs/governance/README.md`.
+
+## `ote task`
+
+```bash
+ote task add "Add rate limiting" --verify "npm test -- rate-limit"
+ote task list
+ote task move T-001 in-progress
+ote task move T-001 done --approved
+ote task status
+ote task worktree T-001 --remove --yes
+```
+
+Markdown board with a WIP limit and one optional Git worktree per task. No merges and no automatic commits. See `.ote/board/README.md`.
 
 ## `ote memory`
 

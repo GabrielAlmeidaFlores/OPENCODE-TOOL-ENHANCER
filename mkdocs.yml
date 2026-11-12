@@ -60,6 +60,8 @@ nav:
       - Stats and observability: cost-optimization/observability.md
       - Evaluations: evals/README.md
       - Pilots: pilots/README.md
+      - Task board: board/README.md
+      - Memory plugin: plugin/README.md
       - Hono smoke: pilots/results/hono-smoke.md
   - Configuration:
       - OpenCode V2: configuration/opencode-v2.md

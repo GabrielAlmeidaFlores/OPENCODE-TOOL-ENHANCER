@@ -12,7 +12,7 @@ Status reflects the repository, not intentions.
 | 5 | Markdown memory, spec workflow | Complete |
 | 6 | Stats, deterministic evals, pilot runner | Complete |
 | 7 | Docs site, security/support/roadmap, release automation, drift checks | Complete |
-| 8 | Optional Markdown task board and OpenCode plugin | Planned |
+| 8 | Optional Markdown task board and OpenCode plugin | Implemented; CI confirmation pending |
 
 ## Next after Phase 7
 

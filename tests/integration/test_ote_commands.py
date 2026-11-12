@@ -311,6 +311,11 @@ class MemoryAndSpecReadTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("# Project Memory", result.stdout)
 
+    def test_task_list_json(self) -> None:
+        result = run_ote("task", "list", "--json")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("tasks", json.loads(result.stdout))
+
     def test_spec_list(self) -> None:
         result = run_ote("spec", "list")
         self.assertEqual(result.returncode, 0, result.stderr)

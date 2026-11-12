@@ -71,6 +71,11 @@
 | A pilot clone check out fails | The pinned commit is unavailable or the network is blocked | Verify the commit and access; rerun with `--dry-run` first |
 | A pilot verification fails | The task was not completed correctly | Keep the artifacts; record rework separately |
 
+| `ote task move` hits the WIP limit | Too many in-progress tasks | Finish or move one to review |
+| `ote task move done` is refused | Completion requires explicit approval | Re-run with `--approved` |
+| `ote task worktree` fails | The project is not a Git repository or the branch exists | Initialize Git or remove the stale branch/worktree |
+| The memory plugin does nothing | `.ote/memory/plugin.enabled` is missing or `ote` is not on PATH | Create the sentinel and verify `ote` in the server environment |
+
 | `ote memory add` refuses text | The text matches a credential pattern | Remove the secret; store a reference instead |
 | `ote memory add` reports a duplicate | The same title exists in that scope | Use a distinct title or `--force` |
 | A memory entry never appears | It expired or exceeded the preamble budget | Check `expires`; raise `memory.token_budget` |

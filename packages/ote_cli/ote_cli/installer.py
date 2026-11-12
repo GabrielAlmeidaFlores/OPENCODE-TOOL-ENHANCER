@@ -60,6 +60,12 @@ def plan_files(root: Path, target: Path, components: list[str]) -> list[PlannedF
                 if file.is_file() and not is_generated_file(file):
                     relative = file.relative_to(source.parent)
                     add(file, target / ".opencode/skills" / name / relative, "skills")
+    if "plugin" in components:
+        add(
+            root / "configs/opencode/plugins/ote-memory.js",
+            target / ".opencode/plugins/ote-memory.js",
+            "plugin",
+        )
     if "ralph" in components:
         add(root / "configs/ralph/ralph.yml", target / ".ralph/ralph.yml", "ralph")
         for source in sorted((root / "configs/ralph/hats").glob("*.yml")):

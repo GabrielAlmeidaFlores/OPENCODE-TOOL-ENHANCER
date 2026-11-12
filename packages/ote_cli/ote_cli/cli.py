@@ -20,6 +20,7 @@ from typing import Any, Sequence
 from . import __version__
 from .doctor import checks_as_dict as doctor_dict
 from .doctor import run_diagnostic_checks, summarize_checks
+from . import board as board_module
 from . import catalog as catalog_module
 from . import compat as compat_module
 from . import eval as eval_module
@@ -117,6 +118,27 @@ def build_argument_parser() -> argparse.ArgumentParser:
     catalog_commands.add_parser("build", parents=[common], help="regenerate the catalog")
 
     subparsers.add_parser("compat", parents=[common], help="show the OpenCode V1/V2 compatibility matrix")
+
+    task_parser = subparsers.add_parser(
+        "task", parents=[common], help="manage the optional Markdown task board"
+    )
+    task_commands = task_parser.add_subparsers(dest="task_command", required=True)
+    task_add = task_commands.add_parser("add", parents=[common], help="add a task")
+    task_add.add_argument("title")
+    task_add.add_argument("--worktree", action="store_true", help="create a Git worktree for the task")
+    task_add.add_argument("--verify", default="", help="verification command recorded with the task")
+    task_list = task_commands.add_parser("list", parents=[common], help="list tasks")
+    task_list.add_argument("--status", choices=list(board_module.STATUSES))
+    task_move = task_commands.add_parser("move", parents=[common], help="move a task to a status")
+    task_move.add_argument("identifier")
+    task_move.add_argument("status", choices=list(board_module.STATUSES))
+    task_move.add_argument("--approved", action="store_true", help="confirm completion")
+    task_commands.add_parser("status", parents=[common], help="show board counts")
+    task_worktree = task_commands.add_parser("worktree", parents=[common], help="create or remove a task worktree")
+    task_worktree.add_argument("identifier")
+    task_worktree.add_argument("--remove", action="store_true")
+    task_worktree.add_argument("--force", action="store_true")
+    task_worktree.add_argument("--yes", action="store_true", help="confirm worktree removal")
 
     verify_parser = subparsers.add_parser(
         "verify", parents=[common], help="run the configured deterministic verification checks"
@@ -559,6 +581,70 @@ def _command_govern(args: argparse.Namespace) -> int:
     return 0 if evaluation["allowed"] else 1
 
 
+def _command_task(args: argparse.Namespace) -> int:
+    root = resolve_repository_root(args)
+    action = args.task_command
+    if action == "add":
+        task = board_module.add_task(root, args.title, worktree=args.worktree, verify=args.verify)
+        if args.json:
+            emit_payload({"id": task.identifier, "title": task.title, "status": task.status, "worktree": task.worktree, "verify": task.verify}, True)
+            return 0
+        print(f"{task.identifier} {task.status} {task.title}")
+        if task.worktree:
+            print(f"worktree: {task.worktree}")
+        return 0
+    if action == "list":
+        tasks = board_module.list_tasks(root, args.status)
+        if args.json:
+            emit_payload(
+                {
+                    "tasks": [
+                        {
+                            "id": task.identifier,
+                            "title": task.title,
+                            "status": task.status,
+                            "created": task.created,
+                            "worktree": task.worktree,
+                            "verify": task.verify,
+                            "approved": task.approved,
+                        }
+                        for task in tasks
+                    ]
+                },
+                True,
+            )
+            return 0
+        for task in tasks:
+            print(f"{task.identifier}  {task.status:<12} {task.title}")
+        print(f"\n{len(tasks)} task(s)")
+        return 0
+    if action == "move":
+        task = board_module.move_task(root, args.identifier, args.status, approved=args.approved)
+        if args.json:
+            emit_payload({"id": task.identifier, "status": task.status, "approved": task.approved}, True)
+            return 0
+        print(f"{task.identifier} -> {task.status}")
+        return 0
+    if action == "status":
+        result = board_module.summary(root)
+        if args.json:
+            emit_payload(result, True)
+        else:
+            print(f"tasks: {result['tasks']}")
+            for status, count in result["by_status"].items():
+                print(f"  {status:<12} {count}")
+            print(f"WIP limit: {result['wip_limit']}")
+        return 0
+    if args.remove and not args.yes:
+        raise OteError("refusing to remove a worktree without --yes")
+    task = board_module.manage_worktree(root, args.identifier, remove=args.remove, force=args.force)
+    if args.json:
+        emit_payload({"id": task.identifier, "worktree": task.worktree}, True)
+        return 0
+    print(f"{task.identifier} worktree: {task.worktree or 'none'}")
+    return 0
+
+
 def _command_memory(args: argparse.Namespace) -> int:
     root = resolve_repository_root(args)
     action = args.memory_command
@@ -738,6 +824,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "stats": _command_stats,
         "eval": _command_eval,
         "pilot": _command_pilot,
+        "task": _command_task,
     }
     try:
         return handlers[args.command](args)
