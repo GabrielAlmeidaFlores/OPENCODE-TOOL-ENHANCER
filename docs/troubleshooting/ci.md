@@ -133,6 +133,28 @@ HOME="$(mktemp -d)" OPENCODE_CONFIG="/abs/path/.opencode/opencode.jsonc" \
   opencode --standalone debug agents
 ```
 
+## Confirmed green
+
+Run [`43227605747`](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/actions/runs/43227605747)
+completed on 2026-11-12 with every job successful:
+
+| Job | Result |
+|---|---|
+| `static (ubuntu-latest)` | success |
+| `static (macos-latest)` | success |
+| `test (ubuntu-latest)` | success |
+| `test (macos-latest)` | success |
+| `examples` | success |
+| `opencode profile` | success |
+| `harness dry-run` | success |
+
+This confirms the harness fix, the offline suite on both operating systems, OpenCode
+agent discovery with a pinned version, and benchmark dry-runs.
+
+Action major versions were updated after this run (`checkout@v7`, `setup-python@v7`,
+`setup-node@v7`, `setup-dotnet@v6`) to remove Node.js 20 deprecation warnings. Re-confirm
+on the next run; a version bump is a CI change like any other.
+
 ## Job map
 
 | Job | Purpose | Needs |

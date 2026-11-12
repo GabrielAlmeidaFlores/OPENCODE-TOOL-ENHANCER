@@ -41,11 +41,11 @@ Use this checklist before tagging a release. A checked item must have reproducib
 
 ## CI
 
-- [ ] GitHub Actions is green on macOS.
-- [ ] GitHub Actions is green on Linux.
-- [ ] Shellcheck passes.
-- [ ] The OpenCode profile job discovers all twelve agents.
-- [ ] Harness dry-runs pass for every task.
+- [x] GitHub Actions is green on macOS (run 43227605747).
+- [x] GitHub Actions is green on Linux (run 43227605747).
+- [x] ShellCheck passes on Linux.
+- [x] The OpenCode profile job discovers all twelve agents.
+- [x] Harness dry-runs pass for every task.
 
 ## Evidence
 

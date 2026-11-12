@@ -28,6 +28,7 @@ All notable changes to this repository are documented here.
 
 ### Verified
 
+- CI run `43227605747` is green on Ubuntu and macOS across all seven job instances (static, test, examples, profile discovery, harness dry-run).
 - OpenCode 2.2.7 keeps `run --agent`, `--model`, `--format json`, and `stats --cost --json`.
 - Ralph hats support `backend_args` (alias `args`), enabling per-hat OpenCode agent routing.
 - CodeGraph is MIT licensed and exposes `codegraph serve --mcp`.
