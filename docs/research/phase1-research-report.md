@@ -1,5 +1,7 @@
 # Phase 1 Research Report
 
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+
 - Date: 2026-11-11
 - Scope: OpenCode capabilities, Ralph Orchestrator, orchestration alternatives, code-intelligence tools, cost evidence.
 - Method: official documentation, release metadata, repository source reading, and non-destructive CLI verification.

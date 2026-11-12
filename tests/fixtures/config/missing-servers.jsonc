@@ -1,0 +1,9 @@
+// Name: Missing servers fixture
+// Purpose: Exercises the OpenCode V2 mcp.servers requirement.
+// Usage: validator unit tests only.
+// Validation: scripts/validation/validate_config.py
+// References: docs/decisions/ADR-001-opencode-v2-baseline.md
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {}
+}

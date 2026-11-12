@@ -1,0 +1,5 @@
+{
+  "id": "fixture-task",
+  "prompt": "Fixture prompt.",
+  "working_directory": "."
+}

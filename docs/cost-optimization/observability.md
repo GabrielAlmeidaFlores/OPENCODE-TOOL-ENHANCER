@@ -1,5 +1,7 @@
 # Observability and Cost Reporting
 
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+
 The harness stores raw artifacts under `benchmarks/results/<run-id>/`. The cost report aggregates those artifacts without calling a model.
 
 ## Generate a report

@@ -1,5 +1,7 @@
 # OpenCode V2 Configuration
 
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+
 This page explains the configuration in `configs/opencode/opencode.jsonc`.
 
 ## Location and precedence

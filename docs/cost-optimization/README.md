@@ -1,5 +1,7 @@
 # Cost Optimization
 
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+
 The objective is the lowest total cost for a correct result, not the smallest prompt.
 
 ## Levers in this repository

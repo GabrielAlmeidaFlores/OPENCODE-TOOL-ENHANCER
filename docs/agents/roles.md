@@ -1,5 +1,7 @@
 # Agent Roles and Delegation
 
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+
 ## Compatibility
 
 See [artifact compatibility](compatibility.md) for the runtime status of each agent, command, skill, and Ralph collection.

@@ -1,5 +1,7 @@
 # Compatibility Matrix
 
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+
 Verified on 2026-11-11 against a standalone OpenCode 2.2.7 binary and repository sources. Nothing in this matrix was inferred from vendor marketing.
 
 ## OpenCode V2 CLI contract

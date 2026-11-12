@@ -25,12 +25,15 @@ ROOT = Path(__file__).resolve().parents[2]
 REQUIRED = [
     "README.md",
     "LICENSE",
+    "VERSION",
     "CONTRIBUTING.md",
     "configs/opencode/opencode.jsonc",
     "configs/opencode/minimal.jsonc",
     "configs/ralph/ralph.yml",
     "configs/ralph/hats/code-assist.yml",
     "docs/decisions/ADR-001-opencode-v2-baseline.md",
+    "docs/research/baseline.md",
+    "docs/architecture/testing.md",
     "benchmarks/methodology/README.md",
 ]
 
@@ -515,6 +518,29 @@ def check_comment_policy() -> None:
             fail(f"{path.relative_to(ROOT)}: tokenization failed: {exc}")
 
 
+def check_docs_status() -> None:
+    """Enforce the Phase 0 documentation status block on every docs page."""
+    global checked
+    allowed = {"Stable", "Experimental", "Planned", "Deprecated"}
+    for path in sorted((ROOT / "docs").rglob("*.md")):
+        relative = path.relative_to(ROOT)
+        if relative.parts[:2] == ("docs", "decisions"):
+            continue
+        checked += 1
+        head = "\n".join(path.read_text(encoding="utf-8").splitlines()[:8])
+        missing = [marker for marker in ("**Status:**", "**Last verified:**", "**Evidence:**") if marker not in head]
+        if missing:
+            fail(f"{relative}: missing documentation status field {missing[0]}")
+            continue
+        match = re.search(r"\*\*Status:\*\*\s*([A-Za-z]+)", head)
+        if match is None:
+            fail(f"{relative}: missing documentation status value")
+        elif match.group(1) not in allowed:
+            fail(f"{relative}: unknown documentation status {match.group(1)}")
+        if not re.search(r"\*\*Last verified:\*\*\s*\d{4}-\d{2}-\d{2}", head):
+            fail(f"{relative}: last verified date must be ISO 8601")
+
+
 def check_links() -> None:
     """Check external HTTP links found in documentation."""
     global checked
@@ -550,6 +576,8 @@ def main() -> int:
         check_jsonc(path)
     for path in sorted((ROOT / "configs").rglob("*.yml")):
         check_yaml(path)
+    for path in sorted((ROOT / ".github/workflows").glob("*.yml")):
+        check_yaml(path)
     check_tasks()
 
     check_agents()
@@ -558,6 +586,7 @@ def main() -> int:
     check_provenance()
     check_git_permissions()
     check_comment_policy()
+    check_docs_status()
 
     if args.links:
         check_links()

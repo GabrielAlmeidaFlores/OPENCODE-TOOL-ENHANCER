@@ -1,9 +1,22 @@
-name: validate
+# Name: Continuous integration
+# Purpose: Validates repository content, runs the offline test suite, builds the examples, verifies OpenCode agent discovery, and dry-runs every benchmark task.
+# Usage: Runs on push to main, on pull requests, and on manual dispatch.
+# Validation: ./scripts/validation/validate.sh and python3 -m unittest discover -s tests -t .
+# References: docs/architecture/testing.md, docs/troubleshooting/ci.md
+name: ci
 
 on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   static:
@@ -19,7 +32,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Install YAML parser
+      - name: Install validation dependencies
         run: python -m pip install --quiet pyyaml
       - name: Validate repository
         run: ./scripts/validation/validate.sh
@@ -28,11 +41,30 @@ jobs:
           for file in scripts/installation/*.sh scripts/maintenance/*.sh scripts/validation/*.sh scripts/benchmarking/*.sh benchmarks/harness/*.sh; do
             bash -n "$file"
           done
-      - name: Shellcheck
+      - name: ShellCheck
         if: runner.os == 'Linux'
-        uses: ludeeus/action-shellcheck@master
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes shellcheck
+          shellcheck scripts/*/*.sh benchmarks/harness/*.sh
+
+  test:
+    timeout-minutes: 15
+    name: test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          scandir: ./scripts
+          python-version: "3.12"
+      - name: Install test dependencies
+        run: python -m pip install --quiet pyyaml
+      - name: Run unit and integration tests
+        run: python -m unittest discover -s tests -t . -v
 
   examples:
     timeout-minutes: 20
@@ -67,8 +99,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Install OpenCode
-        run: npm install --global @opencode/cli
+      - name: Install OpenCode V2
+        run: npm install --global @opencode/cli@2.2.7
       - name: Install profile into a temporary project
         run: |
           target="$RUNNER_TEMP/profile-project"
@@ -81,7 +113,7 @@ jobs:
           OPENCODE_CONFIG: ${{ runner.temp }}/profile-project/.opencode/opencode.jsonc
         run: |
           cd "$RUNNER_TEMP/profile-project"
-          opencode debug agents > agents.json
+          opencode --standalone debug agents > agents.json
           python3 - <<'PY'
           import json
           from pathlib import Path
@@ -110,8 +142,6 @@ jobs:
         with:
           python-version: "3.12"
       - name: Dry-run every benchmark task
-        env:
-          OPENCODE_BENCH_MODEL: provider/model
         run: |
           for task in benchmarks/tasks/*.json; do
             ./benchmarks/harness/run.sh --arm baseline --task "$task" --dry-run

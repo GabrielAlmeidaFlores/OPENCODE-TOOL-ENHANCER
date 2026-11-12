@@ -1,5 +1,7 @@
 # ripgrep
 
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+
 Fast text search. The default for exact strings, error messages, and configuration keys.
 
 - Repository: https://github.com/BurntSushi/ripgrep

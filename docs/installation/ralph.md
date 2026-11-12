@@ -2,6 +2,8 @@ Repository: https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER
 
 # Install Ralph Orchestrator
 
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+
 ## Prerequisites
 
 - Node >= 18

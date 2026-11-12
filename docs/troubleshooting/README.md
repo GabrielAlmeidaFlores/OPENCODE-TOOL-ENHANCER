@@ -1,5 +1,7 @@
 # Troubleshooting
 
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+
 ## OpenCode
 
 | Symptom | Cause | Fix |
@@ -47,6 +49,17 @@
 | Gate passes despite failures | Validator trusted the builder | Validator must execute commands itself |
 | Per-hat agent ignored | `args` not forwarded | Use `backend.args` or the `args` alias; verify with a dry run |
 | Cost page commands fail | Stale `--max-cost` flag | Use current `ralph run` flags; set limits in `event_loop` |
+
+## Repository tooling
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| `validate.sh` fails on a new file | Required file list changed | Add the file and cover it with a test; see `docs/architecture/testing.md` |
+| `make test` fails only in CI | Python version, missing PyYAML, CRLF checkout, or uncommitted files | See `docs/troubleshooting/ci.md` |
+| CI job queued for hours | Runner availability or concurrency | Inspect with `gh run list`; see `docs/troubleshooting/ci.md` |
+| Harness dry-run exits 2 | OpenCode missing on `PATH` | Fixed in Phase 1: dry-run needs only Python; real runs still need OpenCode |
+| Docs page fails validation | Missing status block or non-ISO date | Add `Status`, `Last verified`, and `Evidence` near the title |
+| ShellCheck fails after a script edit | Unquoted expansion or dead branch | Run `make lint` before returning the change |
 
 ## Windows
 

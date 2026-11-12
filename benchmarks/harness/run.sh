@@ -3,7 +3,7 @@
 # Purpose: Runs one baseline or optimized benchmark arm, records session and statistics artifacts, and executes the task verification command.
 # Usage: ./benchmarks/harness/run.sh --arm baseline|optimized --task <file.json> [--run-id ID] [--dry-run]
 # Arguments: --arm selects the configuration, --task selects the task definition, --run-id sets the output directory name, --dry-run prints the command.
-# Environment: Requires bash, opencode, python3, and git. OPENCODE_BENCH_MODEL must be a provider/model#variant identifier.
+# Environment: Requires bash, python3, and git. opencode is required to execute a run but not for --dry-run. OPENCODE_BENCH_MODEL must be a provider/model#variant identifier for execution.
 # Outputs: Writes meta.json, session.jsonl, stats.json, export.json, verification.log, and notes.md under benchmarks/results/<run-id>.
 # Side effects: Executes opencode with --auto in a non-interactive session; use a disposable checkout.
 # References: docs/benchmarks/methodology.md, benchmarks/tasks/*.json
@@ -38,8 +38,10 @@ done
 
 [[ -n "$ARM" && -n "$TASK" ]] || { usage; exit 2; }
 [[ -f "$TASK" ]] || { echo "task not found: $TASK"; exit 2; }
-command -v opencode >/dev/null || { echo "opencode not found"; exit 2; }
 command -v python3 >/dev/null || { echo "python3 not found"; exit 2; }
+if [[ "$DRY" != "1" ]]; then
+  command -v opencode >/dev/null || { echo "opencode not found"; exit 2; }
+fi
 
 IFS=$'\t' read -r TASK_ID PROMPT VERIFY MAX_WALL WORKDIR < <(python3 - "$TASK" <<'PY'
 import json

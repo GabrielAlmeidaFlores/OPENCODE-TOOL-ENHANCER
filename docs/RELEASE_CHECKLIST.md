@@ -1,11 +1,15 @@
 # Release Checklist
 
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+
 Use this checklist before tagging a release. A checked item must have reproducible evidence.
 
 ## Repository
 
 - [ ] Working tree clean.
 - [ ] `./scripts/validation/validate.sh --links` passes.
+- [ ] `make test` passes.
+- [ ] `VERSION` matches the release tag.
 - [ ] `git diff --check` passes.
 - [ ] No credentials or machine-specific paths are committed.
 - [ ] `THIRD_PARTY_NOTICES.md` matches the current sources.

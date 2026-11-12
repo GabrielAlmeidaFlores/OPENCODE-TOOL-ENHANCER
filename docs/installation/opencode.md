@@ -2,6 +2,8 @@ Repository: https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER
 
 # Install OpenCode V2 and this configuration
 
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+
 ## Prerequisites
 
 - macOS or Linux (Windows best-effort)

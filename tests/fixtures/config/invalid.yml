@@ -1,0 +1,6 @@
+# Name: Invalid YAML fixture
+# Purpose: Exercises YAML parse error reporting.
+# Usage: validator unit tests only.
+# Validation: scripts/validation/validate_config.py
+# References: AGENTS.md Section 12
+key: [unterminated

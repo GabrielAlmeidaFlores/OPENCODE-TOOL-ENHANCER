@@ -1,5 +1,7 @@
 # Artifact Compatibility
 
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+
 This page records how the sourced artifacts behave in OpenCode 2.2.x. It separates static validation from runtime smoke tests so a passing check is not mistaken for a full evaluation.
 
 ## Agents

@@ -1,9 +1,20 @@
 # Validation Checklist
 
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+
 Run the automated checks first:
 
 ```bash
-./scripts/validation/validate.sh
+make ci
+```
+
+`make ci` runs the validator and the unit and integration suites. Run the individual
+targets during development:
+
+```bash
+make validate   # validator only
+make test       # unit and integration tests
+make lint       # shell syntax and ShellCheck
 ```
 
 Then complete the manual checks for your environment.
@@ -11,12 +22,15 @@ Then complete the manual checks for your environment.
 ## Repository
 
 - [ ] `./scripts/validation/validate.sh` prints `OK`.
+- [ ] `python3 -m unittest discover -s tests -t .` passes.
+- [ ] `VERSION` contains a semantic version.
 - [ ] JSON/JSONC files parse and contain `$schema`.
 - [ ] Ralph YAML files parse.
 - [ ] All 12 agent files exist with valid `mode`.
 - [ ] All 10 skills exist with a matching `name` and provenance metadata.
 - [ ] Every agent, command, and hat has a provenance header.
 - [ ] `docs/provenance/registry.yml` points only to existing local paths.
+- [ ] Every `docs/` page outside `decisions/` has status, last-verified, and evidence fields.
 - [ ] Comments follow AGENTS.md Section 2C: file headers and function documentation only.
 - [ ] No inline comments or commented-out code in scripts, configs, or examples.
 - [ ] Relative documentation links resolve.

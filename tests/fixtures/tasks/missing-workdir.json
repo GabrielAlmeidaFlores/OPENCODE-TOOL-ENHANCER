@@ -1,0 +1,6 @@
+{
+  "id": "fixture-task",
+  "prompt": "Fixture prompt.",
+  "verification": "true",
+  "working_directory": "does/not/exist"
+}

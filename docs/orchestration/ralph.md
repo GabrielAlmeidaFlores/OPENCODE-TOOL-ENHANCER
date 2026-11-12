@@ -1,5 +1,7 @@
 # Ralph Orchestration
 
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+
 Ralph Orchestrator is the primary orchestration framework. It owns the loop, retries, completion, gates, and persistent state. OpenCode remains the model and tool runtime.
 
 - Repository: https://github.com/mikeyobrien/ralph-orchestrator

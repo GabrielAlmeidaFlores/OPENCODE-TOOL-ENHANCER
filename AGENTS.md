@@ -206,6 +206,38 @@ Allowed without further documentation:
 2. Review must reject inline comments, commented-out code, and field-level comments in configuration.
 3. When a comment explains a decision, move the explanation to the relevant `docs/` page instead of leaving it beside the code.
 
+# 2D. Testing and Continuous Integration
+
+Every change to tooling, configuration, or repository invariants must be covered by a test that fails without the change.
+
+## Rules
+
+1. **Tests use the Python standard library `unittest` runner.** No test dependency is required to run `make test` on a clean machine. PyYAML is optional and only improves YAML coverage.
+2. **The default suite is deterministic and offline.** Unit and integration tests must not require network access, a model credential, or a paid API call. Tests that need the OpenCode binary skip cleanly when it is absent.
+3. **Tests do not write inside the repository.** Use `tests/support.py` helpers and temporary directories. The only exception is a test that reads the working tree without modifying it.
+4. **Fixtures are test inputs, not artifacts.** Files under `tests/fixtures/` exist to exercise failure paths. They must not be installed, cataloged, or presented as reusable agents, skills, or commands.
+5. **A new rule goes with its test.** When a validator rule is added, add a unit test that fails on a fixture and a passing case. When a shell or Python entry point is added, add an integration test.
+6. **A new required file goes into the validator.** Add it to `REQUIRED` in `scripts/validation/validate_config.py` and cover it with a test.
+7. **Every documentation page declares status.** Pages under `docs/` outside `decisions/` carry a status block with `Status`, `Last verified`, and `Evidence` in the first eight lines. Allowed status values are `Stable`, `Experimental`, `Planned`, and `Deprecated`.
+8. **CI stays free of paid model calls.** Benchmark execution requires `OPENCODE_BENCH_MODEL` and runs only when a human starts it.
+9. **CI never stages, commits, or pushes.** Workflows read the repository and report results only.
+
+## Required commands before returning a change
+
+```bash
+make validate   # validator
+make test       # unit and integration suites
+make lint       # shell syntax and ShellCheck when installed
+```
+
+`make ci` runs the validator and the tests together and mirrors the default remote gate.
+
+## References
+
+- `docs/architecture/testing.md`
+- `docs/troubleshooting/ci.md`
+- `docs/validation-checklist.md`
+
 # 3. OpenCode Configuration
 
 OpenCode must be the primary coding environment.
@@ -574,6 +606,18 @@ Where applicable:
 - Check that documentation matches actual behavior.
 
 Create a validation checklist and automate what can reasonably be automated.
+
+## Automated entry points
+
+| Command | Scope |
+|---|---|
+| `make validate` | Files, JSONC, YAML, frontmatter, provenance, permissions, comments, docs status |
+| `make test` | Unit and integration suites under `tests/` |
+| `make lint` | Shell syntax and ShellCheck |
+| `make ci` | `validate` plus `test` |
+| `./scripts/validation/validate.sh --links` | Adds external link reachability |
+
+The remote gate in `.github/workflows/validate.yml` runs static checks, tests, examples, OpenCode profile discovery, and benchmark dry-runs. See `docs/architecture/testing.md`.
 
 # 13. Implementation Strategy
 

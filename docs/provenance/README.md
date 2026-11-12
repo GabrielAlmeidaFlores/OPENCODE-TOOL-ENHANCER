@@ -1,5 +1,7 @@
 # Provenance
 
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+
 This directory implements **AGENTS.md Section 2A**: no reusable artifact is authored from scratch when a maintained upstream exists.
 
 ## Sources and authors
@@ -34,7 +36,19 @@ Every artifact records its author in three places:
 - retrieval date
 - modification summary
 
-`original_artifacts` records the only permitted local work: configuration composition, glue scripts, and test/benchmark fixtures. Each entry states why no upstream artifact applies.
+`original_artifacts` records the only permitted local work: configuration composition, glue scripts, test/benchmark fixtures, and project documentation. Each entry states why no upstream artifact applies.
+
+| ID | Kind | Scope |
+|---|---|---|
+| `benchmark-harness` | fixture | Measurement harness and task definitions |
+| `installation-and-validation` | glue | Installer, validator, CI workflows |
+| `examples` | fixture | Deliberately defective TypeScript and C# examples |
+| `opencode-config` | configuration-composition | V2 options only |
+| `project-logo` | original-artwork | Logo variants |
+| `ralph-isolated-runner` | glue | Separate-clone runner for Ralph auto-commit |
+| `cost-report` | glue | Session artifact aggregation |
+| `repository-tests` | fixture | Unit and integration tests, broken fixtures, build entry points |
+| `project-documentation` | original-documentation | ADRs, research, guides, and operating docs |
 
 ## Artifact mapping
 

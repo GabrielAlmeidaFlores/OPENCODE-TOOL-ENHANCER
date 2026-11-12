@@ -1,5 +1,7 @@
 # CodeGraph
 
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+
 A local, pre-indexed code knowledge graph exposed over MCP. Use it for structural questions across files.
 
 - Repository: https://github.com/colbymchenry/codegraph

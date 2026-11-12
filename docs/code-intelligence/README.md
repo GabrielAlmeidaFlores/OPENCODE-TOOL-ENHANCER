@@ -1,5 +1,7 @@
 # Code Intelligence
 
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+
 The default stack answers different questions with the cheapest sufficient tool.
 
 | Question | Tool |

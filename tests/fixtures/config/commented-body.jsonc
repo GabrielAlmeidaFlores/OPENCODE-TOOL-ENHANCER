@@ -1,0 +1,12 @@
+// Name: Commented body fixture
+// Purpose: Exercises the inline-comment prohibition.
+// Usage: validator unit tests only.
+// Validation: scripts/validation/validate_config.py
+// References: AGENTS.md Section 2C
+{
+  "$schema": "https://opencode.ai/config.json",
+  // inline comment that must be rejected
+  "mcp": {
+    "servers": {}
+  }
+}

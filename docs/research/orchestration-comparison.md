@@ -1,5 +1,7 @@
 # Orchestration Comparison
 
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+
 Compared on 2026-11-11. Weights reflect this project's priorities: OpenCode fit, quality gates, and maintainability.
 
 | Criterion | Ralph Orchestrator | OpenCode native | oh-my-opencode(-slim) | Claude Squad |

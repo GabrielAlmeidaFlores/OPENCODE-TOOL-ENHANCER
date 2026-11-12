@@ -1,5 +1,7 @@
 # Serena
 
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+
 Symbol-level retrieval, editing, and refactoring over the Model Context Protocol. Serena replaces native LSP for OpenCode V2.
 
 - Repository: https://github.com/oraios/serena

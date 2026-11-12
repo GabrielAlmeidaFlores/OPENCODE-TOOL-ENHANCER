@@ -70,7 +70,8 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 | MCP startup overhead | Narrow `debug agents` measurement recorded |
 | Benchmarks | Deferred by decision; no published results |
 | Real-repository pilots | Repositories selected and pinned; execution pending |
-| CI | Workflow added; green confirmation pending |
+| CI | Five jobs defined; remote confirmation tracked in [docs/troubleshooting/ci.md](docs/troubleshooting/ci.md) |
+| Repository tests | 70 unit and integration tests; run with `make test` |
 
 ## Architecture
 
@@ -134,6 +135,7 @@ opencode --version
 opencode debug agents
 opencode mcp list
 ./scripts/validation/validate.sh
+make test
 ```
 
 Expected: OpenCode 2.2.x and `coordinator` plus eleven subagents. After Serena and CodeGraph are installed, `opencode mcp list` should show both connected.
@@ -564,6 +566,27 @@ No skill or agent is original work. Each is adapted from a maintained MIT-licens
 
 Every artifact records its source path, commit, license, author, and local modifications in [docs/provenance/registry.yml](docs/provenance/registry.yml). License texts are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
+## Testing this repository
+
+The repository tests its own tooling. The suite uses the Python standard library, so it
+runs on a clean machine with no virtual environment.
+
+```bash
+make test        # unit and integration suites
+make validate    # validator, frontmatter, provenance, permissions, docs status
+make lint        # shell syntax and ShellCheck when installed
+make ci          # validate + test, the default gate
+```
+
+| Layer | Covers |
+| --- | --- |
+| Unit | Validator rules, fixtures, repository invariants, version file, docs status |
+| Integration | Validation entry points, benchmark dry-run, installer safety, OpenCode discovery |
+
+See [testing the repository](docs/architecture/testing.md) for fixtures, conventions, and
+how to add a test, and [CI diagnosis](docs/troubleshooting/ci.md) for real workflow failures
+and their fixes.
+
 ## Benchmarks
 
 The benchmark harness is reproducible, but **no results are published yet**. This is deliberate: token savings without correctness and rework data are not a result.
@@ -588,7 +611,9 @@ The benchmark harness is reproducible, but **no results are published yet**. Thi
 ├── examples/                       # TypeScript, C#, multi-agent fixtures
 ├── benchmarks/                     # methodology, tasks, harness, results
 ├── scripts/                        # install, validate, benchmark, maintain
+├── tests/                          # unit, integration, and fixtures
 ├── AGENTS.md                       # engineering rules
+├── VERSION                         # semantic version for releases
 ├── THIRD_PARTY_NOTICES.md
 └── README.md
 ```
@@ -610,12 +635,15 @@ The benchmark harness is reproducible, but **no results are published yet**. Thi
 | [Benchmark methodology](docs/benchmarks/methodology.md) | Tasks, metrics, validity rules |
 | [Cost observability](docs/cost-optimization/observability.md) | Cost and token reporting |
 | [MCP overhead](docs/code-intelligence/overhead.md) | Narrow startup measurement |
+| [Baseline record](docs/research/baseline.md) | Environment, versions, frozen validation output |
+| [Testing the repository](docs/architecture/testing.md) | Test layers, fixtures, and how to add a test |
+| [CI diagnosis](docs/troubleshooting/ci.md) | Real workflow failures and fixes |
 | [Release checklist](docs/RELEASE_CHECKLIST.md) | Pre-release requirements |
 | [Validation checklist](docs/validation-checklist.md) | Automated and manual checks |
 | [Troubleshooting](docs/troubleshooting/README.md) | Common failures and fixes |
 | [Provenance](docs/provenance/README.md) | Sources, authors, modification rules |
 | [Research report](docs/research/phase1-research-report.md) | Evidence and compatibility findings |
-| [Architecture decisions](docs/decisions) | ADRs for version, orchestration, tools, benchmarks |
+| [Architecture decisions](docs/decisions) | ADRs for version, orchestration, tools, benchmarks, CLI, catalog, memory |
 
 ## Troubleshooting
 

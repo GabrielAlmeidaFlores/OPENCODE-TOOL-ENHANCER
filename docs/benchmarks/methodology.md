@@ -1,5 +1,7 @@
 # Benchmark Methodology
 
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+
 Status: methodology and harness only. No results are published.
 
 ## Question

@@ -2,6 +2,8 @@ Repository: https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER
 
 # Install Code Intelligence
 
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+
 Install in this order. Each step has a verification command.
 
 ## 1. ripgrep

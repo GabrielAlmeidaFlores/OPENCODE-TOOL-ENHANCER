@@ -6,6 +6,15 @@ All notable changes to this repository are documented here.
 
 ### Added
 
+- `VERSION` file for release and update checks.
+- Phase 0 baseline record with frozen environment, versions, and validation output.
+- ADR-005 for the Python CLI stack, ADR-006 for a single catalog source of truth, and ADR-007 for Markdown memory without a vector store.
+- Status metadata on every documentation page: status, last verified date, and evidence class.
+- Unit and integration test suite under `tests/` using the standard library runner.
+- Test fixtures that exercise provenance, permissions, JSONC, YAML, skills, commands, and benchmark tasks.
+- `Makefile` targets `test`, `lint`, and `ci`.
+- Testing guide and CI diagnosis guide.
+- Validator check for workflow YAML and documentation status metadata.
 - Phase 1 research report with verified compatibility findings.
 - Architecture decision records for the OpenCode V2 baseline, Ralph orchestration, maximal code intelligence, and benchmark scope.
 - OpenCode V2 project configuration with cost and context controls.
@@ -22,6 +31,11 @@ All notable changes to this repository are documented here.
 - OpenCode 2.2.7 keeps `run --agent`, `--model`, `--format json`, and `stats --cost --json`.
 - Ralph hats support `backend_args` (alias `args`), enabling per-hat OpenCode agent routing.
 - CodeGraph is MIT licensed and exposes `codegraph serve --mcp`.
+
+### Fixed
+
+- Benchmark harness dry-run no longer requires the OpenCode binary; the CI `harness` job failed with exit code 2 because OpenCode was never installed there. Dry-run now validates task inputs only, and real runs still require both OpenCode and `OPENCODE_BENCH_MODEL`.
+- CI workflow now separates static checks, tests, examples, profile discovery, and harness dry-run into independent jobs with timeouts and a concurrency group.
 
 ### Repository readiness (2026-11-11)
 

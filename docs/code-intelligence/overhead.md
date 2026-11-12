@@ -1,5 +1,7 @@
 # MCP Overhead
 
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+
 This page records a narrow startup measurement performed on 2026-11-11 with OpenCode 2.2.7 on macOS arm64. It is not a token or task-cost benchmark.
 
 ## Method

@@ -1,7 +1,7 @@
 # Provenance registry for every reusable artifact.
 # Required by AGENTS.md Section 2A. Keep this file in sync with frontmatter/comments.
 version: 1
-updated: "2026-11-11"
+updated: "2026-11-12"
 
 sources:
   volt:
@@ -412,4 +412,14 @@ original_artifacts:
     kind: "glue"
     author: "OPENCODE-TOOL-ENHANCER contributors"
     justification: "Aggregates harness session artifacts into a Markdown cost report; no upstream equivalent."
+  - id: repository-tests
+    local: "tests/**, VERSION, Makefile"
+    kind: "fixture"
+    author: "OPENCODE-TOOL-ENHANCER contributors"
+    justification: "Project-specific test suite, deliberately broken fixtures, and build entry points for the repository's own tooling. Fixtures are test inputs only and must never be installed, cataloged, or presented as reusable agents, skills, or commands."
+  - id: project-documentation
+    local: "docs/**"
+    kind: "original-documentation"
+    author: "OPENCODE-TOOL-ENHANCER contributors"
+    justification: "Project analysis, decision records, and operating guides written for this repository. Documentation is not an agent, skill, command, hat, prompt, or template, and no upstream document is reproduced as an artifact."
 
