@@ -1,6 +1,6 @@
 # Verification Engine
 
-> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally and in CI run 43273061721
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally and in CI run 43275405166
 
 `ote verify` runs the repository's deterministic checks from `.ote/config.toml` and treats exit codes as authoritative. It is the gate used by Ralph, CI, and local workflows.
 

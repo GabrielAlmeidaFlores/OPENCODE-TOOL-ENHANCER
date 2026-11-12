@@ -76,7 +76,7 @@ All notable changes to this repository are documented here.
 
 ### Verified
 
-- CI run `43273061721` is green on Ubuntu and macOS across all eight job instances (static, test, examples, cli, profile discovery, harness dry-run), including catalog drift, profile verification, verification gates, governance contracts, memory/spec smoke checks, and stats/eval/pilot dry-runs.
+- CI run `43275405166` is green across all nine job instances (static, test, examples, cli, docs, profile discovery, harness dry-run), including catalog drift, profile verification, verification gates, governance contracts, memory/spec smoke checks, stats/eval/pilot dry-runs, and the strict MkDocs build.
 - OpenCode 2.2.7 keeps `run --agent`, `--model`, `--format json`, and `stats --cost --json`.
 - Ralph hats support `backend_args` (alias `args`), enabling per-hat OpenCode agent routing.
 - CodeGraph is MIT licensed and exposes `codegraph serve --mcp`.

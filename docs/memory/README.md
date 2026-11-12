@@ -1,6 +1,6 @@
 # Project Memory
 
-> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally and in CI run 43273061721
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally and in CI run 43275405166
 
 Memory is plain Markdown under `.ote/memory/`. There are no embeddings, no vector database, and no background service.
 
