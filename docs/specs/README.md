@@ -1,6 +1,6 @@
 # Spec-Driven Workflow
 
-> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally and in CI run 43275405166
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally and in CI run 43277080347
 
 Specs make a change reviewable before code is written and verifiable after. The workflow is adapted from `nerv`'s eight-phase SDD model (explore, propose, spec, design, tasks, apply, verify, archive), collapsed into four durable artifacts.
 

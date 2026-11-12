@@ -1,6 +1,6 @@
 # OPENCODE-TOOL-ENHANCER
 
-> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally; CI green on run 43275405166
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally; CI green on run 43277080347
 
 A reproducible OpenCode profile built around four pillars:
 
