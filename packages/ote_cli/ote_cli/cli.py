@@ -220,6 +220,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
     pilot_run.add_argument("--verify", help="verification command")
     pilot_run.add_argument("--profile", default="minimal")
     pilot_run.add_argument("--agent", default="coordinator", help="OpenCode agent for the run")
+    pilot_run.add_argument("--setup", help="dependency setup command run in the clone")
     pilot_run.add_argument("--keep", action="store_true", help="keep the disposable clone")
     pilot_run.add_argument("--dry-run", action="store_true", help="print the plan without cloning")
 
@@ -783,6 +784,7 @@ def _command_pilot(args: argparse.Namespace) -> int:
         dry_run=args.dry_run,
         model=os.environ.get("OPENCODE_PILOT_MODEL"),
         agent=args.agent,
+        setup_command=args.setup,
     )
     if args.json:
         emit_payload(result, True)

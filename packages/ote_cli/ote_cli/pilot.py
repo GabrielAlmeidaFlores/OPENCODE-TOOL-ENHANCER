@@ -85,6 +85,7 @@ def run_pilot(
     dry_run: bool,
     model: str | None,
     agent: str = "coordinator",
+    setup_command: str | None = None,
 ) -> dict[str, Any]:
     pilots = load_pilots(root)
     if name not in pilots:
@@ -100,6 +101,7 @@ def run_pilot(
         f"git -C {clone} fetch --depth 1 origin {pilot['commit']}",
         f"git -C {clone} checkout --detach FETCH_HEAD",
         f"ote install --profile {profile} --target {clone} --apply",
+        f"bash -lc {setup_command or '<setup command>'}",
         f"opencode --standalone run --agent {agent} --model {model or '<provider/model>'} --auto --format json <prompt>",
         f"bash -lc {verify_command or '<verification command>'}",
     ]
@@ -130,6 +132,14 @@ def run_pilot(
         run_git(["-C", str(clone), "fetch", "--depth", "1", "origin", pilot["commit"]])
         run_git(["-C", str(clone), "checkout", "--detach", "FETCH_HEAD"])
         install(root=root, target=clone, profile=profile, components=components, apply=True)
+        if setup_command:
+            setup_code, setup_out, setup_err = capture_command(
+                ["bash", "-lc", setup_command],
+                cwd=clone,
+                timeout=1800,
+            )
+            if setup_code != 0:
+                raise OteError(f"pilot setup failed: {setup_err or setup_out}")
         environment = dict(os.environ)
         environment["PWD"] = str(clone)
         environment["OPENCODE_CONFIG"] = str(clone / ".opencode/opencode.jsonc")
@@ -170,6 +180,7 @@ def run_pilot(
             "verification_command": verify_value,
             "verification_exit": verify_code,
             "opencode_exit": code,
+            "setup_command": setup_command,
             "success": verify_code == 0 and code == 0,
             "opencode_stderr": session_error,
             "started_at": started_at,

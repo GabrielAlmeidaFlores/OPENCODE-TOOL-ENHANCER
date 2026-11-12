@@ -65,7 +65,7 @@ used. It never stages or commits in the main repository and never runs Ralph.
 
 | Pilot | Status |
 | --- | --- |
-| `honojs/hono` | Round 1 discovery complete: 5/5 passed; code-change tasks pending |
+| `honojs/hono` | Discovery 5/5; code-change round 5/5; independent diff review pending |
 | `ardalis/CleanArchitecture` | Round 1 discovery complete: 5/5 passed; code-change tasks pending |
 | `vercel/turborepo` | Round 1 discovery complete: 5/5 passed after funded rerun; code-change tasks pending |
 

@@ -4,11 +4,18 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-11-12
+
+Pilot dependency setup, agent selection, Hono code-change round, and step-budget tuning.
+
 ## [0.1.1] - 2026-11-12
 
 Pilot round 1 discovery results, funded reruns, plugin live verification, release and policy documentation, step-budget tuning, and pilot agent selection.
 
 ### Added
+
+- Hono code-change pilot round: five tasks with targeted tests and diff summaries; see `docs/pilots/results/code-round-hono.md`.
+- Pilot dependency setup via `--setup` and explicit agent selection via `--agent`.
 
 - Pilot round 1 discovery suite across Hono, CleanArchitecture, and turborepo: 6/15 structural tasks passed; failures and provider quota are recorded in `docs/pilots/results/round-1.md`.
 - Six generated pilot reports under `docs/pilots/results/` with file:line references.

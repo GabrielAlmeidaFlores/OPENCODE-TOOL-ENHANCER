@@ -16,7 +16,7 @@ Status reflects the repository, not intentions. All planned phases are complete.
 
 ## Next after Phase 7
 
-- Round 1 discovery pilots are complete: 15/15 passed after funded reruns; see `docs/pilots/results/round-1.md`. The five code-change tasks per repository remain pending.
+- Discovery round 1 is complete: 15/15 passed after funded reruns. The Hono code-change round is 5/5 with targeted tests; CleanArchitecture and turborepo code rounds remain pending.
 - Evaluate optional task board and memory-injection plugin only after the CLI, memory, and observability are stable.
 - Keep benchmarks deferred until correctness and rework measurement is reproducible.
 
