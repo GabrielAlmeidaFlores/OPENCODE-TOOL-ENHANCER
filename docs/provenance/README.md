@@ -112,4 +112,4 @@ The validator checks that every registered local path exists and that every agen
 
 ## License notices
 
-See [THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md).
+See [THIRD_PARTY_NOTICES.md](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/blob/main/THIRD_PARTY_NOTICES.md).

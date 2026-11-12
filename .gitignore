@@ -35,6 +35,8 @@ obj/
 
 target/
 
+site/
+
 __pycache__/
 .venv/
 *.pyc

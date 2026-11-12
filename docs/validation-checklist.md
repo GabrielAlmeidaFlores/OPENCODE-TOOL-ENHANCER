@@ -136,6 +136,14 @@ Then complete the manual checks for your environment.
 - [ ] `python3 scripts/benchmarking/report_costs.py` runs without error.
 - [ ] MCP overhead evidence is current.
 
+## Docs site and release
+
+- [ ] `mkdocs build --strict` passes.
+- [ ] `python3 scripts/release/check_version.py` passes.
+- [ ] `python3 scripts/maintenance/check_upstream_drift.py --offline` lists every source.
+- [ ] `SECURITY.md`, `SUPPORT.md`, `ROADMAP.md`, and `CODE_OF_CONDUCT.md` exist.
+- [ ] The release and upstream-drift workflows parse as valid YAML.
+
 ## Documentation
 
 - [ ] Every command in the quick start was executed.

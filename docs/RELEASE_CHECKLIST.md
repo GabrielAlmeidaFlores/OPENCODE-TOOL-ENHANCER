@@ -100,9 +100,13 @@ Use this checklist before tagging a release. A checked item must have reproducib
 - [ ] No vendor benchmark is presented as an independent result.
 
 ## Release
-
 - [ ] `CHANGELOG.md` has an entry for the release.
 - [ ] Version follows semantic versioning.
 - [ ] Tag and release notes exist.
 - [ ] Upgrade and rollback paths are documented.
+- [ ] `python3 scripts/release/check_version.py` passes.
+- [ ] `mkdocs build --strict` passes.
+- [ ] A `v<VERSION>` tag produces a release with the wheel and `SHA256SUMS`.
+- [ ] The release workflow verifies the tag against `VERSION`.
+- [ ] The upstream drift workflow is enabled.
 - [ ] Upstream pins for OpenCode, Ralph, Serena, and CodeGraph are current or intentionally pinned.

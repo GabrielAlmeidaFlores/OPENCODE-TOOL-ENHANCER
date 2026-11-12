@@ -65,12 +65,13 @@ used. It never stages or commits in the main repository and never runs Ralph.
 
 | Pilot | Status |
 | --- | --- |
-| `honojs/hono` | Runner ready; execution pending |
-| `ardalis/CleanArchitecture` | Runner ready; execution pending |
-| `vercel/turborepo` | Runner ready; execution pending |
+| `honojs/hono` | Runner smoke executed on the pinned commit; five-task pilot pending |
+| `ardalis/CleanArchitecture` | Runner verified by an automated end-to-end test; real pilot pending |
+| `vercel/turborepo` | Runner verified by an automated end-to-end test; real pilot pending |
 
-Runner capability is not evidence. A pilot is complete only after the artifacts exist and the
-verification command has been reviewed independently.
+Runner capability is not evidence. The Hono smoke run proves the runner executes against a real
+repository, but it is not a pilot result. A pilot is complete only after the five tasks, artifacts,
+and independent verification exist. See `docs/pilots/results/hono-smoke.md`.
 
 ## Constraints
 

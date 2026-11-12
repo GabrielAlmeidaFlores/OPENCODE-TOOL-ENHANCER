@@ -100,6 +100,7 @@ never be installed.
 - Memory scopes, deduplication, credential rejection, expiry, export, and preamble budgets are tested.
 - Spec creation, criterion/task mapping, and evidence verification are tested.
 - Stats parsing and rendering, deterministic eval cases, and pilot planning are tested.
+- The pilot runner is exercised end to end with a local mock: clone/fetch/checkout, install, agent run, verification, artifacts, and the dual-exit success rule.
 
 The OpenCode checks skip cleanly when `opencode` is not on `PATH`, so contributors without
 the binary still get a green suite.
@@ -124,7 +125,9 @@ the binary still get a green suite.
 - example builds (TypeScript and C#);
 - OpenCode profile installation and discovery;
 - benchmark dry-run for every task;
-- the `cli` job: wheel build, `ote doctor`, verification gates, contracts, and the install/update/uninstall lifecycle.
+- the `cli` job: wheel build, `ote doctor`, verification gates, contracts, and the install/update/uninstall lifecycle;
+- the `docs` job: strict MkDocs build;
+- the `release` and `upstream-drift` workflows for tags and scheduled pin checks.
 
 Paid model calls are excluded from the default workflow. Real benchmark runs are explicit
 and require `OPENCODE_BENCH_MODEL`.

@@ -1,4 +1,4 @@
-.PHONY: help validate validate-links test lint check ci ote build-cli catalog-check verify govern stats eval install dry-run backup
+.PHONY: help validate validate-links test lint check ci ote build-cli catalog-check verify govern stats eval docs version-check drift-check release-check install dry-run backup
 
 .DEFAULT_GOAL := help
 
@@ -16,6 +16,10 @@ help:
 	@echo "govern         Show derived agent contracts"
 	@echo "stats          Report cost and token artifacts"
 	@echo "eval           Run deterministic evaluation cases"
+	@echo "docs           Build the MkDocs site in strict mode"
+	@echo "version-check  Verify VERSION and package version agree"
+	@echo "drift-check    Compare pinned upstream commits with remote HEAD"
+	@echo "release-check  Reproduce the release build and checksum locally"
 	@echo "dry-run        Print every installer action without writing files"
 	@echo "install        Apply the full profile to the current project"
 	@echo "backup         Back up the existing OpenCode configuration"
@@ -64,6 +68,18 @@ stats:
 
 eval:
 	PYTHONPATH=packages/ote_cli python3 -m ote_cli eval
+
+docs:
+	mkdocs build --strict
+
+version-check:
+	python3 scripts/release/check_version.py
+
+drift-check:
+	python3 scripts/maintenance/check_upstream_drift.py
+
+release-check:
+	./scripts/release/local_release_check.sh
 
 dry-run:
 	./scripts/installation/install.sh --dry-run --all

@@ -6,6 +6,15 @@ All notable changes to this repository are documented here.
 
 ### Added
 
+- MkDocs Material site with navigation for every guide and a strict build in CI.
+- `SECURITY.md`, `SUPPORT.md`, `ROADMAP.md`, `CODE_OF_CONDUCT.md`, and a security threat model with MCP trust levels.
+- Compatibility policy and release process documentation.
+- Tag-driven release workflow that verifies `VERSION`, builds the wheel, writes `SHA256SUMS`, and publishes the GitHub release.
+- Weekly upstream-drift workflow and `check_upstream_drift.py`.
+- `check_version.py`, `local_release_check.sh`, `make docs`, `make version-check`, `make drift-check`, and `make release-check`.
+- Actionlint workflow validation and a mocked end-to-end pilot-runner test.
+- A real Hono smoke run that exposed and fixed the runner's inherited-`PWD` bug; see `docs/pilots/results/hono-smoke.md`.
+
 - `ote stats` with Markdown, JSON, and CSV reports; per-agent/model/tool aggregation; tool-error counts; baseline comparison; and a post-run budget guard.
 - `ote eval` with deterministic case definitions in `tests/evals/cases.json`; no model calls.
 - `ote pilot list|run` with a disposable clone, pinned commit, profile installation, one prompt, verification, and local artifacts.

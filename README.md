@@ -80,12 +80,12 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 | Benchmarks | Deferred by decision; no published results |
 | Real-repository pilots | Repositories selected and pinned; execution pending |
 | CI | Green on Ubuntu and macOS for run [43273061721](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/actions/runs/43273061721); six jobs including `cli` |
-| Repository tests | 259 unit and integration tests; run with `make test` |
+| Repository tests | 267 unit and integration tests; run with `make test` |
 | `ote` CLI | Install, uninstall, update check, rollback, doctor verified locally and in the `cli` job |
 | Profiles and catalog | Three manifests and 34 catalog entries verified locally and in run 43273061721 |
 | Verification and governance | `ote verify` and `ote govern contracts` verified locally; CI runs both |
 | Memory and specs | Verified locally and in run 43273061721 |
-| Stats, eval, pilots | `ote stats` and `ote eval` verified locally; pilot dry-run covered in run 43273061721 |
+| Stats, eval, pilots | `ote stats` and `ote eval` verified locally; real Hono smoke run succeeded; full five-task pilots pending |
 
 ## Architecture
 
@@ -675,6 +675,10 @@ The benchmark harness is reproducible, but **no results are published yet**. Thi
 | [Baseline record](docs/research/baseline.md) | Environment, versions, frozen validation output |
 | [Testing the repository](docs/architecture/testing.md) | Test layers, fixtures, and how to add a test |
 | [CI diagnosis](docs/troubleshooting/ci.md) | Real workflow failures and fixes |
+| [Security](docs/security/README.md) | Threat model, MCP trust, secret handling |
+| [Compatibility policy](docs/compatibility/policy.md) | Supported versions and change rules |
+| [Release process](docs/release/README.md) | Versioning, checksums, rollback, drift |
+| [Docs site](mkdocs.yml) | MkDocs Material navigation |
 | [Release checklist](docs/RELEASE_CHECKLIST.md) | Pre-release requirements |
 | [Validation checklist](docs/validation-checklist.md) | Automated and manual checks |
 | [Troubleshooting](docs/troubleshooting/README.md) | Common failures and fixes |
@@ -707,6 +711,21 @@ Full guide: [docs/troubleshooting/README.md](docs/troubleshooting/README.md).
 **Can I use my own models?** Yes. Use the environment-driven overlay in [`model-routing.example.jsonc`](configs/opencode/model-routing.example.jsonc).
 
 **Can I add my own agent, skill, or command?** Yes, but follow the provenance rule in [AGENTS.md](AGENTS.md): source a maintained upstream artifact, pin the commit, attribute the author, and modify minimally.
+
+## Security, support, roadmap
+
+- [SECURITY.md](SECURITY.md) — supported versions and private reporting.
+- [SUPPORT.md](SUPPORT.md) — where to ask and what to include.
+- [ROADMAP.md](ROADMAP.md) — phase status and non-goals.
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) — Contributor Covenant 2.1.
+
+Build the documentation site:
+
+```bash
+python3 -m pip install mkdocs-material==9.8.1
+mkdocs build --strict
+mkdocs serve
+```
 
 ## Contributing
 

@@ -38,6 +38,14 @@ jobs:
         run: ./scripts/validation/validate.sh
       - name: Verify catalog files are tracked
         run: git ls-files --error-unmatch catalog/registry.json catalog/index.md
+      - name: Lint GitHub workflows
+        if: runner.os == 'Linux'
+        run: go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.12 .github/workflows/*.yml
+      - name: Local release check
+        if: runner.os == 'Linux'
+        run: ./scripts/release/local_release_check.sh
+      - name: Check release version consistency
+        run: python scripts/release/check_version.py
       - name: Check catalog drift
         run: python scripts/catalog/build_catalog.py --check
       - name: Check shell syntax
@@ -118,6 +126,20 @@ jobs:
           grep -q "already up to date" reapply.log
           ote update --check --target "$target"
           ote uninstall --target "$target" --apply --yes
+
+  docs:
+    timeout-minutes: 10
+    name: docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install MkDocs
+        run: python -m pip install --quiet mkdocs-material==9.8.1
+      - name: Build documentation site
+        run: mkdocs build --strict
 
   examples:
     timeout-minutes: 20

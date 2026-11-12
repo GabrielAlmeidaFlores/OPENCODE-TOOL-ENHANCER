@@ -155,6 +155,13 @@ drift and tracked-file checks, verification gates, governance contracts, memory 
 discovery with a pinned version, and benchmark dry-runs. Action majors are `checkout@v7`, `setup-python@v7`,
 `setup-node@v7`, and `setup-dotnet@v6`.
 
+## Scheduled and tag workflows
+
+| Workflow | Trigger | Purpose |
+|---|---|---|
+| `release` | `v*` tag | Verifies the tag, builds the wheel, writes `SHA256SUMS`, publishes the release |
+| `upstream-drift` | Weekly schedule, manual | Reports pinned provenance commits versus remote HEAD in the job summary |
+
 ## Job map
 
 | Job | Purpose | Needs |
@@ -165,6 +172,7 @@ discovery with a pinned version, and benchmark dry-runs. Action majors are `chec
 | `opencode-profile` | Install profile and verify discovery | Node, OpenCode V2 |
 | `harness` | Benchmark dry-run for every task | Python |
 | `cli` | Builds the wheel, runs `ote doctor`, exercises install, update, and uninstall | Python, Node, OpenCode V2 |
+| `docs` | Builds the MkDocs site in strict mode | Python, MkDocs Material |
 
 ## References
 

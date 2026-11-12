@@ -1,0 +1,106 @@
+# Name: Documentation site
+# Purpose: Builds the browsable documentation with MkDocs Material.
+# Usage: mkdocs build --strict; mkdocs serve
+# Validation: mkdocs build --strict
+# References: docs/index.md, docs/validation-checklist.md
+
+site_name: OPENCODE-TOOL-ENHANCER
+site_description: Reproducible, evidence-driven OpenCode profile with orchestration, code intelligence, memory, and observability.
+site_author: OPENCODE-TOOL-ENHANCER contributors
+repo_url: https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER
+repo_name: GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER
+
+theme:
+  name: material
+  language: en
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.highlight
+    - search.suggest
+
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+nav:
+  - Home: index.md
+  - Install:
+      - OpenCode: installation/opencode.md
+      - Code intelligence: installation/code-intelligence.md
+      - Ralph: installation/ralph.md
+      - ote CLI: installation/ote-cli.md
+  - CLI:
+      - Command reference: cli/README.md
+      - Profiles: profiles/README.md
+      - Catalog: catalog/README.md
+      - Verification: verification/README.md
+      - Governance: governance/README.md
+      - Memory: memory/README.md
+      - Specs: specs/README.md
+      - Stats and observability: cost-optimization/observability.md
+      - Evaluations: evals/README.md
+      - Pilots: pilots/README.md
+      - Hono smoke: pilots/results/hono-smoke.md
+  - Configuration:
+      - OpenCode V2: configuration/opencode-v2.md
+  - Code intelligence:
+      - Overview: code-intelligence/README.md
+      - ripgrep: code-intelligence/ripgrep.md
+      - ast-grep: code-intelligence/ast-grep.md
+      - Serena: code-intelligence/serena.md
+      - CodeGraph: code-intelligence/codegraph.md
+      - Optional tools: code-intelligence/optional-tools.md
+      - MCP overhead: code-intelligence/overhead.md
+  - Orchestration:
+      - Ralph: orchestration/ralph.md
+      - Agents: agents/roles.md
+      - Compatibility: agents/compatibility.md
+  - Cost:
+      - Optimization: cost-optimization/README.md
+      - Observability: cost-optimization/observability.md
+      - Benchmark methodology: benchmarks/methodology.md
+  - Research:
+      - Baseline: research/baseline.md
+      - Phase 1 report: research/phase1-research-report.md
+      - Orchestration comparison: research/orchestration-comparison.md
+      - Compatibility matrix: research/compatibility-matrix.md
+      - Decisions:
+          - ADR-001 baseline: decisions/ADR-001-opencode-v2-baseline.md
+          - ADR-002 orchestration: decisions/ADR-002-ralph-primary-orchestrator.md
+          - ADR-003 code intelligence: decisions/ADR-003-maximal-code-intelligence.md
+          - ADR-004 benchmarks: decisions/ADR-004-benchmark-scope.md
+          - ADR-005 CLI: decisions/ADR-005-cli-stack.md
+          - ADR-006 catalog: decisions/ADR-006-catalog-source-of-truth.md
+          - ADR-007 memory: decisions/ADR-007-memory-without-rag.md
+          - ADR-008 config: decisions/ADR-008-toml-verification-config.md
+  - Project:
+      - Architecture: architecture/overview.md
+      - Testing: architecture/testing.md
+      - Security: security/README.md
+      - Compatibility policy: compatibility/policy.md
+      - Provenance: provenance/README.md
+      - Release: release/README.md
+      - Release checklist: RELEASE_CHECKLIST.md
+      - Validation checklist: validation-checklist.md
+      - Troubleshooting: troubleshooting/README.md
+      - CI diagnosis: troubleshooting/ci.md

@@ -16,6 +16,7 @@ runs Ralph.
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import tempfile
 import time
@@ -98,7 +99,7 @@ def run_pilot(
         f"git -C {clone} fetch --depth 1 origin {pilot['commit']}",
         f"git -C {clone} checkout --detach FETCH_HEAD",
         f"ote install --profile {profile} --target {clone} --apply",
-        f"opencode run --agent coordinator --model {model or '<provider/model>'} --auto --format json <prompt>",
+        f"opencode --standalone run --agent coordinator --model {model or '<provider/model>'} --auto --format json <prompt>",
         f"bash -lc {verify_command or '<verification command>'}",
     ]
     if dry_run:
@@ -128,9 +129,13 @@ def run_pilot(
         run_git(["-C", str(clone), "fetch", "--depth", "1", "origin", pilot["commit"]])
         run_git(["-C", str(clone), "checkout", "--detach", "FETCH_HEAD"])
         install(root=root, target=clone, profile=profile, components=components, apply=True)
+        environment = dict(os.environ)
+        environment["PWD"] = str(clone)
+        environment["OPENCODE_CONFIG"] = str(clone / ".opencode/opencode.jsonc")
         code, session, session_error = capture_command(
             [
                 "opencode",
+                "--standalone",
                 "run",
                 "--agent",
                 "coordinator",
@@ -142,6 +147,7 @@ def run_pilot(
                 prompt_value,
             ],
             cwd=clone,
+            env=environment,
             timeout=3600,
         )
         (artifacts / "session.jsonl").write_text(session, encoding="utf-8")
