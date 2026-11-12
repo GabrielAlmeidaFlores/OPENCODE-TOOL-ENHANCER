@@ -38,7 +38,8 @@ The package requires Python 3.11 or newer and has no runtime dependencies.
 | `ote profile` | Available | List, show, verify, and apply profile manifests |
 | `ote catalog` | Available | List, search, verify, and build the artifact catalog |
 | `ote compat` | Available | OpenCode V1/V2 compatibility matrix |
-| `ote verify` | Phase 4 | Deterministic verification engine |
+| `ote verify` | Available | Deterministic verification checks and failure classes |
+| `ote govern` | Available | Contracts, budgets, loop/deadlock detection, risk gates |
 | `ote memory` | Phase 5 | Markdown project memory |
 | `ote spec` | Phase 5 | Spec-driven workflow |
 | `ote stats` | Phase 6 | Cost and token reports |
@@ -90,6 +91,27 @@ ote compat --json
 Prints the OpenCode V1/V2 matrix. Cells that were not verified are marked `not verified` rather than
 guessed. This is a compatibility matrix, not a benchmark. See `docs/agents/compatibility.md` and
 `docs/decisions/ADR-001-opencode-v2-baseline.md`.
+
+## `ote verify`
+
+```bash
+ote verify
+ote verify --only test
+ote verify --json
+ote verify --no-cache
+```
+
+Runs the checks in `.ote/config.toml`, treats exit codes as authoritative, and caches passing results for checks with declared inputs. See `docs/verification/README.md`.
+
+## `ote govern`
+
+```bash
+ote govern contracts
+ote govern gate --risk high
+ote govern check --record run.json
+```
+
+Contracts are derived from agent permissions; budgets and limits come from the `[governance]` table. See `docs/governance/README.md`.
 
 ## `ote doctor`
 

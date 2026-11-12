@@ -6,6 +6,14 @@ All notable changes to this repository are documented here.
 
 ### Added
 
+- `ote verify` with `.ote/config.toml`, per-check timeouts, input-hash caching for passing checks, JSON output, and failure classification.
+- `ote govern contracts|gate|check` with contracts derived from agent permissions, budget and loop/deadlock evaluation, and risk-based gate selection.
+- `.ote/config.toml` with repository checks and governance limits; `.ote/cache/` is gitignored.
+- Ralph `code-assist` finalizer now requires `ote verify` when the config exists.
+- CI runs `ote verify --only validate --only lint` and `ote govern contracts`.
+- ADR-008 records the TOML decision and supersedes the YAML filename in the plan.
+- Phase 4 tests for configuration, execution, classification, caching, contracts, budgets, and gates.
+
 - Declarative profiles under `profiles/` with a restricted-YAML loader and `ote profile list|show|verify|use`.
 - Generated, schema-validated artifact catalog under `catalog/` with `ote catalog list|search|verify|build`.
 - OpenCode V1/V2 compatibility matrix exposed by `ote compat`, with an explicit not-a-benchmark disclaimer.

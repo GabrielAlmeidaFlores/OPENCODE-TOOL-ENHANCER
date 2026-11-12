@@ -48,3 +48,4 @@ repomix-output.*
 
 .ote/state.json
 .ote/backups/
+.ote/cache/

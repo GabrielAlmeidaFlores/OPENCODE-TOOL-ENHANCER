@@ -94,6 +94,10 @@ jobs:
         run: |
           ote profile verify
           ote catalog verify --check-drift
+      - name: Run verification gates
+        run: |
+          ote verify --only validate --only lint
+          ote govern contracts
       - name: Exercise the install lifecycle
         run: |
           target="$RUNNER_TEMP/ote-project"

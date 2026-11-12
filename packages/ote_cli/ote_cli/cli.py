@@ -23,6 +23,8 @@ from .doctor import as_dict as doctor_dict
 from .doctor import run_checks, summarize
 from . import catalog as catalog_module
 from . import compat as compat_module
+from . import governance as governance_module
+from . import verify as verify_module
 from .installer import install, list_backups, uninstall
 from .paths import OteError, find_repo_root, resolve_target
 from .process import run
@@ -30,7 +32,6 @@ from .profiles import DEFAULT_PROFILE, load_profiles, resolve_components, verify
 from .updater import check as update_check
 
 DEFERRED = {
-    "verify": "Phase 4 (verification engine)",
     "memory": "Phase 5 (Markdown memory)",
     "spec": "Phase 5 (spec workflow)",
     "stats": "Phase 6 (observability)",
@@ -122,6 +123,23 @@ def _build_parser() -> argparse.ArgumentParser:
     catalog_commands.add_parser("build", parents=[common], help="regenerate the catalog")
 
     subparsers.add_parser("compat", parents=[common], help="show the OpenCode V1/V2 compatibility matrix")
+
+    verify_parser = subparsers.add_parser(
+        "verify", parents=[common], help="run the configured deterministic verification checks"
+    )
+    verify_parser.add_argument("--only", action="append", default=[], help="run only the named check; repeatable")
+    verify_parser.add_argument("--no-cache", action="store_true", help="ignore cached results")
+    verify_parser.add_argument("--config", help="config path (default: .ote/config.toml)")
+
+    govern_parser = subparsers.add_parser(
+        "govern", parents=[common], help="inspect contracts and evaluate governance limits"
+    )
+    govern_commands = govern_parser.add_subparsers(dest="govern_command", required=True)
+    govern_commands.add_parser("contracts", parents=[common], help="show derived agent contracts")
+    govern_gate = govern_commands.add_parser("gate", parents=[common], help="show the required gates for a risk level")
+    govern_gate.add_argument("--risk", required=True, choices=["low", "medium", "high"])
+    govern_check = govern_commands.add_parser("check", parents=[common], help="evaluate a run record against budgets")
+    govern_check.add_argument("--record", required=True, help="JSON run record")
 
     for name, phase in DEFERRED.items():
         command = subparsers.add_parser(name, parents=[common], help=f"available in {phase}")
@@ -426,6 +444,105 @@ def _command_compat(args: argparse.Namespace) -> int:
     return 0
 
 
+def _command_verify(args: argparse.Namespace) -> int:
+    """
+    Run the configured verification checks.
+    """
+    root = _repo(args)
+    config_path = None
+    if args.config:
+        candidate = Path(args.config).expanduser()
+        config_path = candidate if candidate.is_absolute() else root / candidate
+    checks, _ = verify_module.load_config(root, config_path)
+    results = verify_module.run_checks(
+        root,
+        checks,
+        only=args.only or None,
+        use_cache=not args.no_cache,
+    )
+    summary = verify_module.summarize(results)
+    if args.json:
+        _emit(
+            {
+                "results": [
+                    {
+                        "name": result.name,
+                        "status": result.status,
+                        "exit_code": result.exit_code,
+                        "seconds": result.seconds,
+                        "failure_class": result.failure_class,
+                        "cached": result.cached,
+                        "stdout": result.stdout,
+                        "stderr": result.stderr,
+                    }
+                    for result in results
+                ],
+                "summary": summary,
+            },
+            True,
+        )
+    else:
+        for result in results:
+            suffix = " (cached)" if result.cached else ""
+            label = result.failure_class if result.status == "fail" else "ok"
+            print(f"{result.status.upper():<4} {result.name:<12} {result.seconds:>6.2f}s  {label}{suffix}")
+            if result.status == "fail":
+                output = (result.stdout + "\n" + result.stderr).strip().splitlines()
+                for line in output[-10:]:
+                    print(f"     {line}")
+        print(f"\n{summary['passed']} passed, {summary['failed']} failed")
+    return 1 if summary["failed"] else 0
+
+
+def _command_govern(args: argparse.Namespace) -> int:
+    """
+    Inspect contracts or evaluate governance limits.
+    """
+    root = _repo(args)
+    action = args.govern_command
+    if action == "contracts":
+        results = governance_module.contracts(root)
+        failures = [result for result in results if result["status"] == "fail"]
+        if args.json:
+            _emit({"contracts": results, "failures": len(failures)}, True)
+        else:
+            for result in results:
+                label = "read-only" if result["read_only"] else "writer"
+                print(f"{result['status'].upper():<4} {result['agent']:<22} {result['mode']:<8} {label}")
+                for violation in result["violations"]:
+                    print(f"     {violation}")
+            print(f"\n{len(failures)} failure(s)")
+        return 1 if failures else 0
+    if action == "gate":
+        gate = governance_module.risk_gate(args.risk)
+        if args.json:
+            _emit(gate, True)
+        else:
+            print(f"risk: {gate['risk']}")
+            for requirement in gate["required"]:
+                print(f"  required: {requirement}")
+        return 0
+    record_path = Path(args.record).expanduser()
+    if not record_path.is_file():
+        raise OteError(f"record not found: {record_path}")
+    try:
+        record = json.loads(record_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as error:
+        raise OteError(f"{record_path}: invalid JSON: {error}") from error
+    if not isinstance(record, dict):
+        raise OteError(f"{record_path}: run record must be a JSON object")
+    _, governance = verify_module.load_config(root)
+    evaluation = governance_module.evaluate_record(record, governance)
+    if args.json:
+        _emit(evaluation, True)
+    else:
+        print(f"allowed: {evaluation['allowed']}")
+        print(f"validator_mode: {evaluation['validator_mode']}")
+        for violation in evaluation["violations"]:
+            print(f"  {violation['kind']}: {violation['detail']}")
+    return 0 if evaluation["allowed"] else 1
+
+
 def _command_deferred(args: argparse.Namespace) -> int:
     """
     Report that a planned command is not implemented yet.
@@ -460,6 +577,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         "profile": _command_profile,
         "catalog": _command_catalog,
         "compat": _command_compat,
+        "verify": _command_verify,
+        "govern": _command_govern,
     }
     try:
         handler = handlers.get(args.command, _command_deferred)

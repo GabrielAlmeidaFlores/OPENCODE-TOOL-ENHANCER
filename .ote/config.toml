@@ -1,0 +1,25 @@
+[verify]
+timeout = 900
+
+[verify.checks.validate]
+command = "./scripts/validation/validate.sh"
+timeout = 120
+
+[verify.checks.lint]
+command = "make lint"
+timeout = 120
+
+[verify.checks.test]
+command = "python3 -m unittest discover -s tests -t ."
+timeout = 900
+inputs = ["tests", "packages"]
+
+[governance]
+validator_mode = "advisory"
+max_iterations = 40
+max_tool_calls = 200
+max_writes = 15
+max_cost_usd = 5.0
+max_delegation_depth = 2
+max_repeats = 2
+max_bounces = 3

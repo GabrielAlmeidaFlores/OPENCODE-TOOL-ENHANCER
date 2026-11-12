@@ -49,7 +49,16 @@ Use this checklist before tagging a release. A checked item must have reproducib
 - [ ] `catalog/registry.json` and `catalog/index.md` match the provenance registry.
 - [ ] `ote compat` reflects the pinned OpenCode versions.
 
+## Verification and governance
+
+- [ ] `ote verify` passes with the committed `.ote/config.toml`.
+- [ ] Failing checks return a non-zero exit and a failure class.
+- [ ] `ote govern contracts` passes.
+- [ ] Governance limits and risk gates match the documented defaults.
+- [ ] Ralph `code-assist` finalizer references `ote verify`.
+
 ## Orchestration
+
 
 
 - [ ] `ralph preflight` passes.

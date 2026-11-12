@@ -1,4 +1,4 @@
-.PHONY: help validate validate-links test lint check ci ote build-cli catalog-check install dry-run backup
+.PHONY: help validate validate-links test lint check ci ote build-cli catalog-check verify govern install dry-run backup
 
 .DEFAULT_GOAL := help
 
@@ -12,6 +12,8 @@ help:
 	@echo "ote            Run the CLI from the checkout; pass ARGS=\"...\""
 	@echo "build-cli      Build the ote-cli wheel into dist/"
 	@echo "catalog-check  Verify generated catalog matches the provenance registry"
+	@echo "verify         Run the configured deterministic verification checks"
+	@echo "govern         Show derived agent contracts"
 	@echo "dry-run        Print every installer action without writing files"
 	@echo "install        Apply the full profile to the current project"
 	@echo "backup         Back up the existing OpenCode configuration"
@@ -48,6 +50,12 @@ build-cli:
 
 catalog-check:
 	python3 scripts/catalog/build_catalog.py --check
+
+verify:
+	PYTHONPATH=packages/ote_cli python3 -m ote_cli verify
+
+govern:
+	PYTHONPATH=packages/ote_cli python3 -m ote_cli govern contracts
 
 dry-run:
 	./scripts/installation/install.sh --dry-run --all

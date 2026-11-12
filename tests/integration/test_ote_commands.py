@@ -270,6 +270,66 @@ class ProfileAndCatalogTests(unittest.TestCase):
         self.assertTrue(payload["features"])
 
 
+class VerificationCommandTests(unittest.TestCase):
+    """
+    Tests for ote verify and ote govern.
+    """
+
+    def _config(self, directory: str) -> Path:
+        """
+        Write a minimal verification configuration in a temporary directory.
+        """
+        path = Path(directory) / "config.toml"
+        path.write_text(
+            '[verify]\ntimeout = 10\n'
+            '[verify.checks.ok]\ncommand = "true"\n'
+            '[verify.checks.fail]\ncommand = "sh -c \'exit 3\'"\n',
+            encoding="utf-8",
+        )
+        return path
+
+    def test_verify_pass_and_fail(self) -> None:
+        """
+        Verify reports pass and exit codes for configured checks.
+        """
+        with tempfile.TemporaryDirectory() as directory:
+            config = self._config(directory)
+            passed = run_ote("verify", "--config", str(config), "--only", "ok", "--json")
+            self.assertEqual(passed.returncode, 0, passed.stdout + passed.stderr)
+            self.assertEqual(json.loads(passed.stdout)["summary"]["status"], "pass")
+            failed = run_ote("verify", "--config", str(config), "--only", "fail", "--json")
+            self.assertEqual(failed.returncode, 1)
+            self.assertEqual(json.loads(failed.stdout)["summary"]["failed"], 1)
+
+    def test_govern_contracts(self) -> None:
+        """
+        Contracts are derived from agent permissions.
+        """
+        result = run_ote("govern", "contracts")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("coordinator", result.stdout)
+        self.assertIn("0 failure(s)", result.stdout)
+
+    def test_govern_gate(self) -> None:
+        """
+        Risk gates are machine-readable.
+        """
+        result = run_ote("govern", "gate", "--risk", "high", "--json")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout)["required"], ["verify", "review", "security"])
+
+    def test_govern_check(self) -> None:
+        """
+        A record over budget is blocked with a non-zero exit.
+        """
+        with tempfile.TemporaryDirectory() as directory:
+            record = Path(directory) / "record.json"
+            record.write_text(json.dumps({"iterations": 999}), encoding="utf-8")
+            result = run_ote("govern", "check", "--record", str(record), "--json")
+            self.assertEqual(result.returncode, 1)
+            self.assertFalse(json.loads(result.stdout)["allowed"])
+
+
 class CommandSurfaceTests(unittest.TestCase):
     """
     Tests for command registration and safety defaults.
@@ -279,9 +339,9 @@ class CommandSurfaceTests(unittest.TestCase):
         """
         A planned command reports the owning phase.
         """
-        result = run_ote("verify")
+        result = run_ote("memory")
         self.assertEqual(result.returncode, 2)
-        self.assertIn("Phase 4", result.stderr)
+        self.assertIn("Phase 5", result.stderr)
 
     def test_rollback_without_backups(self) -> None:
         """

@@ -56,6 +56,8 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 | CLI | `ote` install, diagnostics, update, rollback | [`packages/ote_cli`](packages/ote_cli) |
 | Profiles | Declarative install profiles | [`profiles/`](profiles) |
 | Catalog | Generated, verified artifact list | [`catalog/`](catalog) |
+| Verification | Deterministic checks with cache and failure classes | [`docs/verification/`](docs/verification) |
+| Governance | Contracts, budgets, loop detection, risk gates | [`docs/governance/`](docs/governance) |
 | Examples | TypeScript, C#, multi-agent workflows | [`examples/`](examples) |
 | Benchmarks | Methodology, tasks, harness, results | [`benchmarks/`](benchmarks) |
 | Documentation | Research, decisions, guides, provenance | [`docs/`](docs) |
@@ -74,9 +76,10 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 | Benchmarks | Deferred by decision; no published results |
 | Real-repository pilots | Repositories selected and pinned; execution pending |
 | CI | Green on Ubuntu and macOS for run [43239159927](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/actions/runs/43239159927); six jobs including `cli` |
-| Repository tests | 165 unit and integration tests; run with `make test` |
+| Repository tests | 197 unit and integration tests; run with `make test` |
 | `ote` CLI | Install, uninstall, update check, rollback, doctor verified locally and in the `cli` job |
 | Profiles and catalog | Three manifests and 34 catalog entries verified locally and in run 43239159927 |
+| Verification and governance | `ote verify` and `ote govern contracts` verified locally; CI runs both |
 
 ## Architecture
 
@@ -647,6 +650,8 @@ The benchmark harness is reproducible, but **no results are published yet**. Thi
 | [CLI reference](docs/cli/README.md) | `ote` commands, lock file, exit codes, safety |
 | [Profiles](docs/profiles/README.md) | Manifest format and available profiles |
 | [Verified catalog](docs/catalog/README.md) | Catalog schema, generation, and drift checks |
+| [Verification engine](docs/verification/README.md) | Checks, cache, failure classes, CI gate |
+| [Governance](docs/governance/README.md) | Contracts, budgets, loop detection, risk gates |
 | [Install the CLI](docs/installation/ote-cli.md) | uv, pipx, wheel, verification |
 | [Agent roles](docs/agents/roles.md) | Responsibilities and delegation rules |
 | [Artifact compatibility](docs/agents/compatibility.md) | OpenCode compatibility and runtime status |

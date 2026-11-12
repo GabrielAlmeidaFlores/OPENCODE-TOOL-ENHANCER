@@ -5,6 +5,8 @@ from __future__ import annotations
 
 import unittest
 
+from tests import support
+
 from ote_cli import compat
 
 

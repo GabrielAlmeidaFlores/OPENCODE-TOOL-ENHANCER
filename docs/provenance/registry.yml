@@ -430,6 +430,11 @@ original_artifacts:
     kind: "glue"
     author: "OPENCODE-TOOL-ENHANCER contributors"
     justification: "Schema-first catalog generator and restricted-YAML profile loader. The catalog schema shape follows awesome-opencode (CC0-1.0) and the registry structure in OpenAgentsControl (MIT); the profile concept follows weisser-dev/awesome-opencode (MIT). No upstream code was copied; the implementation is original Python."
+  - id: verification-and-governance
+    local: "packages/ote_cli/ote_cli/verify.py, packages/ote_cli/ote_cli/governance.py, .ote/config.toml"
+    kind: "glue"
+    author: "OPENCODE-TOOL-ENHANCER contributors"
+    justification: "Deterministic verification runner and governance evaluator. The cache idea follows nerv (Apache-2.0) and the governance concepts follow FlowDeck (MIT); no upstream code was copied and the implementation is original Python."
   - id: project-documentation
     local: "docs/**"
     kind: "original-documentation"

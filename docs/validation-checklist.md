@@ -47,6 +47,17 @@ Then complete the manual checks for your environment.
 - [ ] `ote uninstall` without `--yes` refuses; with `--apply --yes` removes only unmodified managed files.
 - [ ] `ote rollback` lists backups without changing files.
 
+## Verification and governance
+
+- [ ] `ote verify --only validate` exits 0.
+- [ ] `ote verify --only lint` exits 0.
+- [ ] `ote verify --json` reports a summary and failure classes.
+- [ ] A failing check exits 1 and a missing check name exits 2.
+- [ ] `ote govern contracts` reports zero failures.
+- [ ] `ote govern gate --risk high` lists verify, review, and security.
+- [ ] `ote govern check --record` blocks a record over budget.
+- [ ] `.ote/cache/` is gitignored.
+
 ## Profiles and catalog
 
 - [ ] `ote profile verify` exits 0 for every manifest.

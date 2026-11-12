@@ -95,6 +95,8 @@ never be installed.
   changing the lock, detects tampered files, refuses destructive commands without
   confirmation, and removes only unmodified managed files.
 - Profiles load and validate, and the catalog verifies its schema, counts, and local paths.
+- The verification engine loads TOML, runs checks, classifies failures, and reuses only passing cache entries.
+- Governance contracts, budgets, loop/deadlock limits, and risk gates are evaluated deterministically.
 
 The OpenCode checks skip cleanly when `opencode` is not on `PATH`, so contributors without
 the binary still get a green suite.
@@ -119,7 +121,7 @@ the binary still get a green suite.
 - example builds (TypeScript and C#);
 - OpenCode profile installation and discovery;
 - benchmark dry-run for every task;
-- the `cli` job: wheel build, `ote doctor`, and the install/update/uninstall lifecycle.
+- the `cli` job: wheel build, `ote doctor`, verification gates, contracts, and the install/update/uninstall lifecycle.
 
 Paid model calls are excluded from the default workflow. Real benchmark runs are explicit
 and require `OPENCODE_BENCH_MODEL`.

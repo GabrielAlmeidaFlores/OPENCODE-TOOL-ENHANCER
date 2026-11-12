@@ -61,6 +61,10 @@
 | `ote doctor` fails on `opencode` | Missing or V1 installation | Install `@opencode/cli` 2.2.x |
 | `ote doctor` warns about `serena` or `codegraph` | Optional tools are not installed | Install them only if the profile needs them |
 | `ote` cannot find the repository | Running outside a checkout | Run from the checkout or set `OTE_REPO` |
+| `ote verify` exits 2 | Config is missing, malformed, or names an unknown check | Inspect `.ote/config.toml`; see `docs/verification/README.md` |
+| `ote verify` runs a stale result | A passing cached result exists for unchanged inputs | Run with `--no-cache`, or change the declared inputs |
+| `ote govern contracts` fails | An agent's mode or edit permission violates its role | Fix `agents/<role>/AGENT.md`; rerun the validator |
+| `ote govern check` blocks a run | A budget, loop, or deadlock limit was exceeded | Inspect the violation kind and increase the limit only with justification |
 | `ote profile verify` fails | A manifest has a bad name, component, or syntax | Fix `profiles/<name>.yml`; see `docs/profiles/README.md` |
 | `ote catalog verify` fails | A catalog entry is missing a field or local path | Fix `docs/provenance/registry.yml`, then rebuild the catalog |
 | `ote catalog verify --check-drift` fails | Catalog files were edited by hand | Run `python3 scripts/catalog/build_catalog.py` |
