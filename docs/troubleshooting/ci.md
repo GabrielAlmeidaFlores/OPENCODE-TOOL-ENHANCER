@@ -135,7 +135,7 @@ HOME="$(mktemp -d)" OPENCODE_CONFIG="/abs/path/.opencode/opencode.jsonc" \
 
 ## Confirmed green
 
-Run [`43227605747`](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/actions/runs/43227605747)
+Run [`43234273370`](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/actions/runs/43234273370)
 completed on 2026-11-12 with every job successful:
 
 | Job | Result |
@@ -145,19 +145,14 @@ completed on 2026-11-12 with every job successful:
 | `test (ubuntu-latest)` | success |
 | `test (macos-latest)` | success |
 | `examples` | success |
+| `cli` | success |
 | `opencode profile` | success |
 | `harness dry-run` | success |
 
-This confirms the harness fix, the offline suite on both operating systems, OpenCode
-agent discovery with a pinned version, and benchmark dry-runs.
-
-The `cli` job was added with Phase 2. Its first green run is recorded after the next push,
-along with the updated action majors.
-
-Action major versions were updated after this run (`checkout@v7`, `setup-python@v7`,
-`setup-node@v7`, `setup-dotnet@v6`) to remove Node.js 20 deprecation warnings and were
-re-confirmed green in run
-[`43227870143`](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/actions/runs/43227870143).
+This confirms the harness fix, the offline suite on both operating systems without a local
+OpenCode binary, the CLI wheel build and install lifecycle, OpenCode agent discovery with a
+pinned version, and benchmark dry-runs. Action majors are `checkout@v7`, `setup-python@v7`,
+`setup-node@v7`, and `setup-dotnet@v6`.
 
 ## Job map
 
