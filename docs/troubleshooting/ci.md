@@ -152,8 +152,9 @@ This confirms the harness fix, the offline suite on both operating systems, Open
 agent discovery with a pinned version, and benchmark dry-runs.
 
 Action major versions were updated after this run (`checkout@v7`, `setup-python@v7`,
-`setup-node@v7`, `setup-dotnet@v6`) to remove Node.js 20 deprecation warnings. Re-confirm
-on the next run; a version bump is a CI change like any other.
+`setup-node@v7`, `setup-dotnet@v6`) to remove Node.js 20 deprecation warnings and were
+re-confirmed green in run
+[`43227870143`](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/actions/runs/43227870143).
 
 ## Job map
 
