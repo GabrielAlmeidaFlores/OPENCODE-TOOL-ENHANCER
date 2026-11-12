@@ -54,6 +54,13 @@
 
 | Symptom | Cause | Fix |
 | --- | --- | --- |
+| `ote: command not found` | `~/.local/bin` is not on `PATH` | Export it, or run `PYTHONPATH=packages/ote_cli python3 -m ote_cli` |
+| `ote install` says `already up to date` but files look old | Source digest still matches | Use `--force`, or change the artifact and re-run |
+| `ote update --check` exits 1 | Managed files were edited or the source advanced | Inspect the reported paths; reinstall with `--force` after reviewing the edits |
+| `ote uninstall` keeps a file | The file changed after installation | Review the change, then use `--force` if removal is intended |
+| `ote doctor` fails on `opencode` | Missing or V1 installation | Install `@opencode/cli` 2.2.x |
+| `ote doctor` warns about `serena` or `codegraph` | Optional tools are not installed | Install them only if the profile needs them |
+| `ote` cannot find the repository | Running outside a checkout | Run from the checkout or set `OTE_REPO` |
 | `validate.sh` fails on a new file | Required file list changed | Add the file and cover it with a test; see `docs/architecture/testing.md` |
 | `make test` fails only in CI | Python version, missing PyYAML, CRLF checkout, or uncommitted files | See `docs/troubleshooting/ci.md` |
 | CI job queued for hours | Runner availability or concurrency | Inspect with `gh run list`; see `docs/troubleshooting/ci.md` |

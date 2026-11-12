@@ -35,7 +35,7 @@ else
 fi
 
 echo "== shell syntax =="
-for f in scripts/installation/*.sh scripts/maintenance/*.sh scripts/benchmarking/*.sh benchmarks/harness/*.sh; do
+for f in scripts/installation/*.sh scripts/maintenance/*.sh scripts/benchmarking/*.sh benchmarks/harness/*.sh skills/*/*.sh; do
   [[ -f "$f" ]] || continue
   bash -n "$f"
 done

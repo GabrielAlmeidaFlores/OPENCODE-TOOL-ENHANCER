@@ -38,7 +38,7 @@ jobs:
         run: ./scripts/validation/validate.sh
       - name: Check shell syntax
         run: |
-          for file in scripts/installation/*.sh scripts/maintenance/*.sh scripts/validation/*.sh scripts/benchmarking/*.sh benchmarks/harness/*.sh; do
+          for file in scripts/installation/*.sh scripts/maintenance/*.sh scripts/validation/*.sh scripts/benchmarking/*.sh benchmarks/harness/*.sh skills/*/*.sh; do
             bash -n "$file"
           done
       - name: ShellCheck
@@ -46,7 +46,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --yes shellcheck
-          shellcheck scripts/*/*.sh benchmarks/harness/*.sh
+          shellcheck scripts/*/*.sh benchmarks/harness/*.sh skills/*/*.sh
 
   test:
     timeout-minutes: 15
@@ -65,6 +65,36 @@ jobs:
         run: python -m pip install --quiet pyyaml
       - name: Run unit and integration tests
         run: python -m unittest discover -s tests -t . -v
+
+  cli:
+    timeout-minutes: 15
+    name: cli
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "20"
+      - name: Install OpenCode V2
+        run: npm install --global @opencode/cli@2.2.7
+      - name: Build the wheel
+        run: python -m pip wheel ./packages/ote_cli --no-deps --wheel-dir dist
+      - name: Install the CLI
+        run: python -m pip install ./packages/ote_cli pyyaml
+      - name: Diagnose the repository
+        run: ote doctor --json --no-mcp
+      - name: Exercise the install lifecycle
+        run: |
+          target="$RUNNER_TEMP/ote-project"
+          ote install --profile minimal --target "$target" --dry-run
+          ote install --profile minimal --target "$target" --apply
+          ote install --profile minimal --target "$target" --apply | tee reapply.log
+          grep -q "already up to date" reapply.log
+          ote update --check --target "$target"
+          ote uninstall --target "$target" --apply --yes
 
   examples:
     timeout-minutes: 20

@@ -30,6 +30,17 @@ Use this checklist before tagging a release. A checked item must have reproducib
 - [ ] Installer applies to a temporary project and reports the expected counts.
 - [ ] Installer `--clean` removes only selected components and preserves `.ralph/agent`.
 
+## CLI
+
+- [ ] `python3 -m pip wheel ./packages/ote_cli --no-deps` builds a wheel.
+- [ ] `ote --version` matches `VERSION`.
+- [ ] `ote doctor --json` exits 0.
+- [ ] `ote install --apply` into a temporary target writes a lock and state.
+- [ ] A second `ote install --apply` reports `already up to date`.
+- [ ] `ote update --check` exits 0, then 1 after a managed file changes.
+- [ ] `ote uninstall --apply --yes` removes managed files and keeps modified ones.
+- [ ] `ote rollback` lists backups without writing.
+
 ## Orchestration
 
 - [ ] `ralph preflight` passes.

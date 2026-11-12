@@ -161,6 +161,7 @@ Ralph Orchestrator 2.10.1 runs an automatic commit during its landing sequence (
 
 - One module docstring at the top: purpose, public API, side effects, references.
 - One docstring per function, method, class, and non-trivial module-level constant.
+- Every docstring uses block form: the opening and closing triple quotes are on their own lines. A single-line `"""text"""` docstring is prohibited.
 - Use type hints instead of comments that describe types.
 - `#` is allowed only for tool directives such as `# noqa`, `# type: ignore`, or `# pragma`, and each directive must state the reason.
 - No inline comments and no commented-out code.
@@ -199,6 +200,7 @@ Allowed without further documentation:
 - Shebangs, SPDX/license headers, and generated-file headers.
 - Tool directives with a stated reason.
 - Comments inside quoted configuration or instruction strings, because they are content rather than source comments.
+- Files under `tests/fixtures/` that must contain a prohibited pattern to exercise the validator. They are test inputs, never production code, and must never be installed.
 
 ## Enforcement
 

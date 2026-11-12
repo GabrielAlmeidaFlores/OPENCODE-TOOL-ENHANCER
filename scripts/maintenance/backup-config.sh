@@ -1,16 +1,25 @@
 #!/usr/bin/env bash
 # Name: OpenCode and project configuration backup
-# Purpose: Archives the global OpenCode configuration and the project's .opencode and .ralph directories.
-# Usage: ./scripts/maintenance/backup-config.sh [DESTINATION]
-# Arguments: $1 is the destination directory; defaults to ~/.opencode-backups/<timestamp>.
+# Purpose: Archives the global OpenCode configuration and the project's .opencode and .ralph directories, or only the project directories with --project-only.
+# Usage: ./scripts/maintenance/backup-config.sh [DESTINATION] [--project-only]
+# Arguments: $1 is the destination directory; --project-only skips the global configuration. The destination defaults to ~/.opencode-backups/<timestamp>.
 # Environment: Requires bash and tar.
 # Outputs: Prints the backup directory and each archived path.
 # Side effects: Creates archives under the destination directory.
 # References: docs/installation/opencode.md, docs/troubleshooting/README.md
 set -euo pipefail
 
+PROJECT_ONLY=0
+DEST=""
+for argument in "$@"; do
+  case "$argument" in
+    --project-only) PROJECT_ONLY=1 ;;
+    *) DEST="$argument" ;;
+  esac
+done
+
 STAMP="$(date +%Y%m%d-%H%M%S)"
-DEST="${1:-$HOME/.opencode-backups/$STAMP}"
+DEST="${DEST:-$HOME/.opencode-backups/$STAMP}"
 mkdir -p "$DEST"
 
 # Function: backup_dir
@@ -28,7 +37,9 @@ backup_dir() {
   fi
 }
 
-backup_dir "$HOME/.config/opencode" "global-config"
+if [[ "$PROJECT_ONLY" == "0" ]]; then
+  backup_dir "$HOME/.config/opencode" "global-config"
+fi
 backup_dir "$PWD/.opencode" "project-opencode"
 backup_dir "$PWD/.ralph" "project-ralph"
 

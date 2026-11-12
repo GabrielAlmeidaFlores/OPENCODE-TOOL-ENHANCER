@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
-"""Static validation for the OPENCODE-TOOL-ENHANCER repository.
+"""
+Static validation for the OPENCODE-TOOL-ENHANCER repository.
 
 The validator checks required files, JSONC and YAML syntax, agent and skill
-frontmatter, provenance metadata, git permission ordering, external links, and
-the invariants described in AGENTS.md Sections 2A, 2B, and 2C. It performs no
+frontmatter, provenance metadata, git permission ordering, documentation
+comments, external links, and the invariants described in AGENTS.md Sections 2A, 2B, and 2C. It performs no
 network access unless --links is passed.
+
+Module constants: ``REQUIRED`` lists files every checkout must contain,
+``AGENT_ROLES`` and ``SKILLS`` define the expected artifact names, and
+``errors``/``warnings``/``checked`` hold the current run state.
 """
 from __future__ import annotations
 
@@ -34,6 +39,8 @@ REQUIRED = [
     "docs/decisions/ADR-001-opencode-v2-baseline.md",
     "docs/research/baseline.md",
     "docs/architecture/testing.md",
+    "docs/cli/README.md",
+    "packages/ote_cli/pyproject.toml",
     "benchmarks/methodology/README.md",
 ]
 
@@ -71,17 +78,23 @@ checked = 0
 
 
 def fail(message: str) -> None:
-    """Record a validation failure."""
+    """
+    Record a validation failure.
+    """
     errors.append(message)
 
 
 def warn(message: str) -> None:
-    """Record a validation warning."""
+    """
+    Record a validation warning.
+    """
     warnings.append(message)
 
 
 def strip_jsonc(text: str) -> str:
-    """Remove JSONC comments and trailing commas while preserving string contents."""
+    """
+    Remove JSONC comments and trailing commas while preserving string contents.
+    """
     out: list[str] = []
     index = 0
     length = len(text)
@@ -122,7 +135,9 @@ def strip_jsonc(text: str) -> str:
 
 
 def check_jsonc(path: Path) -> None:
-    """Validate a JSONC file and its OpenCode V2 shape."""
+    """
+    Validate a JSONC file and its OpenCode V2 shape.
+    """
     global checked
     checked += 1
     try:
@@ -140,7 +155,9 @@ def check_jsonc(path: Path) -> None:
 
 
 def check_yaml(path: Path) -> None:
-    """Validate a YAML file with PyYAML when available, otherwise with Ruby."""
+    """
+    Validate a YAML file with PyYAML when available, otherwise with Ruby.
+    """
     global checked
     checked += 1
     try:
@@ -166,7 +183,9 @@ def check_yaml(path: Path) -> None:
 
 
 def check_tasks() -> None:
-    """Validate benchmark task definitions and their working directories."""
+    """
+    Validate benchmark task definitions and their working directories.
+    """
     global checked
     for path in sorted((ROOT / "benchmarks/tasks").glob("*.json")):
         checked += 1
@@ -186,7 +205,9 @@ def check_tasks() -> None:
 
 
 def frontmatter(path: Path) -> dict[str, str]:
-    """Return the simple top-level string fields from a Markdown frontmatter block."""
+    """
+    Return the simple top-level string fields from a Markdown frontmatter block.
+    """
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---"):
         return {}
@@ -203,7 +224,9 @@ def frontmatter(path: Path) -> dict[str, str]:
 
 
 def check_agents() -> None:
-    """Validate required agent files and their frontmatter fields."""
+    """
+    Validate required agent files and their frontmatter fields.
+    """
     global checked
     for role in AGENT_ROLES:
         path = ROOT / "agents" / role / "AGENT.md"
@@ -223,7 +246,9 @@ def check_agents() -> None:
 
 
 def check_skills() -> None:
-    """Validate required skill files, names, descriptions, and naming format."""
+    """
+    Validate required skill files, names, descriptions, and naming format.
+    """
     global checked
     pattern = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
     for name in SKILLS:
@@ -243,7 +268,9 @@ def check_skills() -> None:
 
 
 def check_commands() -> None:
-    """Validate every command file and its target agent."""
+    """
+    Validate every command file and its target agent.
+    """
     global checked
     for path in sorted((ROOT / "commands").glob("*.md")):
         checked += 1
@@ -258,7 +285,9 @@ def check_commands() -> None:
 
 
 def check_provenance() -> None:
-    """Enforce AGENTS.md Section 2A across registered artifacts."""
+    """
+    Enforce AGENTS.md Section 2A across registered artifacts.
+    """
     global checked
     registry = ROOT / "docs/provenance/registry.yml"
     checked += 1
@@ -304,7 +333,9 @@ def check_provenance() -> None:
 
 
 def parse_permissions(frontmatter_text: str) -> list[dict[str, str]]:
-    """Parse the action, resource, and effect fields from agent permissions."""
+    """
+    Parse the action, resource, and effect fields from agent permissions.
+    """
     permissions: list[dict[str, str]] = []
     current: dict[str, str] = {}
     in_permissions = False
@@ -335,7 +366,9 @@ def parse_permissions(frontmatter_text: str) -> list[dict[str, str]]:
 
 
 def check_git_permissions() -> None:
-    """Verify that every agent resolves git write commands to deny as the last matching rule."""
+    """
+    Verify that every agent resolves git write commands to deny as the last matching rule.
+    """
     global checked
     commands = [
         "git add -A",
@@ -377,7 +410,9 @@ def check_git_permissions() -> None:
 
 
 def jsonc_comment_lines(text: str) -> list[int]:
-    """Return the 1-based line numbers of comments outside JSON strings."""
+    """
+    Return the 1-based line numbers of comments outside JSON strings.
+    """
     lines: list[int] = []
     index = 0
     line = 1
@@ -422,7 +457,9 @@ def jsonc_comment_lines(text: str) -> list[int]:
 
 
 def shell_inline_comment(line: str) -> bool:
-    """Return True when a shell line contains a comment after executable text."""
+    """
+    Return True when a shell line contains a comment after executable text.
+    """
     in_single = False
     in_double = False
     escaped = False
@@ -466,8 +503,34 @@ def shell_inline_comment(line: str) -> bool:
     return False
 
 
+def python_sources(base: Path) -> list[Path]:
+    """
+    Return Python sources under a directory, excluding build and cache output.
+    """
+    def excluded(part: str) -> bool:
+        """
+        Return True for generated directories that policy checks must skip.
+        """
+        return part in {"build", "__pycache__"} or part.endswith(".egg-info")
+
+    return [path for path in sorted(base.rglob("*.py")) if not any(excluded(part) for part in path.parts)]
+
+
+def is_test_fixture(path: Path) -> bool:
+    """
+    Return True for files under tests/fixtures, which may contain prohibited patterns.
+    """
+    try:
+        path.resolve().relative_to((ROOT / "tests" / "fixtures").resolve())
+    except ValueError:
+        return False
+    return True
+
+
 def check_comment_policy() -> None:
-    """Enforce the documentation-comment policy from AGENTS.md Section 2C."""
+    """
+    Enforce the documentation-comment policy from AGENTS.md Section 2C.
+    """
     global checked
 
     for path in sorted((ROOT / "configs").rglob("*.jsonc")):
@@ -488,7 +551,7 @@ def check_comment_policy() -> None:
             if comment_line >= body_line:
                 fail(f"{path.relative_to(ROOT)}:{comment_line}: inline JSONC comments are prohibited")
 
-    for path in sorted((ROOT / "scripts").rglob("*.sh")) + sorted((ROOT / "benchmarks/harness").rglob("*.sh")):
+    for path in sorted((ROOT / "scripts").rglob("*.sh")) + sorted((ROOT / "benchmarks/harness").rglob("*.sh")) + sorted((ROOT / "skills").rglob("*.sh")):
         checked += 1
         lines = path.read_text(encoding="utf-8").splitlines()
         header = "\n".join(lines[:12])
@@ -498,7 +561,9 @@ def check_comment_policy() -> None:
             if shell_inline_comment(line):
                 fail(f"{path.relative_to(ROOT)}:{number}: inline shell comments are prohibited")
 
-    for path in sorted((ROOT / "scripts").rglob("*.py")):
+    for path in python_sources(ROOT / "scripts") + python_sources(ROOT / "packages") + python_sources(ROOT / "skills") + python_sources(ROOT / "tests"):
+        if is_test_fixture(path):
+            continue
         checked += 1
         text = path.read_text(encoding="utf-8")
         if ast.get_docstring(ast.parse(text)) is None:
@@ -519,7 +584,9 @@ def check_comment_policy() -> None:
 
 
 def check_docs_status() -> None:
-    """Enforce the Phase 0 documentation status block on every docs page."""
+    """
+    Enforce the Phase 0 documentation status block on every docs page.
+    """
     global checked
     allowed = {"Stable", "Experimental", "Planned", "Deprecated"}
     for path in sorted((ROOT / "docs").rglob("*.md")):
@@ -541,8 +608,134 @@ def check_docs_status() -> None:
             fail(f"{relative}: last verified date must be ISO 8601")
 
 
+def code_line_comment(line: str) -> int | None:
+    """
+    Return the index of a ``//`` comment outside string literals, or None.
+    """
+    in_single = False
+    in_double = False
+    in_template = False
+    escaped = False
+    index = 0
+    while index < len(line) - 1:
+        character = line[index]
+        if escaped:
+            escaped = False
+            index += 1
+            continue
+        if character == "\\" and (in_single or in_double or in_template):
+            escaped = True
+            index += 1
+            continue
+        if character == "'" and not in_double and not in_template:
+            in_single = not in_single
+        elif character == '"' and not in_single and not in_template:
+            in_double = not in_double
+        elif character == "`" and not in_single and not in_double:
+            in_template = not in_template
+        elif (
+            character == "/"
+            and line[index + 1] == "/"
+            and not in_single
+            and not in_double
+            and not in_template
+        ):
+            return index
+        index += 1
+    return None
+
+
+def check_source_comments() -> None:
+    """
+    Enforce documentation-only comments in TypeScript and C# sources.
+    """
+    global checked
+    bases = [ROOT / "examples", ROOT / "skills"]
+    patterns = ("*.ts", "*.tsx", "*.cs")
+    for base in bases:
+        for pattern in patterns:
+            for path in sorted(base.rglob(pattern)):
+                if {"bin", "obj", "node_modules"}.intersection(path.parts):
+                    continue
+                checked += 1
+                in_block = False
+                for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+                    stripped = line.strip()
+                    if in_block:
+                        if "*/" in line:
+                            in_block = False
+                        continue
+                    if stripped.startswith("/**"):
+                        if "*/" not in stripped:
+                            in_block = True
+                        continue
+                    if stripped.startswith("/*"):
+                        fail(f"{path.relative_to(ROOT)}:{number}: block comments are prohibited")
+                        if "*/" not in stripped:
+                            in_block = True
+                        continue
+                    index = code_line_comment(line)
+                    if index is None:
+                        continue
+                    if line[index : index + 3] == "///":
+                        continue
+                    fail(f"{path.relative_to(ROOT)}:{number}: line comments are prohibited; use JSDoc or XML documentation")
+
+
+def check_docstring_form() -> None:
+    """
+    Enforce block-form docstrings on every module, class, and function.
+
+    A block-form docstring places the opening and closing triple quotes on their
+    own lines. Single-line docstrings are rejected because they read as inline
+    comments rather than documentation.
+    """
+    global checked
+    for base in (ROOT / "scripts", ROOT / "packages", ROOT / "skills", ROOT / "tests"):
+        for path in python_sources(base):
+            if is_test_fixture(path):
+                continue
+            checked += 1
+            source = path.read_text(encoding="utf-8")
+            try:
+                tree = ast.parse(source)
+            except SyntaxError as error:
+                fail(f"{path.relative_to(ROOT)}: cannot parse: {error}")
+                continue
+            lines = source.splitlines()
+            nodes: list[ast.AST] = [tree]
+            nodes.extend(
+                node
+                for node in ast.walk(tree)
+                if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef))
+            )
+            for node in nodes:
+                name = getattr(node, "name", "module")
+                body = getattr(node, "body", [])
+                if not body:
+                    fail(f"{path.relative_to(ROOT)}:{getattr(node, 'lineno', 1)}: {name} has no body")
+                    continue
+                first = body[0]
+                is_docstring = (
+                    isinstance(first, ast.Expr)
+                    and isinstance(first.value, ast.Constant)
+                    and isinstance(first.value.value, str)
+                )
+                if not is_docstring:
+                    fail(f"{path.relative_to(ROOT)}:{getattr(node, 'lineno', 1)}: {name} is missing a docstring")
+                    continue
+                start = first.lineno - 1
+                end = first.end_lineno - 1
+                if lines[start].strip() != '"""' or lines[end].strip() != '"""':
+                    fail(
+                        f"{path.relative_to(ROOT)}:{first.lineno}: {name} docstring must place the triple quotes on their own lines"
+                    )
+
+
 def check_links() -> None:
-    """Check external HTTP links found in documentation."""
+    """
+    Check external HTTP links found in documentation.
+    """
     global checked
     urls: set[str] = set()
     for path in list(ROOT.glob("docs/**/*.md")) + [ROOT / "README.md"]:
@@ -563,7 +756,9 @@ def check_links() -> None:
 
 
 def main() -> int:
-    """Run every validation check and return a process exit code."""
+    """
+    Run every validation check and return a process exit code.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("--links", action="store_true", help="check external links")
     args = parser.parse_args()
@@ -586,6 +781,8 @@ def main() -> int:
     check_provenance()
     check_git_permissions()
     check_comment_policy()
+    check_source_comments()
+    check_docstring_form()
     check_docs_status()
 
     if args.links:

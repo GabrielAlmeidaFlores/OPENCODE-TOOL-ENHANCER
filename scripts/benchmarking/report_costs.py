@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Aggregate benchmark artifacts into a Markdown cost and token report.
+"""
+Aggregate benchmark artifacts into a Markdown cost and token report.
 
 The report reads each run directory under the results root, parses
 session.jsonl and meta.json, and prints one row per run plus a summary.
@@ -15,7 +16,9 @@ from pathlib import Path
 
 @dataclass
 class RunSummary:
-    """Aggregated metrics for one benchmark run."""
+    """
+    Aggregated metrics for one benchmark run.
+    """
 
     run_id: str
     arm: str
@@ -37,7 +40,9 @@ class RunSummary:
 
 
 def parse_session(session_path: Path) -> dict[str, int | float]:
-    """Sum cost, tokens, steps, and tool calls from a session JSONL file."""
+    """
+    Sum cost, tokens, steps, and tool calls from a session JSONL file.
+    """
     totals: dict[str, int | float] = {
         "cost": 0.0,
         "input_tokens": 0,
@@ -72,7 +77,9 @@ def parse_session(session_path: Path) -> dict[str, int | float]:
 
 
 def summarize_run(run_dir: Path) -> RunSummary | None:
-    """Build a RunSummary from one result directory, or return None when meta is missing."""
+    """
+    Build a RunSummary from one result directory, or return None when meta is missing.
+    """
     meta_path = run_dir / "meta.json"
     if not meta_path.exists():
         return None
@@ -100,7 +107,9 @@ def summarize_run(run_dir: Path) -> RunSummary | None:
 
 
 def render_report(runs: list[RunSummary]) -> str:
-    """Render a Markdown report for the provided runs."""
+    """
+    Render a Markdown report for the provided runs.
+    """
     if not runs:
         return "# Benchmark Cost Report\n\nNo completed result directories were found.\n"
     lines = [
@@ -139,7 +148,9 @@ def render_report(runs: list[RunSummary]) -> str:
 
 
 def main() -> int:
-    """Parse arguments, aggregate runs, and print the report."""
+    """
+    Parse arguments, aggregate runs, and print the report.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--results",

@@ -31,10 +31,21 @@ Then complete the manual checks for your environment.
 - [ ] Every agent, command, and hat has a provenance header.
 - [ ] `docs/provenance/registry.yml` points only to existing local paths.
 - [ ] Every `docs/` page outside `decisions/` has status, last-verified, and evidence fields.
-- [ ] Comments follow AGENTS.md Section 2C: file headers and function documentation only.
+- [ ] Comments follow AGENTS.md Section 2C across `scripts/`, `packages/`, `skills/`, and `tests/`: file headers and function documentation only, with block-form Python docstrings, JSDoc for TypeScript, and XML documentation for C#.
 - [ ] No inline comments or commented-out code in scripts, configs, or examples.
 - [ ] Relative documentation links resolve.
 - [ ] External links use maintained sources (run `--links` when useful).
+
+## CLI
+
+- [ ] `python3 -m pip wheel ./packages/ote_cli --no-deps` builds a wheel.
+- [ ] `ote --version` matches `VERSION`.
+- [ ] `ote doctor --json` exits 0 with no failures.
+- [ ] `ote install --dry-run` lists files and writes nothing.
+- [ ] `ote install --apply` writes a lock and state, and a second apply reports `already up to date`.
+- [ ] `ote update --check` exits 0 on a clean target and 1 after a managed file is modified.
+- [ ] `ote uninstall` without `--yes` refuses; with `--apply --yes` removes only unmodified managed files.
+- [ ] `ote rollback` lists backups without changing files.
 
 ## OpenCode
 

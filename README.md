@@ -53,6 +53,7 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 | Ralph | Core config + 4 official hat collections | [`configs/ralph/`](configs/ralph) |
 | Code intelligence | ripgrep, ast-grep, Serena, CodeGraph | [`docs/code-intelligence/`](docs/code-intelligence) |
 | Automation | Install, validate, benchmark, backup, restore | [`scripts/`](scripts) |
+| CLI | `ote` install, diagnostics, update, rollback | [`packages/ote_cli`](packages/ote_cli) |
 | Examples | TypeScript, C#, multi-agent workflows | [`examples/`](examples) |
 | Benchmarks | Methodology, tasks, harness, results | [`benchmarks/`](benchmarks) |
 | Documentation | Research, decisions, guides, provenance | [`docs/`](docs) |
@@ -70,8 +71,9 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 | MCP startup overhead | Narrow `debug agents` measurement recorded |
 | Benchmarks | Deferred by decision; no published results |
 | Real-repository pilots | Repositories selected and pinned; execution pending |
-| CI | Green on Ubuntu and macOS for run [43227870143](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/actions/runs/43227870143) |
-| Repository tests | 70 unit and integration tests; run with `make test` |
+| CI | Green on Ubuntu and macOS for run [43227870143](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/actions/runs/43227870143); now six jobs including `cli` |
+| Repository tests | 132 unit and integration tests; run with `make test` |
+| `ote` CLI | Install, uninstall, update check, rollback, doctor verified locally and in the `cli` job |
 
 ## Architecture
 
@@ -118,7 +120,16 @@ The installer defaults to check-only, prints every action, and never edits `~/.c
 ./scripts/installation/install.sh --apply --only opencode,agents,commands,skills,ralph
 ```
 
-This writes `.opencode/` and `.ralph/` in the current project. To target another project, add `--target /path/to/project`. To replace an existing managed configuration without leaving removed files behind, add `--clean`.
+Or use the CLI, which plans first, writes a lock, and supports rollback:
+
+```bash
+uv tool install ./packages/ote_cli
+ote install --profile minimal --target /path/to/project --dry-run
+ote install --profile minimal --target /path/to/project --apply
+```
+
+This writes `.opencode/` and `.ralph/` in the target project. To replace an existing
+managed configuration without leaving removed files behind, add `--clean`.
 
 ### 4. Install the code-intelligence tools
 
@@ -576,12 +587,13 @@ make test        # unit and integration suites
 make validate    # validator, frontmatter, provenance, permissions, docs status
 make lint        # shell syntax and ShellCheck when installed
 make ci          # validate + test, the default gate
+make ote ARGS="doctor"   # run the CLI from the checkout
 ```
 
 | Layer | Covers |
 | --- | --- |
-| Unit | Validator rules, fixtures, repository invariants, version file, docs status |
-| Integration | Validation entry points, benchmark dry-run, installer safety, OpenCode discovery |
+| Unit | Validator rules, fixtures, repository invariants, version file, docs status, CLI parser, lock file, installer plan |
+| Integration | Validation entry points, benchmark dry-run, installer safety, OpenCode discovery, `ote` install/update/uninstall lifecycle |
 
 See [testing the repository](docs/architecture/testing.md) for fixtures, conventions, and
 how to add a test, and [CI diagnosis](docs/troubleshooting/ci.md) for real workflow failures
@@ -611,6 +623,7 @@ The benchmark harness is reproducible, but **no results are published yet**. Thi
 ├── examples/                       # TypeScript, C#, multi-agent fixtures
 ├── benchmarks/                     # methodology, tasks, harness, results
 ├── scripts/                        # install, validate, benchmark, maintain
+├── packages/ote_cli/               # the ote command line
 ├── tests/                          # unit, integration, and fixtures
 ├── AGENTS.md                       # engineering rules
 ├── VERSION                         # semantic version for releases
@@ -626,6 +639,8 @@ The benchmark harness is reproducible, but **no results are published yet**. Thi
 | [Code intelligence installation](docs/installation/code-intelligence.md) | ripgrep, ast-grep, Serena, CodeGraph |
 | [Ralph installation](docs/installation/ralph.md) | Install, preflight, first run |
 | [OpenCode V2 configuration](docs/configuration/opencode-v2.md) | Agents, permissions, MCP, compaction, model routing |
+| [CLI reference](docs/cli/README.md) | `ote` commands, lock file, exit codes, safety |
+| [Install the CLI](docs/installation/ote-cli.md) | uv, pipx, wheel, verification |
 | [Agent roles](docs/agents/roles.md) | Responsibilities and delegation rules |
 | [Artifact compatibility](docs/agents/compatibility.md) | OpenCode compatibility and runtime status |
 | [Real-repository pilots](docs/pilots/README.md) | Selected repositories and pilot procedure |

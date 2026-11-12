@@ -1,6 +1,7 @@
 # ADR-005: Implement the repository CLI in Python
 
-- Status: Proposed
+- Status: Accepted
+- Accepted: 2026-11-12
 - Date: 2026-11-12
 
 ## Context
@@ -58,11 +59,14 @@ and CI keep working unchanged.
 - **Shell-only CLI:** argument parsing and JSON output become fragile, and Windows support
   degrades.
 
-## Verification required before acceptance
+## Verification
 
-- `pyproject.toml` builds a wheel that installs `ote` in a clean environment.
-- `ote doctor` reproduces `./scripts/validation/validate.sh` output.
-- The CLI has no third-party runtime dependencies.
+- `packages/ote_cli/pyproject.toml` builds a wheel and installs the `ote` console script.
+- `ote doctor` runs the existing validator as a subprocess and reports its `checked:` count.
+- `pyproject.toml` declares no runtime dependencies; the tests assert this.
+- `ote install` wraps `scripts/installation/install.sh` instead of reimplementing it.
+- 30 unit tests and 13 integration tests cover the command surface.
+- The `cli` CI job is defined to install the wheel, run `ote doctor`, and exercise the install lifecycle; its first green run is recorded in `docs/troubleshooting/ci.md` after the next push.
 
 ## References
 

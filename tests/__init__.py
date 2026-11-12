@@ -1,1 +1,3 @@
-"""Repository test suite shared infrastructure."""
+"""
+Repository test suite shared infrastructure.
+"""

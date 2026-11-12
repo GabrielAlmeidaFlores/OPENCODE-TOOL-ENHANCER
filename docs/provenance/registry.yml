@@ -1,5 +1,8 @@
-# Provenance registry for every reusable artifact.
-# Required by AGENTS.md Section 2A. Keep this file in sync with frontmatter/comments.
+# Name: Provenance registry
+# Purpose: Records the upstream author, repository, commit, license, and local modification for every reusable artifact.
+# Usage: Read by the validator, the CLI, and maintainers when adding or updating an artifact.
+# Validation: scripts/validation/validate_config.py
+# References: AGENTS.md Section 2A, docs/provenance/README.md
 version: 1
 updated: "2026-11-12"
 
@@ -176,7 +179,7 @@ skills:
     author: "Jesse Vincent"
     author_url: "https://github.com/obra"
     retrieved: "2026-11-11"
-    modified: "SKILL.md metadata only; supporting files copied as-is"
+    modified: "SKILL.md metadata only; find-polluter.sh uses documented functions and a standardized header, and condition-based-waiting-example.ts uses JSDoc instead of line comments, per AGENTS.md Section 2C"
   - id: writing-plans
     local: "skills/writing-plans/SKILL.md"
     source: superpowers
@@ -216,7 +219,7 @@ skills:
     author: "Seth Hobson"
     author_url: "https://github.com/wshobson"
     retrieved: "2026-11-11"
-    modified: "SKILL.md metadata only; supporting files copied as-is"
+    modified: "SKILL.md metadata only; rest-api-template.py comments replaced with docstrings per AGENTS.md Section 2C; other supporting files copied as-is"
   - id: database-migration
     local: "skills/database-migration/SKILL.md"
     source: wshobson
@@ -417,6 +420,11 @@ original_artifacts:
     kind: "fixture"
     author: "OPENCODE-TOOL-ENHANCER contributors"
     justification: "Project-specific test suite, deliberately broken fixtures, and build entry points for the repository's own tooling. Fixtures are test inputs only and must never be installed, cataloged, or presented as reusable agents, skills, or commands."
+  - id: ote-cli
+    local: "packages/ote_cli/**"
+    kind: "glue"
+    author: "OPENCODE-TOOL-ENHANCER contributors"
+    justification: "Repository-specific Python wrapper over the existing installer, validator, backup, and restore scripts. The command surface and installer UX were informed by weisser-dev/awesome-opencode (MIT) and DVNghiem/FlowDeck (MIT); the lock file concept follows juanmanueldaza/nerv (Apache-2.0). No upstream code was copied; the implementation is original and dependency-free."
   - id: project-documentation
     local: "docs/**"
     kind: "original-documentation"

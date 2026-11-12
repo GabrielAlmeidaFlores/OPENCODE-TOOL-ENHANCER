@@ -6,6 +6,14 @@ All notable changes to this repository are documented here.
 
 ### Added
 
+- `ote` command line in `packages/ote_cli`: `doctor`, `install`, `uninstall`, `update --check`, and `rollback`, with deferred commands registered for later phases.
+- `ote.lock.json` records the source commit, version, source digest, profile, components, and a SHA-256 digest per installed file.
+- `ote doctor` combines repository checks, dependency checks, the validator, lock drift, and MCP connectivity.
+- `ote install` plans by default, backs up before overwrite, delegates to the shell installer, and is idempotent.
+- `ote uninstall` only removes lock-listed files inside the target and preserves modified files unless `--force` is given.
+- `ote rollback` lists and restores CLI backups through the existing restore script.
+- `Makefile` targets `ote` and `build-cli`.
+- CI job `cli` builds the wheel, installs it, runs `ote doctor`, and exercises the install lifecycle.
 - `VERSION` file for release and update checks.
 - Phase 0 baseline record with frozen environment, versions, and validation output.
 - ADR-005 for the Python CLI stack, ADR-006 for a single catalog source of truth, and ADR-007 for Markdown memory without a vector store.
@@ -32,6 +40,22 @@ All notable changes to this repository are documented here.
 - OpenCode 2.2.7 keeps `run --agent`, `--model`, `--format json`, and `stats --cost --json`.
 - Ralph hats support `backend_args` (alias `args`), enabling per-hat OpenCode agent routing.
 - CodeGraph is MIT licensed and exposes `codegraph serve --mcp`.
+
+### Fixed
+
+- `ote doctor` now reports a missing OpenCode binary as a failed check instead of aborting; external command capture returns code 127 or 124 for missing executables and timeouts.
+- A no-op `ote install --apply` refreshes the recorded source commit, so `ote update --check` no longer stays non-zero after a non-artifact commit.
+- Installation backups archive only the target's `.opencode` and `.ralph`; the global `~/.config/opencode` is no longer copied into the project.
+- External command failures such as a failed backup now produce a clean error instead of a Python traceback.
+- `ote install --apply` prints the installer output and names tool components that may install globally.
+- Skill installation skips `__pycache__`, `.pyc`, `.DS_Store`, and `node_modules`.
+- Shell syntax and ShellCheck now cover `skills/**/*.sh`.
+- Bare `make` prints help via `.DEFAULT_GOAL`; run `make validate` for the previous behavior.
+
+### Changed
+
+- Normalized every repository file to AGENTS.md Section 2C: vendored skill assets now use docstrings and documented functions instead of inline comments, the provenance registry and `.gitignore` use standardized header blocks, and the validator scans `skills/` and `tests/` in addition to `scripts/` and `packages/`, rejects non-documentation TypeScript and C# comments, and requires block-form Python docstrings with the triple quotes on their own lines.
+- `tests/fixtures/` is the only documented exception, because those files must contain prohibited patterns to exercise the validator.
 
 ### Fixed
 

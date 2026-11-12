@@ -1,1 +1,3 @@
-"""Integration tests for repository entry points and OpenCode runtime."""
+"""
+Integration tests for repository entry points and OpenCode runtime.
+"""

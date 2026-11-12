@@ -20,6 +20,7 @@ smoke checks were performed manually.
 | Unit | `tests/unit/` | Yes | No | No |
 | Integration | `tests/integration/` | Yes | No | No |
 | Runtime discovery | `tests/integration/test_opencode_runtime.py` | Yes, when OpenCode is installed | No | No |
+| CLI lifecycle | `tests/integration/test_ote_commands.py` | Yes, in the `cli` job | No | No |
 | Benchmark execution | `benchmarks/harness/` | Dry-run only | No | Yes, for real runs |
 
 ## Running the suite
@@ -84,14 +85,18 @@ never be installed.
 ## What the integration tests assert
 
 - `scripts/validation/validate.sh` exits zero on the repository.
+- The comment policy scans `scripts/`, `packages/`, `skills/`, and `tests/`, plus TypeScript and C# sources; Python docstrings must use block form with the quotes on their own lines. Only `tests/fixtures/` is exempt because those files must contain prohibited patterns.
 - `validate_config.py` exits zero and prints a `checked:` count.
 - Every benchmark task dry-runs without an OpenCode binary and without a model.
 - The installer defaults to check-only and creates no files.
 - OpenCode discovers all twelve agents when the profile is installed into a temporary
   target, and the coordinator is `primary`.
+- The CLI plans without writing, applies into a temporary target, re-applies without
+  changing the lock, detects tampered files, refuses destructive commands without
+  confirmation, and removes only unmodified managed files.
 
-The last check skips cleanly when `opencode` is not on `PATH`, so contributors without the
-binary still get a green suite.
+The OpenCode checks skip cleanly when `opencode` is not on `PATH`, so contributors without
+the binary still get a green suite.
 
 ## Adding a test
 
@@ -112,7 +117,8 @@ binary still get a green suite.
 - ShellCheck on Linux;
 - example builds (TypeScript and C#);
 - OpenCode profile installation and discovery;
-- benchmark dry-run for every task.
+- benchmark dry-run for every task;
+- the `cli` job: wheel build, `ote doctor`, and the install/update/uninstall lifecycle.
 
 Paid model calls are excluded from the default workflow. Real benchmark runs are explicit
 and require `OPENCODE_BENCH_MODEL`.

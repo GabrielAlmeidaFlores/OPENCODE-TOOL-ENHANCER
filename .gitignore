@@ -1,26 +1,27 @@
-# OS
+# Name: Repository ignore rules
+# Purpose: Keeps generated, local, and secret files out of version control.
+# Usage: Applied automatically by Git for this working tree.
+# Validation: git status --ignored
+# References: AGENTS.md Section 2B, docs/troubleshooting/README.md
+
 .DS_Store
 Thumbs.db
 
-# OpenCode local state
 .opencode-backup-*/
 .opencode/node_modules/
 .opencode/cache/
 .opencode/state/
 
-# Ralph state
 .ralph-isolated/
 .agent/
 .ralph/agent/
 .ralph/runs/
 .ralph/*.lock
 
-# Code intelligence indexes
 .codegraph/
 .cache/
 .serena/
 
-# Node
 node_modules/
 dist/
 build/
@@ -28,23 +29,22 @@ coverage/
 .next/
 .turbo/
 
-# .NET
 bin/
 obj/
 *.user
 
-# Rust
 target/
 
-# Python
 __pycache__/
 .venv/
 *.pyc
+*.egg-info/
 
-# Generated context
 repomix-output.*
 
-# Secrets and machine-local overrides
 .env
 .env.*
 !.env.example
+
+.ote/state.json
+.ote/backups/

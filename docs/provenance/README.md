@@ -49,6 +49,7 @@ Every artifact records its author in three places:
 | `cost-report` | glue | Session artifact aggregation |
 | `repository-tests` | fixture | Unit and integration tests, broken fixtures, build entry points |
 | `project-documentation` | original-documentation | ADRs, research, guides, and operating docs |
+| `ote-cli` | glue | CLI wrapper over the existing scripts; original implementation |
 
 ## Artifact mapping
 
@@ -66,7 +67,7 @@ Every artifact records its author in three places:
 | `agents/security-reviewer` | `volt/categories/04-quality-security/security-auditor.md` | OpenCode frontmatter |
 | `agents/performance-analyst` | `volt/categories/04-quality-security/performance-engineer.md` | OpenCode frontmatter |
 | `agents/documentation-engineer` | `volt/categories/06-developer-experience/documentation-engineer.md` | OpenCode frontmatter |
-| `skills/*` | see `registry.yml` | none or metadata only |
+| `skills/*` | see `registry.yml` | metadata only; three supporting assets normalized to the comment policy |
 | `commands/*` | see `registry.yml` | OpenCode frontmatter |
 | `configs/ralph/hats/*` | Ralph `presets/*.yml` | extracted hats + per-hat OpenCode backend |
 

@@ -151,6 +151,9 @@ completed on 2026-11-12 with every job successful:
 This confirms the harness fix, the offline suite on both operating systems, OpenCode
 agent discovery with a pinned version, and benchmark dry-runs.
 
+The `cli` job was added with Phase 2. Its first green run is recorded after the next push,
+along with the updated action majors.
+
 Action major versions were updated after this run (`checkout@v7`, `setup-python@v7`,
 `setup-node@v7`, `setup-dotnet@v6`) to remove Node.js 20 deprecation warnings and were
 re-confirmed green in run
@@ -165,6 +168,7 @@ re-confirmed green in run
 | `examples` | TypeScript and C# builds | Node, .NET |
 | `opencode-profile` | Install profile and verify discovery | Node, OpenCode V2 |
 | `harness` | Benchmark dry-run for every task | Python |
+| `cli` | Builds the wheel, runs `ote doctor`, exercises install, update, and uninstall | Python, Node, OpenCode V2 |
 
 ## References
 
