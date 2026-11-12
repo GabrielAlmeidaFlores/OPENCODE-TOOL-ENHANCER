@@ -16,7 +16,7 @@ Status reflects the repository, not intentions. All planned phases are complete.
 
 ## Next after Phase 7
 
-- Discovery round 1 is complete: 15/15 passed after funded reruns. The Hono code-change round is 5/5 with targeted tests; CleanArchitecture and turborepo code rounds remain pending.
+- Discovery round 1 is complete: 15/15. Code-change rounds: Hono 5/5 independently reviewed; CleanArchitecture 5/5 with build/unit tests; turborepo 1/5 before quota exhaustion.
 - Evaluate optional task board and memory-injection plugin only after the CLI, memory, and observability are stable.
 - Keep benchmarks deferred until correctness and rework measurement is reproducible.
 

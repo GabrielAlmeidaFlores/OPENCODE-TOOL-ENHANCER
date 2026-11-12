@@ -64,6 +64,8 @@ nav:
       - Memory plugin: plugin/README.md
       - Round 1 results: pilots/results/round-1.md
       - Hono code round: pilots/results/code-round-hono.md
+      - CleanArchitecture code round: pilots/results/code-round-cleanarch.md
+      - turborepo code round: pilots/results/code-round-turbo.md
       - Hono smoke: pilots/results/hono-smoke.md
   - Configuration:
       - OpenCode V2: configuration/opencode-v2.md
