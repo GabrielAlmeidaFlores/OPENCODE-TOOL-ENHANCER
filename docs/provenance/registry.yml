@@ -425,6 +425,11 @@ original_artifacts:
     kind: "glue"
     author: "OPENCODE-TOOL-ENHANCER contributors"
     justification: "Repository-specific Python wrapper over the existing installer, validator, backup, and restore scripts. The command surface and installer UX were informed by weisser-dev/awesome-opencode (MIT) and DVNghiem/FlowDeck (MIT); the lock file concept follows juanmanueldaza/nerv (Apache-2.0). No upstream code was copied; the implementation is original and dependency-free."
+  - id: catalog-and-profiles
+    local: "catalog/**, profiles/**, scripts/catalog/**"
+    kind: "glue"
+    author: "OPENCODE-TOOL-ENHANCER contributors"
+    justification: "Schema-first catalog generator and restricted-YAML profile loader. The catalog schema shape follows awesome-opencode (CC0-1.0) and the registry structure in OpenAgentsControl (MIT); the profile concept follows weisser-dev/awesome-opencode (MIT). No upstream code was copied; the implementation is original Python."
   - id: project-documentation
     local: "docs/**"
     kind: "original-documentation"

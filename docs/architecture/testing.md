@@ -94,6 +94,7 @@ never be installed.
 - The CLI plans without writing, applies into a temporary target, re-applies without
   changing the lock, detects tampered files, refuses destructive commands without
   confirmation, and removes only unmodified managed files.
+- Profiles load and validate, and the catalog verifies its schema, counts, and local paths.
 
 The OpenCode checks skip cleanly when `opencode` is not on `PATH`, so contributors without
 the binary still get a green suite.

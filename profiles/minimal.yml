@@ -1,0 +1,14 @@
+# Name: Minimal profile
+# Purpose: Installs the OpenCode configuration only, without external tools.
+# Usage: ote install --profile minimal --target <project>
+# Validation: ote profile verify
+# References: docs/profiles/README.md, docs/cli/README.md
+
+name: minimal
+description: Configuration only: opencode, agents, commands, skills, and Ralph.
+components:
+  - opencode
+  - agents
+  - commands
+  - skills
+  - ralph

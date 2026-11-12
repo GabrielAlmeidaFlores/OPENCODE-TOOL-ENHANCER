@@ -1,0 +1,17 @@
+# Name: Full profile
+# Purpose: Installs the configuration plus ast-grep, Serena, and CodeGraph.
+# Usage: ote install --profile full --target <project>
+# Validation: ote profile verify
+# References: docs/profiles/README.md, docs/cli/README.md
+
+name: full
+description: Standard plus Serena and CodeGraph.
+components:
+  - opencode
+  - agents
+  - commands
+  - skills
+  - ralph
+  - ast-grep
+  - serena
+  - codegraph

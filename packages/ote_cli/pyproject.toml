@@ -20,6 +20,9 @@ classifiers = [
   "Topic :: Software Development :: Build Tools",
 ]
 
+[project.optional-dependencies]
+catalog = ["pyyaml>=6.0"]
+
 [project.urls]
 Homepage = "https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER"
 Documentation = "https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/tree/main/docs"

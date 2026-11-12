@@ -6,6 +6,14 @@ All notable changes to this repository are documented here.
 
 ### Added
 
+- Declarative profiles under `profiles/` with a restricted-YAML loader and `ote profile list|show|verify|use`.
+- Generated, schema-validated artifact catalog under `catalog/` with `ote catalog list|search|verify|build`.
+- OpenCode V1/V2 compatibility matrix exposed by `ote compat`, with an explicit not-a-benchmark disclaimer.
+- Catalog drift checks in the `static` and `cli` CI jobs, a tracked-files guard, and a `make catalog-check` target.
+- Optional `catalog` extra (`pyyaml`) for CLI environments that build the catalog.
+- 34 catalog entries covering agents, skills, commands, and Ralph hats.
+- Phase 3 tests for profiles, catalog validation, catalog search, and the compatibility matrix.
+
 - `ote` command line in `packages/ote_cli`: `doctor`, `install`, `uninstall`, `update --check`, and `rollback`, with deferred commands registered for later phases.
 - `ote.lock.json` records the source commit, version, source digest, profile, components, and a SHA-256 digest per installed file.
 - `ote doctor` combines repository checks, dependency checks, the validator, lock drift, and MCP connectivity.

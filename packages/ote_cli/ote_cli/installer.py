@@ -1,15 +1,13 @@
 """
 Install, uninstall, and rollback orchestration.
 
-Public API: :data:`PROFILES`, :func:`resolve_components`, :func:`plan_files`,
-:func:`install`, :func:`uninstall`, and :func:`list_backups`.
+Public API: :func:`plan_files`, :func:`install`, :func:`uninstall`,
+:func:`list_backups`, :func:`source_metadata`, and :func:`source_digest`.
 
 Side effects: commands with ``apply=True`` write into the target project and
 delegate to the repository's shell installer. Nothing is staged or committed.
 
-Module constants: ``PROFILES`` maps profile names to component lists,
-``FILE_COMPONENTS`` and ``TOOL_COMPONENTS`` split tracked files from delegated
-tool installs, and ``STATE_SCHEMA_VERSION`` versions the state file.
+Module constants: ``STATE_SCHEMA_VERSION`` versions the state file.
 """
 from __future__ import annotations
 
@@ -25,40 +23,7 @@ from .locking import PlannedFile, build_lock, lock_drift, read_lock, sha256_file
 from .paths import OteError, backup_root, is_within, lock_path, state_path
 from .process import capture, git_commit, git_dirty, git_remote, run
 
-FILE_COMPONENTS = ("opencode", "agents", "commands", "skills", "ralph")
-TOOL_COMPONENTS = ("ast-grep", "serena", "codegraph")
-
-PROFILES: dict[str, dict[str, Any]] = {
-    "minimal": {
-        "description": "Configuration only: agents, commands, skills, and Ralph.",
-        "components": list(FILE_COMPONENTS),
-    },
-    "standard": {
-        "description": "Minimal plus ast-grep for structural search.",
-        "components": [*FILE_COMPONENTS, "ast-grep"],
-    },
-    "full": {
-        "description": "Standard plus Serena and CodeGraph.",
-        "components": [*FILE_COMPONENTS, "ast-grep", "serena", "codegraph"],
-    },
-}
-
 STATE_SCHEMA_VERSION = 1
-
-
-def resolve_components(profile: str, only: str | None) -> list[str]:
-    """
-    Return the ordered component list for a profile, or parse an explicit list.
-    """
-    if only:
-        selected = [item.strip() for item in only.split(",") if item.strip()]
-        unknown = [item for item in selected if item not in FILE_COMPONENTS + TOOL_COMPONENTS]
-        if unknown:
-            raise OteError(f"unknown components: {', '.join(unknown)}")
-        return selected
-    if profile not in PROFILES:
-        raise OteError(f"unknown profile: {profile}")
-    return list(PROFILES[profile]["components"])
 
 
 def _is_generated(path: Path) -> bool:

@@ -41,7 +41,16 @@ Use this checklist before tagging a release. A checked item must have reproducib
 - [ ] `ote uninstall --apply --yes` removes managed files and keeps modified ones.
 - [ ] `ote rollback` lists backups without writing.
 
+## Profiles and catalog
+
+- [ ] `ote profile verify` passes.
+- [ ] `ote catalog verify` passes.
+- [ ] `ote catalog verify --check-drift` passes.
+- [ ] `catalog/registry.json` and `catalog/index.md` match the provenance registry.
+- [ ] `ote compat` reflects the pinned OpenCode versions.
+
 ## Orchestration
+
 
 - [ ] `ralph preflight` passes.
 - [ ] `ralph run --dry-run` works for each collection.

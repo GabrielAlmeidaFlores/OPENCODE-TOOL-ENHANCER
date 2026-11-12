@@ -11,6 +11,7 @@ from pathlib import Path
 from tests import support
 
 from ote_cli import installer
+from ote_cli.profiles import FILE_COMPONENTS
 from ote_cli.locking import write_json
 
 
@@ -26,7 +27,7 @@ class PlanTests(unittest.TestCase):
         planned = installer.plan_files(
             support.REPO_ROOT,
             support.REPO_ROOT / "target",
-            list(installer.FILE_COMPONENTS),
+            list(FILE_COMPONENTS),
         )
         destinations = {item.destination.relative_to(support.REPO_ROOT / "target").as_posix() for item in planned}
         self.assertIn(".opencode/opencode.jsonc", destinations)
@@ -52,7 +53,7 @@ class PlanTests(unittest.TestCase):
         """
         Planning fails early when an artifact is missing.
         """
-        planned = installer.plan_files(support.REPO_ROOT, Path("/tmp/ote-plan"), list(installer.FILE_COMPONENTS))
+        planned = installer.plan_files(support.REPO_ROOT, Path("/tmp/ote-plan"), list(FILE_COMPONENTS))
         self.assertTrue(all(item.source.is_file() for item in planned))
 
 

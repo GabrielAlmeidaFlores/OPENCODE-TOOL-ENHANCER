@@ -1,0 +1,15 @@
+# Name: Standard profile
+# Purpose: Installs the configuration plus ast-grep for structural search.
+# Usage: ote install --profile standard --target <project>
+# Validation: ote profile verify
+# References: docs/profiles/README.md, docs/cli/README.md
+
+name: standard
+description: Minimal plus ast-grep for structural search.
+components:
+  - opencode
+  - agents
+  - commands
+  - skills
+  - ralph
+  - ast-grep

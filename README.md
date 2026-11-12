@@ -54,6 +54,8 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 | Code intelligence | ripgrep, ast-grep, Serena, CodeGraph | [`docs/code-intelligence/`](docs/code-intelligence) |
 | Automation | Install, validate, benchmark, backup, restore | [`scripts/`](scripts) |
 | CLI | `ote` install, diagnostics, update, rollback | [`packages/ote_cli`](packages/ote_cli) |
+| Profiles | Declarative install profiles | [`profiles/`](profiles) |
+| Catalog | Generated, verified artifact list | [`catalog/`](catalog) |
 | Examples | TypeScript, C#, multi-agent workflows | [`examples/`](examples) |
 | Benchmarks | Methodology, tasks, harness, results | [`benchmarks/`](benchmarks) |
 | Documentation | Research, decisions, guides, provenance | [`docs/`](docs) |
@@ -72,8 +74,9 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 | Benchmarks | Deferred by decision; no published results |
 | Real-repository pilots | Repositories selected and pinned; execution pending |
 | CI | Green on Ubuntu and macOS for run [43234273370](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/actions/runs/43234273370); six jobs including `cli` |
-| Repository tests | 132 unit and integration tests; run with `make test` |
+| Repository tests | 165 unit and integration tests; run with `make test` |
 | `ote` CLI | Install, uninstall, update check, rollback, doctor verified locally and in the `cli` job |
+| Profiles and catalog | Three manifests and 34 catalog entries verified locally; CI drift and profile checks defined |
 
 ## Architecture
 
@@ -624,6 +627,8 @@ The benchmark harness is reproducible, but **no results are published yet**. Thi
 ├── benchmarks/                     # methodology, tasks, harness, results
 ├── scripts/                        # install, validate, benchmark, maintain
 ├── packages/ote_cli/               # the ote command line
+├── profiles/                       # install profile manifests
+├── catalog/                        # generated and verified artifact catalog
 ├── tests/                          # unit, integration, and fixtures
 ├── AGENTS.md                       # engineering rules
 ├── VERSION                         # semantic version for releases
@@ -640,6 +645,8 @@ The benchmark harness is reproducible, but **no results are published yet**. Thi
 | [Ralph installation](docs/installation/ralph.md) | Install, preflight, first run |
 | [OpenCode V2 configuration](docs/configuration/opencode-v2.md) | Agents, permissions, MCP, compaction, model routing |
 | [CLI reference](docs/cli/README.md) | `ote` commands, lock file, exit codes, safety |
+| [Profiles](docs/profiles/README.md) | Manifest format and available profiles |
+| [Verified catalog](docs/catalog/README.md) | Catalog schema, generation, and drift checks |
 | [Install the CLI](docs/installation/ote-cli.md) | uv, pipx, wheel, verification |
 | [Agent roles](docs/agents/roles.md) | Responsibilities and delegation rules |
 | [Artifact compatibility](docs/agents/compatibility.md) | OpenCode compatibility and runtime status |

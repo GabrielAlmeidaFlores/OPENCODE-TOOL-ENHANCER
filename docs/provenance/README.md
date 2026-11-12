@@ -49,6 +49,7 @@ Every artifact records its author in three places:
 | `cost-report` | glue | Session artifact aggregation |
 | `repository-tests` | fixture | Unit and integration tests, broken fixtures, build entry points |
 | `project-documentation` | original-documentation | ADRs, research, guides, and operating docs |
+| `catalog-and-profiles` | glue | Catalog generator and profile loader; original implementation |
 | `ote-cli` | glue | CLI wrapper over the existing scripts; original implementation |
 
 ## Artifact mapping

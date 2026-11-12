@@ -4,6 +4,10 @@
 
 This page records how the sourced artifacts behave in OpenCode 2.2.x. It separates static validation from runtime smoke tests so a passing check is not mistaken for a full evaluation.
 
+## Version matrix
+
+Run `ote compat` for the OpenCode V1/V2 feature matrix. Cells that were not verified are marked `not verified`. The matrix records supported features only; it is not a performance or benchmark result.
+
 ## Agents
 
 All twelve custom agents are discovered by `opencode debug agents`. The coordinator is primary; the other eleven are subagents.

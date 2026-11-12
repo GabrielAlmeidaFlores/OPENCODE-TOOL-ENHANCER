@@ -21,21 +21,15 @@ from typing import Any, Sequence
 from . import __version__
 from .doctor import as_dict as doctor_dict
 from .doctor import run_checks, summarize
-from .installer import (
-    PROFILES,
-    install,
-    list_backups,
-    resolve_components,
-    uninstall,
-)
+from . import catalog as catalog_module
+from . import compat as compat_module
+from .installer import install, list_backups, uninstall
 from .paths import OteError, find_repo_root, resolve_target
 from .process import run
+from .profiles import DEFAULT_PROFILE, load_profiles, resolve_components, verify_profiles
 from .updater import check as update_check
 
 DEFERRED = {
-    "profile": "Phase 3 (profile matrix)",
-    "catalog": "Phase 3 (verified catalog)",
-    "compat": "Phase 3 (compatibility adapter)",
     "verify": "Phase 4 (verification engine)",
     "memory": "Phase 5 (Markdown memory)",
     "spec": "Phase 5 (spec workflow)",
@@ -67,7 +61,7 @@ def _build_parser() -> argparse.ArgumentParser:
     install_parser = subparsers.add_parser(
         "install", parents=[common], help="plan or apply an installation"
     )
-    install_parser.add_argument("--profile", choices=sorted(PROFILES), default="standard")
+    install_parser.add_argument("--profile", default=DEFAULT_PROFILE, help="profile manifest name (default: standard)")
     install_parser.add_argument("--only", help="comma-separated components instead of a profile")
     mode = install_parser.add_mutually_exclusive_group()
     mode.add_argument("--apply", action="store_true", help="execute the plan")
@@ -98,6 +92,36 @@ def _build_parser() -> argparse.ArgumentParser:
     rollback_parser.add_argument("--backup", help="backup directory to restore")
     rollback_parser.add_argument("--apply", action="store_true", help="execute the restore")
     rollback_parser.add_argument("--yes", action="store_true", help="confirm the overwrite")
+
+    profile_parser = subparsers.add_parser(
+        "profile", parents=[common], help="list, show, verify, or apply profile manifests"
+    )
+    profile_commands = profile_parser.add_subparsers(dest="profile_command", required=True)
+    profile_commands.add_parser("list", parents=[common], help="list available profiles")
+    profile_show = profile_commands.add_parser("show", parents=[common], help="show one profile")
+    profile_show.add_argument("name")
+    profile_commands.add_parser("verify", parents=[common], help="validate every profile manifest")
+    profile_use = profile_commands.add_parser("use", parents=[common], help="apply a profile")
+    profile_use.add_argument("name")
+    use_mode = profile_use.add_mutually_exclusive_group()
+    use_mode.add_argument("--apply", action="store_true", help="execute the plan")
+    use_mode.add_argument("--dry-run", action="store_true", help="print the plan without writing (default)")
+    profile_use.add_argument("--force", action="store_true", help="apply even when already current")
+    profile_use.add_argument("--clean", action="store_true", help="back up and replace managed directories")
+
+    catalog_parser = subparsers.add_parser(
+        "catalog", parents=[common], help="list, search, verify, or build the artifact catalog"
+    )
+    catalog_commands = catalog_parser.add_subparsers(dest="catalog_command", required=True)
+    catalog_list = catalog_commands.add_parser("list", parents=[common], help="list catalog entries")
+    catalog_list.add_argument("--type", help="filter by artifact type")
+    catalog_search = catalog_commands.add_parser("search", parents=[common], help="search catalog entries")
+    catalog_search.add_argument("query")
+    catalog_verify = catalog_commands.add_parser("verify", parents=[common], help="validate the catalog")
+    catalog_verify.add_argument("--check-drift", action="store_true", help="compare with the provenance registry")
+    catalog_commands.add_parser("build", parents=[common], help="regenerate the catalog")
+
+    subparsers.add_parser("compat", parents=[common], help="show the OpenCode V1/V2 compatibility matrix")
 
     for name, phase in DEFERRED.items():
         command = subparsers.add_parser(name, parents=[common], help=f"available in {phase}")
@@ -177,7 +201,8 @@ def _command_install(args: argparse.Namespace) -> int:
     """
     root = _repo(args)
     target = resolve_target(args.target)
-    components = resolve_components(args.profile, args.only)
+    profiles = load_profiles(root)
+    components = resolve_components(profiles, args.profile, args.only)
     profile = "custom" if args.only else args.profile
     result = install(
         root=root,
@@ -273,6 +298,134 @@ def _command_rollback(args: argparse.Namespace) -> int:
     return 0
 
 
+def _command_profile(args: argparse.Namespace) -> int:
+    """
+    List, show, verify, or apply profile manifests.
+    """
+    root = _repo(args)
+    action = args.profile_command
+    if action == "list":
+        profiles = load_profiles(root)
+        payload = [
+            {"name": profile.name, "description": profile.description, "components": list(profile.components)}
+            for profile in profiles.values()
+        ]
+        if args.json:
+            _emit(payload, True)
+            return 0
+        for profile in profiles.values():
+            print(f"{profile.name:<10} {profile.description}")
+        return 0
+    if action == "show":
+        profiles = load_profiles(root)
+        if args.name not in profiles:
+            raise OteError(f"unknown profile: {args.name}")
+        profile = profiles[args.name]
+        payload = {
+            "name": profile.name,
+            "description": profile.description,
+            "components": list(profile.components),
+            "path": str(profile.path),
+        }
+        if args.json:
+            _emit(payload, True)
+            return 0
+        print(f"name:        {profile.name}")
+        print(f"description: {profile.description}")
+        print(f"components:  {', '.join(profile.components)}")
+        print(f"path:        {profile.path}")
+        return 0
+    if action == "verify":
+        results = verify_profiles(root)
+        if args.json:
+            _emit({"profiles": results}, True)
+        else:
+            for result in results:
+                print(f"{result['status'].upper():<4} {result['profile']:<10} {result['detail']}")
+        return 1 if any(result["status"] == "fail" for result in results) else 0
+    profiles = load_profiles(root)
+    components = resolve_components(profiles, args.name, None)
+    target = resolve_target(args.target)
+    result = install(
+        root=root,
+        target=target,
+        profile=args.name,
+        components=components,
+        apply=args.apply,
+        force=args.force,
+        clean=args.clean,
+    )
+    if args.json:
+        _emit(result, True)
+    else:
+        _print_install(result)
+    return 0
+
+
+def _command_catalog(args: argparse.Namespace) -> int:
+    """
+    List, search, verify, or build the artifact catalog.
+    """
+    root = _repo(args)
+    action = args.catalog_command
+    if action == "build":
+        result = catalog_module.build(root)
+        print(result["output"])
+        return 0 if result["status"] == "ok" else 2
+    document = catalog_module.load_catalog(root)
+    artifacts = document.get("artifacts", [])
+    if action == "list":
+        selected = artifacts
+        if args.type:
+            selected = [entry for entry in artifacts if entry.get("type") == args.type]
+        if args.json:
+            _emit({"artifacts": selected, "count": len(selected)}, True)
+            return 0
+        for entry in selected:
+            print(f"{entry['type']:<8} {entry['id']:<28} {entry['author']:<22} {entry['license']}")
+        print(f"\n{len(selected)} artifact(s)")
+        return 0
+    if action == "search":
+        matches = catalog_module.search(document, args.query)
+        if args.json:
+            _emit({"artifacts": matches, "count": len(matches)}, True)
+            return 0
+        for entry in matches:
+            print(f"{entry['type']:<8} {entry['id']:<28} {entry['author']:<22} {entry['license']}")
+        print(f"\n{len(matches)} match(es)")
+        return 0
+    results = catalog_module.verify(root, document)
+    failures = [result for result in results if result["status"] == "fail"]
+    if args.check_drift:
+        drift = catalog_module.drift(root)
+        results.append(
+            {
+                "check": "drift",
+                "status": "ok" if drift["status"] == "ok" else "fail",
+                "detail": drift["output"] or "catalog matches the registry",
+            }
+        )
+        failures = [result for result in results if result["status"] == "fail"]
+    if args.json:
+        _emit({"results": results, "failures": len(failures)}, True)
+    else:
+        for result in results:
+            print(f"{result['status'].upper():<4} {result['check']:<24} {result['detail']}")
+        print(f"\n{len(failures)} failure(s)")
+    return 1 if failures else 0
+
+
+def _command_compat(args: argparse.Namespace) -> int:
+    """
+    Print the OpenCode V1/V2 compatibility matrix.
+    """
+    if args.json:
+        _emit(compat_module.as_dict(), True)
+    else:
+        print(compat_module.render_text())
+    return 0
+
+
 def _command_deferred(args: argparse.Namespace) -> int:
     """
     Report that a planned command is not implemented yet.
@@ -304,6 +457,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         "uninstall": _command_uninstall,
         "update": _command_update,
         "rollback": _command_rollback,
+        "profile": _command_profile,
+        "catalog": _command_catalog,
+        "compat": _command_compat,
     }
     try:
         handler = handlers.get(args.command, _command_deferred)

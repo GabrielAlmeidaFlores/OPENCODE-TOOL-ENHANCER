@@ -1,6 +1,7 @@
 # ADR-006: Make the provenance registry the single source of truth for the catalog
 
-- Status: Proposed
+- Status: Accepted
+- Accepted: 2026-11-12
 - Date: 2026-11-12
 
 ## Context
@@ -62,11 +63,13 @@ Validation runs in this order:
 | `opencode_compat` | Supported OpenCode versions |
 | `smoke_status`, `last_verified` | Verification state |
 
-## Verification required before acceptance
+## Verification
 
-- Deleting a provenance entry makes `ote catalog verify` fail.
-- Editing a generated catalog file makes CI fail.
-- Regeneration on a clean checkout produces no diff.
+- `scripts/catalog/build_catalog.py` generates `catalog/registry.json` and `catalog/index.md` from the registry.
+- `ote catalog verify` checks required fields, allowed types, duplicate identifiers, declared counts, and local paths.
+- `ote catalog verify --check-drift` fails when the committed files differ from the registry.
+- The `cli` CI job runs the drift check, so a hand-edited generated file fails.
+- Deleting a provenance entry makes the drift check fail.
 
 ## References
 

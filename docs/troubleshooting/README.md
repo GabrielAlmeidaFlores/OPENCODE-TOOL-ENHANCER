@@ -61,6 +61,10 @@
 | `ote doctor` fails on `opencode` | Missing or V1 installation | Install `@opencode/cli` 2.2.x |
 | `ote doctor` warns about `serena` or `codegraph` | Optional tools are not installed | Install them only if the profile needs them |
 | `ote` cannot find the repository | Running outside a checkout | Run from the checkout or set `OTE_REPO` |
+| `ote profile verify` fails | A manifest has a bad name, component, or syntax | Fix `profiles/<name>.yml`; see `docs/profiles/README.md` |
+| `ote catalog verify` fails | A catalog entry is missing a field or local path | Fix `docs/provenance/registry.yml`, then rebuild the catalog |
+| `ote catalog verify --check-drift` fails | Catalog files were edited by hand | Run `python3 scripts/catalog/build_catalog.py` |
+| `catalog build` fails on import | PyYAML is missing | `python3 -m pip install pyyaml` |
 | `validate.sh` fails on a new file | Required file list changed | Add the file and cover it with a test; see `docs/architecture/testing.md` |
 | `make test` fails only in CI | Python version, missing PyYAML, CRLF checkout, or uncommitted files | See `docs/troubleshooting/ci.md` |
 | CI job queued for hours | Runner availability or concurrency | Inspect with `gh run list`; see `docs/troubleshooting/ci.md` |

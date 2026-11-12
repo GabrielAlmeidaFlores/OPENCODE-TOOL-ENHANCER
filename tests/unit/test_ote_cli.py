@@ -50,6 +50,7 @@ class VersionTests(unittest.TestCase):
         with (support.CLI_PACKAGE / "pyproject.toml").open("rb") as handle:
             project = tomllib.load(handle)["project"]
         self.assertEqual(project.get("dependencies", []), [])
+        self.assertEqual(project.get("optional-dependencies", {}).get("catalog"), ["pyyaml>=6.0"])
 
 
 class ParserTests(unittest.TestCase):
@@ -82,9 +83,9 @@ class ParserTests(unittest.TestCase):
         stdout = io.StringIO()
         stderr = io.StringIO()
         with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
-            code = cli.main(["catalog"])
+            code = cli.main(["verify"])
         self.assertEqual(code, 2)
-        self.assertIn("Phase 3", stderr.getvalue())
+        self.assertIn("Phase 4", stderr.getvalue())
 
     def test_every_deferred_command_is_registered(self) -> None:
         """
@@ -180,29 +181,35 @@ class ComponentTests(unittest.TestCase):
     Tests for profile and component resolution.
     """
 
-    def test_profiles_are_ordered_and_known(self) -> None:
+    def test_profiles_are_loaded_from_manifests(self) -> None:
         """
-        Profiles expose the documented component sets.
+        Profiles expose the documented component sets from profiles/*.yml.
         """
-        self.assertEqual(
-            cli.PROFILES["minimal"]["components"],
-            ["opencode", "agents", "commands", "skills", "ralph"],
-        )
-        self.assertIn("ast-grep", cli.PROFILES["standard"]["components"])
-        self.assertIn("serena", cli.PROFILES["full"]["components"])
+        from ote_cli.profiles import load_profiles
+
+        profiles = load_profiles(support.REPO_ROOT)
+        self.assertEqual(list(profiles["minimal"].components), ["opencode", "agents", "commands", "skills", "ralph"])
+        self.assertIn("ast-grep", profiles["standard"].components)
+        self.assertIn("serena", profiles["full"].components)
 
     def test_unknown_only_component_is_rejected(self) -> None:
         """
         An unknown component is an error, not a silent skip.
         """
+        from ote_cli.profiles import load_profiles, resolve_components
+
+        profiles = load_profiles(support.REPO_ROOT)
         with self.assertRaises(OteError):
-            cli.resolve_components("minimal", "agents,nonsense")
+            resolve_components(profiles, "minimal", "agents,nonsense")
 
     def test_explicit_only_overrides_profile(self) -> None:
         """
         --only selects exactly the requested components.
         """
-        self.assertEqual(cli.resolve_components("full", "agents,commands"), ["agents", "commands"])
+        from ote_cli.profiles import load_profiles, resolve_components
+
+        profiles = load_profiles(support.REPO_ROOT)
+        self.assertEqual(resolve_components(profiles, "full", "agents,commands"), ["agents", "commands"])
 
 
 class CaptureTests(unittest.TestCase):

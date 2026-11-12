@@ -47,6 +47,16 @@ Then complete the manual checks for your environment.
 - [ ] `ote uninstall` without `--yes` refuses; with `--apply --yes` removes only unmodified managed files.
 - [ ] `ote rollback` lists backups without changing files.
 
+## Profiles and catalog
+
+- [ ] `ote profile verify` exits 0 for every manifest.
+- [ ] `ote profile use minimal --target /tmp/check --dry-run` lists files and writes nothing.
+- [ ] `ote catalog verify` reports zero failures.
+- [ ] `ote catalog verify --check-drift` matches `docs/provenance/registry.yml`.
+- [ ] `python3 scripts/catalog/build_catalog.py --check` exits 0.
+- [ ] `ote compat --json` returns the V1/V2 matrix.
+- [ ] Adding a provenance entry and regenerating changes both catalog files together.
+
 ## OpenCode
 
 - [ ] `opencode --version` is `2.2.x`.

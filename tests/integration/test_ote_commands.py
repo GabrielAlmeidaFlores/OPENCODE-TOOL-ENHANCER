@@ -199,6 +199,77 @@ class InstallLifecycleTests(unittest.TestCase):
         self.assertTrue((self.target / "ote.lock.json").is_file())
 
 
+class ProfileAndCatalogTests(unittest.TestCase):
+    """
+    Tests for the Phase 3 profile, catalog, and compatibility commands.
+    """
+
+    def test_profile_list(self) -> None:
+        """
+        Profile list prints every manifest.
+        """
+        result = run_ote("profile", "list")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        for name in ("minimal", "standard", "full"):
+            self.assertIn(name, result.stdout)
+
+    def test_profile_show(self) -> None:
+        """
+        Profile show prints components from the manifest.
+        """
+        result = run_ote("profile", "show", "standard")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("ast-grep", result.stdout)
+
+    def test_profile_verify(self) -> None:
+        """
+        Profile verify validates every manifest.
+        """
+        result = run_ote("profile", "verify")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("OK", result.stdout)
+
+    def test_profile_use_dry_run(self) -> None:
+        """
+        Profile use plans an installation without writing.
+        """
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / "project"
+            result = run_ote("profile", "use", "minimal", "--target", str(target), "--dry-run")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("plan only", result.stdout)
+            self.assertFalse(target.exists())
+
+    def test_catalog_list_and_search(self) -> None:
+        """
+        Catalog list and search read the generated catalog.
+        """
+        listed = run_ote("catalog", "list", "--type", "agent")
+        self.assertEqual(listed.returncode, 0, listed.stderr)
+        self.assertIn("coordinator", listed.stdout)
+        found = run_ote("catalog", "search", "security")
+        self.assertEqual(found.returncode, 0, found.stderr)
+        self.assertIn("security", found.stdout)
+
+    def test_catalog_verify(self) -> None:
+        """
+        Catalog verify validates entries and local paths.
+        """
+        result = run_ote("catalog", "verify")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("0 failure(s)", result.stdout)
+
+    def test_compat_json(self) -> None:
+        """
+        Compatibility output is machine-readable.
+        """
+        result = run_ote("compat", "--json")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        payload = json.loads(result.stdout)
+        self.assertEqual(payload["tool"], "opencode")
+        self.assertTrue(payload["features"])
+
+
 class CommandSurfaceTests(unittest.TestCase):
     """
     Tests for command registration and safety defaults.

@@ -40,6 +40,13 @@ REQUIRED = [
     "docs/research/baseline.md",
     "docs/architecture/testing.md",
     "docs/cli/README.md",
+    "docs/catalog/README.md",
+    "docs/profiles/README.md",
+    "catalog/registry.json",
+    "catalog/schema/entry.schema.json",
+    "profiles/minimal.yml",
+    "profiles/standard.yml",
+    "profiles/full.yml",
     "packages/ote_cli/pyproject.toml",
     "benchmarks/methodology/README.md",
 ]

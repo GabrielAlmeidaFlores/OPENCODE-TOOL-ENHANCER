@@ -35,9 +35,9 @@ The package requires Python 3.11 or newer and has no runtime dependencies.
 | `ote uninstall` | Available | Plan removal; `--apply --yes` removes managed files |
 | `ote update --check` | Available | Compare the lock with the current and remote source |
 | `ote rollback` | Available | List backups; `--apply --backup DIR --yes` restores one |
-| `ote profile` | Phase 3 | Profile manifests |
-| `ote catalog` | Phase 3 | Verified artifact catalog |
-| `ote compat` | Phase 3 | OpenCode compatibility adapter |
+| `ote profile` | Available | List, show, verify, and apply profile manifests |
+| `ote catalog` | Available | List, search, verify, and build the artifact catalog |
+| `ote compat` | Available | OpenCode V1/V2 compatibility matrix |
 | `ote verify` | Phase 4 | Deterministic verification engine |
 | `ote memory` | Phase 5 | Markdown project memory |
 | `ote spec` | Phase 5 | Spec-driven workflow |
@@ -47,6 +47,49 @@ The package requires Python 3.11 or newer and has no runtime dependencies.
 
 A command that belongs to a later phase is registered and exits with code 2. It never
 pretends to succeed.
+
+## `ote profile`
+
+```bash
+ote profile list
+ote profile show standard
+ote profile verify
+ote profile use minimal --target ../my-project --apply
+```
+
+Profiles are loaded from `profiles/*.yml`. `profile use` delegates to `ote install` and keeps the same
+plan/apply, backup, and lock behavior. See `docs/profiles/README.md`.
+
+## `ote catalog`
+
+```bash
+ote catalog list
+ote catalog list --type agent
+ote catalog search security
+ote catalog verify
+ote catalog verify --check-drift
+ote catalog build
+```
+
+The catalog is generated from `docs/provenance/registry.yml`. It records the author, source, pinned
+commit, license, local path, and modification note for every agent, skill, command, and hat.
+`--check-drift` fails when the committed catalog differs from the registry. See
+`docs/catalog/README.md`.
+
+`build` and `--check-drift` need PyYAML in the interpreter that runs the generator. Install it for a
+`uv` tool with `uv tool install --with pyyaml ./packages/ote_cli`, or for pipx with
+`pipx inject ote-cli pyyaml`.
+
+## `ote compat`
+
+```bash
+ote compat
+ote compat --json
+```
+
+Prints the OpenCode V1/V2 matrix. Cells that were not verified are marked `not verified` rather than
+guessed. This is a compatibility matrix, not a benchmark. See `docs/agents/compatibility.md` and
+`docs/decisions/ADR-001-opencode-v2-baseline.md`.
 
 ## `ote doctor`
 
