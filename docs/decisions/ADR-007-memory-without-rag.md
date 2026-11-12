@@ -1,6 +1,7 @@
 # ADR-007: Use Markdown memory instead of a vector store
 
-- Status: Proposed
+- Status: Accepted
+- Accepted: 2026-11-12
 - Date: 2026-11-12
 
 ## Context
@@ -57,12 +58,14 @@ embeddings, no vector database, and no background service.
 | Context bloat | Hard byte and token budget on the preamble |
 | Wrong injection | Partition precedence `project > user > shared` and explicit source links |
 
-## Verification required before acceptance
+## Verification
 
-- The preamble stays under the configured budget on the repository itself.
-- `ote memory search` works with the lexical index.
-- A planted secret is rejected with a non-zero exit code.
-- Removing the memory directory leaves the repository valid.
+- `ote memory preamble` enforces the token budget and orders project > user > shared.
+- `ote memory search` is lexical and deterministic.
+- A planted credential is rejected before any file is written.
+- Expired entries are excluded from the preamble and removed by `ote memory prune --apply --yes`.
+- `catalog.md` is regenerated after every add and prune.
+- Unit tests cover scopes, deduplication, secrets, expiry, export, and budget enforcement.
 
 ## References
 

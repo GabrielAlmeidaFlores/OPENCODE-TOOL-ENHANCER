@@ -435,6 +435,11 @@ original_artifacts:
     kind: "glue"
     author: "OPENCODE-TOOL-ENHANCER contributors"
     justification: "Deterministic verification runner and governance evaluator. The cache idea follows nerv (Apache-2.0) and the governance concepts follow FlowDeck (MIT); no upstream code was copied and the implementation is original Python."
+  - id: memory-and-specs
+    local: "packages/ote_cli/ote_cli/memory.py, packages/ote_cli/ote_cli/specs.py, .ote/memory/**, specs/**"
+    kind: "glue"
+    author: "OPENCODE-TOOL-ENHANCER contributors"
+    justification: "Markdown memory store and spec-workflow validator. The partition model follows operator-memory (BSD-3-Clause) and the SDD phase model follows nerv (Apache-2.0). No upstream code was copied; the implementation and templates are original."
   - id: project-documentation
     local: "docs/**"
     kind: "original-documentation"

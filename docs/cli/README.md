@@ -40,8 +40,8 @@ The package requires Python 3.11 or newer and has no runtime dependencies.
 | `ote compat` | Available | OpenCode V1/V2 compatibility matrix |
 | `ote verify` | Available | Deterministic verification checks and failure classes |
 | `ote govern` | Available | Contracts, budgets, loop/deadlock detection, risk gates |
-| `ote memory` | Phase 5 | Markdown project memory |
-| `ote spec` | Phase 5 | Spec-driven workflow |
+| `ote memory` | Available | Markdown project memory |
+| `ote spec` | Available | Spec-driven development artifacts |
 | `ote stats` | Phase 6 | Cost and token reports |
 | `ote eval` | Phase 6 | Evaluation harness |
 | `ote pilot` | Phase 6 | Real-repository pilots |
@@ -112,6 +112,29 @@ ote govern check --record run.json
 ```
 
 Contracts are derived from agent permissions; budgets and limits come from the `[governance]` table. See `docs/governance/README.md`.
+
+## `ote memory`
+
+```bash
+ote memory add "Use expand-and-contract migrations" --type constraint --source docs/decisions/ADR-001.md
+ote memory search migrations
+ote memory prune
+ote memory export --format json
+ote memory preamble --budget 1500
+```
+
+Markdown-only memory with lexical search, TTL, deduplication, and credential rejection. See `docs/memory/README.md`.
+
+## `ote spec`
+
+```bash
+ote spec new "Add user authentication" --criterion "A rejected password returns 401"
+ote spec list
+ote spec plan user-authentication
+ote spec verify user-authentication
+```
+
+Creates requirements, design, tasks, and evidence artifacts; `plan` and `verify` enforce criterion-to-task-to-evidence mapping. See `docs/specs/README.md`.
 
 ## `ote doctor`
 

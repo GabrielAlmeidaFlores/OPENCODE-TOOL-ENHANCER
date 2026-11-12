@@ -330,6 +330,38 @@ class VerificationCommandTests(unittest.TestCase):
             self.assertFalse(json.loads(result.stdout)["allowed"])
 
 
+class MemoryAndSpecReadTests(unittest.TestCase):
+    """
+    Read-only checks for memory and spec commands against the repository.
+    """
+
+    def test_memory_search_and_export(self) -> None:
+        """
+        Searching and exporting memory do not require entries to exist.
+        """
+        search = run_ote("memory", "search", "decision")
+        self.assertEqual(search.returncode, 0, search.stderr)
+        exported = run_ote("memory", "export", "--format", "json")
+        self.assertEqual(exported.returncode, 0, exported.stderr)
+        self.assertIn("entries", json.loads(exported.stdout))
+
+    def test_memory_preamble(self) -> None:
+        """
+        The preamble renders within its budget.
+        """
+        result = run_ote("memory", "preamble", "--budget", "100")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("# Project Memory", result.stdout)
+
+    def test_spec_list(self) -> None:
+        """
+        Listing specs works even when only the README exists.
+        """
+        result = run_ote("spec", "list")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("spec(s)", result.stdout)
+
+
 class CommandSurfaceTests(unittest.TestCase):
     """
     Tests for command registration and safety defaults.
@@ -339,9 +371,9 @@ class CommandSurfaceTests(unittest.TestCase):
         """
         A planned command reports the owning phase.
         """
-        result = run_ote("memory")
+        result = run_ote("stats")
         self.assertEqual(result.returncode, 2)
-        self.assertIn("Phase 5", result.stderr)
+        self.assertIn("Phase 6", result.stderr)
 
     def test_rollback_without_backups(self) -> None:
         """

@@ -97,6 +97,8 @@ never be installed.
 - Profiles load and validate, and the catalog verifies its schema, counts, and local paths.
 - The verification engine loads TOML, runs checks, classifies failures, and reuses only passing cache entries.
 - Governance contracts, budgets, loop/deadlock limits, and risk gates are evaluated deterministically.
+- Memory scopes, deduplication, credential rejection, expiry, export, and preamble budgets are tested.
+- Spec creation, criterion/task mapping, and evidence verification are tested.
 
 The OpenCode checks skip cleanly when `opencode` is not on `PATH`, so contributors without
 the binary still get a green suite.

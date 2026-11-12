@@ -24,6 +24,8 @@ from .doctor import run_checks, summarize
 from . import catalog as catalog_module
 from . import compat as compat_module
 from . import governance as governance_module
+from . import memory as memory_module
+from . import specs as specs_module
 from . import verify as verify_module
 from .installer import install, list_backups, uninstall
 from .paths import OteError, find_repo_root, resolve_target
@@ -32,8 +34,6 @@ from .profiles import DEFAULT_PROFILE, load_profiles, resolve_components, verify
 from .updater import check as update_check
 
 DEFERRED = {
-    "memory": "Phase 5 (Markdown memory)",
-    "spec": "Phase 5 (spec workflow)",
     "stats": "Phase 6 (observability)",
     "eval": "Phase 6 (evaluations)",
     "pilot": "Phase 6 (pilot runner)",
@@ -140,6 +140,45 @@ def _build_parser() -> argparse.ArgumentParser:
     govern_gate.add_argument("--risk", required=True, choices=["low", "medium", "high"])
     govern_check = govern_commands.add_parser("check", parents=[common], help="evaluate a run record against budgets")
     govern_check.add_argument("--record", required=True, help="JSON run record")
+
+    memory_parser = subparsers.add_parser(
+        "memory", parents=[common], help="add, search, prune, export, or render project memory"
+    )
+    memory_commands = memory_parser.add_subparsers(dest="memory_command", required=True)
+    memory_add = memory_commands.add_parser("add", parents=[common], help="add a memory entry")
+    memory_add.add_argument("text")
+    memory_add.add_argument("--type", default="decision", choices=list(memory_module.TYPES))
+    memory_add.add_argument("--title")
+    memory_add.add_argument("--scope", default="project", choices=list(memory_module.SCOPES))
+    memory_add.add_argument("--source", default="manual")
+    memory_add.add_argument("--confidence", type=float, default=0.8)
+    memory_add.add_argument("--link", action="append", default=[])
+    memory_add.add_argument("--ttl-days", type=int)
+    memory_add.add_argument("--force", action="store_true", help="allow a duplicate title")
+    memory_search = memory_commands.add_parser("search", parents=[common], help="search memory lexically")
+    memory_search.add_argument("query")
+    memory_search.add_argument("--type", choices=list(memory_module.TYPES))
+    memory_search.add_argument("--scope", choices=list(memory_module.SCOPES))
+    memory_prune = memory_commands.add_parser("prune", parents=[common], help="list or remove expired entries")
+    memory_prune.add_argument("--apply", action="store_true", help="delete expired entries")
+    memory_prune.add_argument("--yes", action="store_true", help="confirm deletion")
+    memory_export = memory_commands.add_parser("export", parents=[common], help="export memory")
+    memory_export.add_argument("--format", default="markdown", choices=["markdown", "json"])
+    memory_preamble = memory_commands.add_parser("preamble", parents=[common], help="render the bounded preamble")
+    memory_preamble.add_argument("--budget", type=int)
+
+    spec_parser = subparsers.add_parser(
+        "spec", parents=[common], help="create and verify spec-driven development artifacts"
+    )
+    spec_commands = spec_parser.add_subparsers(dest="spec_command", required=True)
+    spec_new = spec_commands.add_parser("new", parents=[common], help="create a spec")
+    spec_new.add_argument("feature")
+    spec_new.add_argument("--criterion", action="append", default=[])
+    spec_commands.add_parser("list", parents=[common], help="list specs")
+    spec_plan = spec_commands.add_parser("plan", parents=[common], help="validate criteria and tasks")
+    spec_plan.add_argument("feature")
+    spec_verify = spec_commands.add_parser("verify", parents=[common], help="verify tasks and evidence")
+    spec_verify.add_argument("feature")
 
     for name, phase in DEFERRED.items():
         command = subparsers.add_parser(name, parents=[common], help=f"available in {phase}")
@@ -543,6 +582,97 @@ def _command_govern(args: argparse.Namespace) -> int:
     return 0 if evaluation["allowed"] else 1
 
 
+def _command_memory(args: argparse.Namespace) -> int:
+    """
+    Add, search, prune, export, or render Markdown memory.
+    """
+    root = _repo(args)
+    action = args.memory_command
+    if action == "add":
+        entry = memory_module.add(
+            root=root,
+            text=args.text,
+            entry_type=args.type,
+            title=args.title,
+            scope=args.scope,
+            source=args.source,
+            confidence=args.confidence,
+            links=args.link,
+            ttl_days=args.ttl_days,
+            force=args.force,
+        )
+        if args.json:
+            _emit({"id": entry.identifier, "scope": entry.scope, "title": entry.title, "path": str(entry.path)}, True)
+        else:
+            print(f"added {entry.scope}/{entry.identifier} ({entry.entry_type})")
+        return 0
+    if action == "search":
+        results = memory_module.search(root, args.query, entry_type=args.type, scope=args.scope)
+        if args.json:
+            _emit({"entries": [{"id": item.identifier, "scope": item.scope, "type": item.entry_type, "title": item.title, "expires": item.expires, "expired": item.expired()} for item in results]}, True)
+        else:
+            for item in results:
+                marker = " (expired)" if item.expired() else ""
+                print(f"{item.scope:<8} {item.entry_type:<10} {item.title}{marker}")
+            print(f"\n{len(results)} match(es)")
+        return 0
+    if action == "prune":
+        if args.apply and not args.yes:
+            raise OteError("refusing to delete memory without --yes")
+        expired = memory_module.prune(root, apply=args.apply)
+        if args.json:
+            _emit({"expired": [item.identifier for item in expired], "applied": args.apply}, True)
+        else:
+            for item in expired:
+                print(f"{item.scope}/{item.identifier} ({item.expires})")
+            print(f"{len(expired)} expired entr{'y' if len(expired) == 1 else 'ies'}")
+            if not args.apply:
+                print("plan only. Re-run with --apply --yes to delete.")
+        return 0
+    if action == "export":
+        output = memory_module.export(root, "json" if args.json else args.format)
+        print(output, end="" if output.endswith("\n") else "\n")
+        return 0
+    print(memory_module.preamble(root, args.budget), end="")
+    return 0
+
+
+def _command_spec(args: argparse.Namespace) -> int:
+    """
+    Create, list, plan, or verify spec artifacts.
+    """
+    root = _repo(args)
+    action = args.spec_command
+    if action == "new":
+        directory = specs_module.create(root, args.feature, args.criterion)
+        if args.json:
+            _emit({"feature": directory.name, "path": str(directory), "files": list(specs_module.FILES)}, True)
+        else:
+            print(f"created {directory}")
+            for name in specs_module.FILES:
+                print(f"  {name}")
+        return 0
+    if action == "list":
+        results = specs_module.list_specs(root)
+        if args.json:
+            _emit({"specs": results}, True)
+        else:
+            for result in results:
+                state = "complete" if result["complete"] else f"missing {', '.join(result['missing'])}"
+                print(f"{result['name']:<30} {state}")
+            print(f"\n{len(results)} spec(s)")
+        return 0
+    result = specs_module.plan(root, args.feature) if action == "plan" else specs_module.verify(root, args.feature)
+    if args.json:
+        _emit(result, True)
+    else:
+        print(f"feature: {result['feature']}")
+        print(f"status:  {result['status']}")
+        for issue in result["issues"]:
+            print(f"  {issue}")
+    return 0 if result["status"] == "ok" else 1
+
+
 def _command_deferred(args: argparse.Namespace) -> int:
     """
     Report that a planned command is not implemented yet.
@@ -579,6 +709,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         "compat": _command_compat,
         "verify": _command_verify,
         "govern": _command_govern,
+        "memory": _command_memory,
+        "spec": _command_spec,
     }
     try:
         handler = handlers.get(args.command, _command_deferred)

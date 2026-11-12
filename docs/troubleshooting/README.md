@@ -65,6 +65,11 @@
 | `ote verify` runs a stale result | A passing cached result exists for unchanged inputs | Run with `--no-cache`, or change the declared inputs |
 | `ote govern contracts` fails | An agent's mode or edit permission violates its role | Fix `agents/<role>/AGENT.md`; rerun the validator |
 | `ote govern check` blocks a run | A budget, loop, or deadlock limit was exceeded | Inspect the violation kind and increase the limit only with justification |
+| `ote memory add` refuses text | The text matches a credential pattern | Remove the secret; store a reference instead |
+| `ote memory add` reports a duplicate | The same title exists in that scope | Use a distinct title or `--force` |
+| A memory entry never appears | It expired or exceeded the preamble budget | Check `expires`; raise `memory.token_budget` |
+| `ote spec plan` fails | A criterion lacks a task or a task names an unknown criterion | Fix `tasks.md` or `requirements.md` |
+| `ote spec verify` fails | A criterion lacks evidence | Add `- AC-n: command/result` to `evidence.md` |
 | `ote profile verify` fails | A manifest has a bad name, component, or syntax | Fix `profiles/<name>.yml`; see `docs/profiles/README.md` |
 | `ote catalog verify` fails | A catalog entry is missing a field or local path | Fix `docs/provenance/registry.yml`, then rebuild the catalog |
 | `ote catalog verify --check-drift` fails | Catalog files were edited by hand | Run `python3 scripts/catalog/build_catalog.py` |

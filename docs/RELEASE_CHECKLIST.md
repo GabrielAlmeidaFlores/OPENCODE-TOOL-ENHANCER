@@ -57,7 +57,15 @@ Use this checklist before tagging a release. A checked item must have reproducib
 - [ ] Governance limits and risk gates match the documented defaults.
 - [ ] Ralph `code-assist` finalizer references `ote verify`.
 
+## Memory and specs
+
+- [ ] Memory and spec commands are covered by tests.
+- [ ] `.ote/memory/catalog.md` matches the entries.
+- [ ] No credential-shaped text is committed under `.ote/memory/`.
+- [ ] `specs/` contains no placeholder-only spec marked complete.
+
 ## Orchestration
+
 
 
 

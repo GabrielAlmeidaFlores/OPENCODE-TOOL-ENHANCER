@@ -83,9 +83,9 @@ class ParserTests(unittest.TestCase):
         stdout = io.StringIO()
         stderr = io.StringIO()
         with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
-            code = cli.main(["memory"])
+            code = cli.main(["stats"])
         self.assertEqual(code, 2)
-        self.assertIn("Phase 5", stderr.getvalue())
+        self.assertIn("Phase 6", stderr.getvalue())
 
     def test_every_deferred_command_is_registered(self) -> None:
         """

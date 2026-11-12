@@ -47,6 +47,18 @@ Then complete the manual checks for your environment.
 - [ ] `ote uninstall` without `--yes` refuses; with `--apply --yes` removes only unmodified managed files.
 - [ ] `ote rollback` lists backups without changing files.
 
+## Memory and specs
+
+- [ ] `ote memory add` writes one entry and updates `catalog.md`.
+- [ ] `ote memory search` finds title, body, source, and type.
+- [ ] A credential-shaped string is rejected.
+- [ ] Expired entries are excluded from the preamble and removed by `prune --apply --yes`.
+- [ ] `ote memory preamble` stays within the configured budget.
+- [ ] `ote spec new` creates four artifacts.
+- [ ] `ote spec plan` fails until every criterion has a task.
+- [ ] `ote spec verify` fails until every criterion has evidence.
+- [ ] `user/` memory is gitignored; `project/` and `shared/` are tracked.
+
 ## Verification and governance
 
 - [ ] `ote verify --only validate` exits 0.

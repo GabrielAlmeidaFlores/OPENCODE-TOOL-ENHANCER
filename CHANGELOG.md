@@ -6,6 +6,14 @@ All notable changes to this repository are documented here.
 
 ### Added
 
+- `ote memory add|search|prune|export|preamble` with three scopes, TTL, deduplication, credential rejection, catalog generation, and a bounded preamble.
+- `.ote/memory/` layout with tracked project/shared scopes and a gitignored user scope.
+- `ote spec new|list|plan|verify` with requirements, design, tasks, and evidence artifacts and criterion/task/evidence validation.
+- `specs/` workflow documentation and templates.
+- ADR-007 accepted with verification; `.ote/config.toml` gains memory settings.
+- CI smoke checks for memory and spec commands.
+- Phase 5 tests for memory scopes, secrets, expiry, preamble, spec creation, planning, and evidence.
+
 - `ote verify` with `.ote/config.toml`, per-check timeouts, input-hash caching for passing checks, JSON output, and failure classification.
 - `ote govern contracts|gate|check` with contracts derived from agent permissions, budget and loop/deadlock evaluation, and risk-based gate selection.
 - `.ote/config.toml` with repository checks and governance limits; `.ote/cache/` is gitignored.

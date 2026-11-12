@@ -94,6 +94,11 @@ jobs:
         run: |
           ote profile verify
           ote catalog verify --check-drift
+      - name: Check memory and spec commands
+        run: |
+          ote memory search decision > /dev/null
+          ote memory preamble --budget 500 > /dev/null
+          ote spec list > /dev/null
       - name: Run verification gates
         run: |
           ote verify --only validate --only lint

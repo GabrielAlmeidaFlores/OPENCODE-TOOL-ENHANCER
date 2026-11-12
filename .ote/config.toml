@@ -23,3 +23,7 @@ max_cost_usd = 5.0
 max_delegation_depth = 2
 max_repeats = 2
 max_bounces = 3
+
+[memory]
+token_budget = 2000
+ttl_days = 30
