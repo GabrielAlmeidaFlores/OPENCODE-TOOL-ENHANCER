@@ -6,6 +6,9 @@ All notable changes to this repository are documented here.
 
 ### Added
 
+- Pilot round 1 discovery suite across Hono, CleanArchitecture, and turborepo: 6/15 structural tasks passed; failures and provider quota are recorded in `docs/pilots/results/round-1.md`.
+- Six generated pilot reports under `docs/pilots/results/` with file:line references.
+
 - Optional Markdown task board (`ote task`) with a WIP limit, approval gate, and one Git worktree per task.
 - Opt-in OpenCode memory plugin that injects the bounded preamble only when `.ote/memory/plugin.enabled` exists.
 - `plugin` component, included only in the explicit `full` profile.

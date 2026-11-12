@@ -16,7 +16,7 @@ Status reflects the repository, not intentions. All planned phases are complete.
 
 ## Next after Phase 7
 
-- Execute the full five-task pilots and publish results with correctness, cost, and rework. The Hono runner smoke is complete and is not a pilot result.
+- Round 1 discovery pilots are recorded in `docs/pilots/results/round-1.md` (6/15 passed; provider quota blocked turborepo). The five code-change tasks per repository remain pending.
 - Evaluate optional task board and memory-injection plugin only after the CLI, memory, and observability are stable.
 - Keep benchmarks deferred until correctness and rework measurement is reproducible.
 

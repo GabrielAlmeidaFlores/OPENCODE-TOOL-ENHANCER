@@ -1,6 +1,6 @@
 # Real-Repository Pilots
 
-> **Status:** Planned · **Last verified:** 2026-11-12 · **Evidence:** selected but not yet executed
+> **Status:** Experimental · **Last verified:** 2026-11-12 · **Evidence:** round 1 discovery executed; code-change pilots pending
 
 The pilots validate the profile on real codebases instead of only the bundled fixtures. They are separate from the deferred benchmark program and do not claim statistical cost results.
 
@@ -65,13 +65,13 @@ used. It never stages or commits in the main repository and never runs Ralph.
 
 | Pilot | Status |
 | --- | --- |
-| `honojs/hono` | Runner smoke executed on the pinned commit; five-task pilot pending |
-| `ardalis/CleanArchitecture` | Runner verified by an automated end-to-end test; real pilot pending |
-| `vercel/turborepo` | Runner verified by an automated end-to-end test; real pilot pending |
+| `honojs/hono` | Round 1 discovery: 3/5 passed; code-change tasks pending |
+| `ardalis/CleanArchitecture` | Round 1 discovery: 3/5 passed; code-change tasks pending |
+| `vercel/turborepo` | Round 1 discovery blocked by free-model quota; code-change tasks pending |
 
 Runner capability is not evidence. The Hono smoke run proves the runner executes against a real
 repository, but it is not a pilot result. A pilot is complete only after the five tasks, artifacts,
-and independent verification exist. See `docs/pilots/results/hono-smoke.md`.
+and independent verification exist. See `docs/pilots/results/round-1.md` and `docs/pilots/results/hono-smoke.md`.
 
 ## Constraints
 
