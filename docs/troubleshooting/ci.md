@@ -135,7 +135,7 @@ HOME="$(mktemp -d)" OPENCODE_CONFIG="/abs/path/.opencode/opencode.jsonc" \
 
 ## Confirmed green
 
-Run [`43234273370`](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/actions/runs/43234273370)
+Run [`43239159927`](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/actions/runs/43239159927)
 completed on 2026-11-12 with every job successful:
 
 | Job | Result |
@@ -150,8 +150,9 @@ completed on 2026-11-12 with every job successful:
 | `harness dry-run` | success |
 
 This confirms the harness fix, the offline suite on both operating systems without a local
-OpenCode binary, the CLI wheel build and install lifecycle, OpenCode agent discovery with a
-pinned version, and benchmark dry-runs. Action majors are `checkout@v7`, `setup-python@v7`,
+OpenCode binary, the CLI wheel build and install lifecycle, profile verification, catalog
+drift and tracked-file checks, OpenCode agent discovery with a pinned version, and benchmark
+dry-runs. Action majors are `checkout@v7`, `setup-python@v7`,
 `setup-node@v7`, and `setup-dotnet@v6`.
 
 ## Job map

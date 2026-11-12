@@ -1,6 +1,6 @@
 # Verified Artifact Catalog
 
-> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** generated and verified locally; CI drift check defined
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally and in CI run 43239159927
 
 The catalog turns the provenance registry into a validated, searchable artifact list. It is generated, never hand-edited.
 

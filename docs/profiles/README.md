@@ -1,6 +1,6 @@
 # Profiles
 
-> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally; CI profile verification defined
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally and in CI run 43239159927
 
 Profiles are declarative manifests under `profiles/`. They replace the provisional component lists that were embedded in the CLI.
 
