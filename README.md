@@ -75,10 +75,10 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 | MCP startup overhead | Narrow `debug agents` measurement recorded |
 | Benchmarks | Deferred by decision; no published results |
 | Real-repository pilots | Repositories selected and pinned; execution pending |
-| CI | Green on Ubuntu and macOS for run [43239159927](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/actions/runs/43239159927); six jobs including `cli` |
+| CI | Green on Ubuntu and macOS for run [43252608149](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/actions/runs/43252608149); six jobs including `cli` |
 | Repository tests | 197 unit and integration tests; run with `make test` |
 | `ote` CLI | Install, uninstall, update check, rollback, doctor verified locally and in the `cli` job |
-| Profiles and catalog | Three manifests and 34 catalog entries verified locally and in run 43239159927 |
+| Profiles and catalog | Three manifests and 34 catalog entries verified locally and in run 43252608149 |
 | Verification and governance | `ote verify` and `ote govern contracts` verified locally; CI runs both |
 
 ## Architecture
