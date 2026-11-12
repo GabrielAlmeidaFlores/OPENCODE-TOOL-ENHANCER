@@ -37,6 +37,12 @@ git push origin "v$(cat VERSION)"
 
 The workflow never stages or commits. It only publishes artifacts for the tag.
 
+## Release history
+
+| Version | Date | Assets | Verification |
+|---|---|---|---|
+| `v0.1.0` | 2026-11-12 | `ote_cli-0.1.0-py3-none-any.whl`, `SHA256SUMS` | Checksum verified; wheel installed in a clean venv and reports `0.1.0` |
+
 ## Verify a release
 
 ```bash
