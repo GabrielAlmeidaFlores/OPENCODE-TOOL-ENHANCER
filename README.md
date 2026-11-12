@@ -88,7 +88,7 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 | Verification and governance | `ote verify` and `ote govern contracts` verified locally; CI runs both |
 | Memory and specs | Verified locally and in run 43277080347 |
 | Stats, eval, pilots | `ote stats` and `ote eval` verified locally; real Hono smoke run succeeded; full five-task pilots pending |
-| Task board and plugin | Board, worktree, and plugin install tests; plugin syntax checked; task/plugin smoke checks in run 43277080347 |
+| Task board and plugin | Board and worktree tests; plugin install, syntax, and live injection verified |
 
 ## Architecture
 

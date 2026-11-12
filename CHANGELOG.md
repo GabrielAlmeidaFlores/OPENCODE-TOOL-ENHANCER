@@ -10,6 +10,7 @@ All notable changes to this repository are documented here.
 - Opt-in OpenCode memory plugin that injects the bounded preamble only when `.ote/memory/plugin.enabled` exists.
 - `plugin` component, included only in the explicit `full` profile.
 - Task-board and plugin documentation, CI smoke checks, and tests.
+- Memory plugin live-session verification: injected with the sentinel, inactive without it; status moved to Stable.
 
 - MkDocs Material site with navigation for every guide and a strict build in CI.
 - `SECURITY.md`, `SUPPORT.md`, `ROADMAP.md`, `CODE_OF_CONDUCT.md`, and a security threat model with MCP trust levels.

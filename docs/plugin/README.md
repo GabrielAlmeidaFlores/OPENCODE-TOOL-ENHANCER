@@ -1,6 +1,6 @@
 # Opt-in Memory Plugin
 
-> **Status:** Experimental · **Last verified:** 2026-11-12 · **Evidence:** plugin file syntax-checked and install plan tested; runtime hook not executed in CI
+> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** live OpenCode session with `PluginSmokeMemory`; disabled path verified
 
 This OpenCode V2 plugin injects the bounded memory preamble at the start of each model request. It is disabled by default and performs no network access or telemetry.
 
@@ -57,10 +57,21 @@ Remove the plugin file entirely with `ote uninstall` or by deleting `.opencode/p
 - `ote` available on `PATH` in the OpenCode server environment.
 - Python 3.11+ and a valid `.ote/memory` directory.
 
+## Verification
+
+On 2026-11-12 the plugin was loaded by a private OpenCode V2 server against a temporary project:
+
+| Case | Observation |
+|---|---|
+| Sentinel present | Setup logged `OTE_PLUGIN_ENABLED`; the context hook logged `OTE_PLUGIN_INJECTED`; the model returned the memory title `PluginSmokeMemory` |
+| Sentinel absent | Setup logged `OTE_PLUGIN_DISABLED`; no injection hook ran |
+
+This used a temporary instrumented copy of the plugin for log assertions. The shipped file has no logging.
+
 ## Limitations
 
 - No TUI, GUI, or telemetry; it only injects memory.
-- Plugin API is experimental and may change between OpenCode releases.
+- Plugin API is experimental and may change between OpenCode releases; the adapter is marked Stable for the verified 2.2.x line.
 - Failures are silent by design so an unavailable CLI cannot break a session.
 - The sentinel is per project; there is no global toggle.
 - The preamble budget is 1200 tokens in the plugin, independent of the CLI default.
