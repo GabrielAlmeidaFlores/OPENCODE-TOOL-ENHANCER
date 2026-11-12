@@ -94,6 +94,12 @@ jobs:
         run: |
           ote profile verify
           ote catalog verify --check-drift
+      - name: Check stats, eval, and pilots
+        run: |
+          ote stats --results benchmarks/results --format json > /dev/null
+          ote eval > /dev/null
+          ote pilot list > /dev/null
+          ote pilot run hono --dry-run > /dev/null
       - name: Check memory and spec commands
         run: |
           ote memory search decision > /dev/null

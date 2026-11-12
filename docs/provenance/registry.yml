@@ -219,7 +219,7 @@ skills:
     author: "Seth Hobson"
     author_url: "https://github.com/wshobson"
     retrieved: "2026-11-11"
-    modified: "SKILL.md metadata only; rest-api-template.py comments replaced with docstrings per AGENTS.md Section 2C; other supporting files copied as-is"
+    modified: "SKILL.md metadata only; rest-api-template.py comments removed and names clarified per AGENTS.md Section 2C; other supporting files copied as-is"
   - id: database-migration
     local: "skills/database-migration/SKILL.md"
     source: wshobson
@@ -440,6 +440,11 @@ original_artifacts:
     kind: "glue"
     author: "OPENCODE-TOOL-ENHANCER contributors"
     justification: "Markdown memory store and spec-workflow validator. The partition model follows operator-memory (BSD-3-Clause) and the SDD phase model follows nerv (Apache-2.0). No upstream code was copied; the implementation and templates are original."
+  - id: observability-evals-pilots
+    local: "packages/ote_cli/ote_cli/stats.py, packages/ote_cli/ote_cli/eval.py, packages/ote_cli/ote_cli/pilot.py, configs/pilots/pilots.toml"
+    kind: "glue"
+    author: "OPENCODE-TOOL-ENHANCER contributors"
+    justification: "Local reporting, deterministic evaluation, and isolated pilot runner. Reporting categories follow agenttrace (MIT); worktree isolation follows vibe-kanban (Apache-2.0). No upstream code was copied; the implementation is original Python."
   - id: project-documentation
     local: "docs/**"
     kind: "original-documentation"

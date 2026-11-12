@@ -1,7 +1,7 @@
 """
 Unit tests for the ``ote`` command-line package.
 
-Covers parser behaviour, version wiring, deferred commands, and lock file
+Covers parser behaviour, version wiring, and lock file
 handling. No test writes inside the repository working tree.
 """
 from __future__ import annotations
@@ -18,35 +18,23 @@ from tests import support
 
 import ote_cli
 from ote_cli import cli, installer, locking
-from ote_cli.process import capture
+from ote_cli.process import capture_command
 from ote_cli.paths import OteError
 
 
 class VersionTests(unittest.TestCase):
-    """
-    Tests that the package version follows the repository VERSION file.
-    """
 
     def test_version_matches_version_file(self) -> None:
-        """
-        The imported version equals VERSION.
-        """
         expected = (support.REPO_ROOT / "VERSION").read_text(encoding="utf-8").strip()
         self.assertEqual(ote_cli.__version__, expected)
 
     def test_pyproject_version_matches_version_file(self) -> None:
-        """
-        The distributable metadata does not drift from VERSION.
-        """
         expected = (support.REPO_ROOT / "VERSION").read_text(encoding="utf-8").strip()
         with (support.CLI_PACKAGE / "pyproject.toml").open("rb") as handle:
             project = tomllib.load(handle)["project"]
         self.assertEqual(project["version"], expected)
 
     def test_package_has_no_runtime_dependencies(self) -> None:
-        """
-        The CLI stays on the standard library.
-        """
         with (support.CLI_PACKAGE / "pyproject.toml").open("rb") as handle:
             project = tomllib.load(handle)["project"]
         self.assertEqual(project.get("dependencies", []), [])
@@ -54,14 +42,8 @@ class VersionTests(unittest.TestCase):
 
 
 class ParserTests(unittest.TestCase):
-    """
-    Tests for argument parsing and command registration.
-    """
 
     def test_version_flag(self) -> None:
-        """
-        --version prints the package version and exits zero.
-        """
         stdout = io.StringIO()
         with contextlib.redirect_stdout(stdout), self.assertRaises(SystemExit) as raised:
             cli.main(["--version"])
@@ -69,43 +51,13 @@ class ParserTests(unittest.TestCase):
         self.assertIn(ote_cli.__version__, stdout.getvalue())
 
     def test_install_rejects_apply_with_dry_run(self) -> None:
-        """
-        --apply and --dry-run are mutually exclusive.
-        """
         with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as raised:
             cli.main(["install", "--apply", "--dry-run"])
         self.assertEqual(raised.exception.code, 2)
 
-    def test_deferred_command_exits_two(self) -> None:
-        """
-        A planned command reports its phase and exits with code 2.
-        """
-        stdout = io.StringIO()
-        stderr = io.StringIO()
-        with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
-            code = cli.main(["stats"])
-        self.assertEqual(code, 2)
-        self.assertIn("Phase 6", stderr.getvalue())
-
-    def test_every_deferred_command_is_registered(self) -> None:
-        """
-        Each planned command is present in the parser help.
-        """
-        parser = cli._build_parser()
-        actions = [action for action in parser._actions if getattr(action, "choices", None)]
-        names = set(actions[0].choices) if actions else set()
-        self.assertTrue(set(cli.DEFERRED).issubset(names))
-
-
 class LockingTests(unittest.TestCase):
-    """
-    Tests for lock file construction and drift detection.
-    """
 
     def test_sha256_file_matches_hashlib(self) -> None:
-        """
-        The digest equals hashlib for the same bytes.
-        """
         import hashlib
 
         with tempfile.TemporaryDirectory() as directory:
@@ -114,9 +66,6 @@ class LockingTests(unittest.TestCase):
             self.assertEqual(locking.sha256_file(path), hashlib.sha256(b"ote\n").hexdigest())
 
     def test_write_read_round_trip(self) -> None:
-        """
-        A written lock can be read back and keeps its schema version.
-        """
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "ote.lock.json"
             locking.write_json(path, {"schema_version": 1, "files": []})
@@ -125,9 +74,6 @@ class LockingTests(unittest.TestCase):
             self.assertEqual(lock["schema_version"], 1)
 
     def test_unsupported_schema_version_is_rejected(self) -> None:
-        """
-        A future schema version is refused instead of misread.
-        """
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "ote.lock.json"
             path.write_text(json.dumps({"schema_version": 99, "files": []}), encoding="utf-8")
@@ -135,16 +81,10 @@ class LockingTests(unittest.TestCase):
                 locking.read_lock(path)
 
     def test_missing_file_is_not_an_error(self) -> None:
-        """
-        An absent lock returns None.
-        """
         with tempfile.TemporaryDirectory() as directory:
             self.assertIsNone(locking.read_lock(Path(directory) / "absent.json"))
 
     def test_drift_reports_modified_and_missing(self) -> None:
-        """
-        Changed and removed files are reported separately.
-        """
         with tempfile.TemporaryDirectory() as directory:
             target = Path(directory)
             (target / "a.txt").write_text("new", encoding="utf-8")
@@ -161,9 +101,6 @@ class LockingTests(unittest.TestCase):
             )
 
     def test_build_lock_refuses_missing_destination(self) -> None:
-        """
-        A lock is not written when a planned file was not created.
-        """
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory) / "root"
             target = Path(directory) / "target"
@@ -177,14 +114,8 @@ class LockingTests(unittest.TestCase):
 
 
 class ComponentTests(unittest.TestCase):
-    """
-    Tests for profile and component resolution.
-    """
 
     def test_profiles_are_loaded_from_manifests(self) -> None:
-        """
-        Profiles expose the documented component sets from profiles/*.yml.
-        """
         from ote_cli.profiles import load_profiles
 
         profiles = load_profiles(support.REPO_ROOT)
@@ -193,9 +124,6 @@ class ComponentTests(unittest.TestCase):
         self.assertIn("serena", profiles["full"].components)
 
     def test_unknown_only_component_is_rejected(self) -> None:
-        """
-        An unknown component is an error, not a silent skip.
-        """
         from ote_cli.profiles import load_profiles, resolve_components
 
         profiles = load_profiles(support.REPO_ROOT)
@@ -203,9 +131,6 @@ class ComponentTests(unittest.TestCase):
             resolve_components(profiles, "minimal", "agents,nonsense")
 
     def test_explicit_only_overrides_profile(self) -> None:
-        """
-        --only selects exactly the requested components.
-        """
         from ote_cli.profiles import load_profiles, resolve_components
 
         profiles = load_profiles(support.REPO_ROOT)
@@ -213,56 +138,35 @@ class ComponentTests(unittest.TestCase):
 
 
 class CaptureTests(unittest.TestCase):
-    """
-    Tests for external command capture behaviour.
-    """
 
     def test_missing_command_returns_127(self) -> None:
-        """
-        A missing executable is reported as a normal failure instead of raising.
-        """
-        code, stdout, stderr = capture(["definitely-not-a-real-command-ote"])
+        code, stdout, stderr = capture_command(["definitely-not-a-real-command-ote"])
         self.assertEqual(code, 127)
         self.assertEqual(stdout, "")
         self.assertIn("command not found", stderr)
 
 
 class DoctorFailureTests(unittest.TestCase):
-    """
-    Tests that doctor reports failures instead of a clean summary.
-    """
 
     def test_missing_repository_files_fail(self) -> None:
-        """
-        An empty directory fails repository, artifact, and validator checks.
-        """
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            checks = cli.run_checks(root, root, mcp=False)
-            summary = cli.summarize(checks)
+            checks = cli.run_diagnostic_checks(root, root, mcp=False)
+            summary = cli.summarize_checks(checks)
             self.assertGreater(summary["fail"], 0)
             self.assertIn("repository", {check.id for check in checks if check.status == "fail"})
 
     def test_json_output_has_summary(self) -> None:
-        """
-        The JSON form carries checks and a summary.
-        """
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            payload = cli.doctor_dict(cli.run_checks(root, root, mcp=False))
+            payload = cli.doctor_dict(cli.run_diagnostic_checks(root, root, mcp=False))
             self.assertIn("checks", payload)
             self.assertIn("summary", payload)
 
 
 class SourceDigestTests(unittest.TestCase):
-    """
-    Tests that idempotency is keyed on source contents.
-    """
 
     def test_digest_changes_with_source_content(self) -> None:
-        """
-        Editing an artifact invalidates the lock digest.
-        """
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory) / "root"
             target = Path(directory) / "target"

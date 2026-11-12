@@ -21,15 +21,12 @@ from typing import Any
 from . import __version__
 from .locking import PlannedFile, build_lock, lock_drift, read_lock, sha256_file, write_json
 from .paths import OteError, backup_root, is_within, lock_path, state_path
-from .process import capture, git_commit, git_dirty, git_remote, run
+from .process import capture_command, git_commit, git_dirty, git_remote, run_command
 
 STATE_SCHEMA_VERSION = 1
 
 
-def _is_generated(path: Path) -> bool:
-    """
-    Return True for cache and operating-system files that must never be installed.
-    """
+def is_generated_file(path: Path) -> bool:
     return (
         path.name == ".DS_Store"
         or path.suffix in {".pyc", ".pyo"}
@@ -39,15 +36,9 @@ def _is_generated(path: Path) -> bool:
 
 
 def plan_files(root: Path, target: Path, components: list[str]) -> list[PlannedFile]:
-    """
-    Return every file the selected components write into the target.
-    """
     planned: list[PlannedFile] = []
 
     def add(source: Path, destination: Path, component: str) -> None:
-        """
-        Record one planned file.
-        """
         planned.append(PlannedFile(source=source, destination=destination, component=component))
 
     if "opencode" in components:
@@ -66,7 +57,7 @@ def plan_files(root: Path, target: Path, components: list[str]) -> list[PlannedF
         for source in sorted((root / "skills").glob("*/SKILL.md")):
             name = source.parent.name
             for file in sorted(source.parent.rglob("*")):
-                if file.is_file() and not _is_generated(file):
+                if file.is_file() and not is_generated_file(file):
                     relative = file.relative_to(source.parent)
                     add(file, target / ".opencode/skills" / name / relative, "skills")
     if "ralph" in components:
@@ -80,10 +71,7 @@ def plan_files(root: Path, target: Path, components: list[str]) -> list[PlannedF
     return planned
 
 
-def summarize(planned: list[PlannedFile], target: Path) -> dict[str, int]:
-    """
-    Count new, updated, and unchanged destination files.
-    """
+def summarize_file_changes(planned: list[PlannedFile], target: Path) -> dict[str, int]:
     summary = {"new": 0, "updated": 0, "unchanged": 0}
     for item in planned:
         if not item.destination.is_file():
@@ -96,9 +84,6 @@ def summarize(planned: list[PlannedFile], target: Path) -> dict[str, int]:
 
 
 def source_metadata(root: Path) -> dict[str, str]:
-    """
-    Return the source repository, commit, version, and dirty flag recorded in the lock.
-    """
     return {
         "repository": git_remote(root) or "https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER",
         "commit": git_commit(root) or "unknown",
@@ -108,9 +93,6 @@ def source_metadata(root: Path) -> dict[str, str]:
 
 
 def source_digest(planned: list[PlannedFile], target: Path) -> str:
-    """
-    Return a digest over the planned source contents and destinations.
-    """
     digest = hashlib.sha256()
     for item in sorted(planned, key=lambda entry: entry.destination.relative_to(target).as_posix()):
         relative = item.destination.relative_to(target).as_posix()
@@ -121,16 +103,13 @@ def source_digest(planned: list[PlannedFile], target: Path) -> str:
     return digest.hexdigest()
 
 
-def _is_current(
+def installation_is_current(
     lock: dict[str, Any] | None,
     target: Path,
     profile: str,
     components: list[str],
     planned: list[PlannedFile],
 ) -> bool:
-    """
-    Return True when the lock matches the source contents, profile, components, and files.
-    """
     if not lock:
         return False
     if lock.get("profile") != profile or lock.get("components") != components:
@@ -141,31 +120,22 @@ def _is_current(
     return not lock_drift(lock, target)
 
 
-def _backup(root: Path, target: Path, stamp: str) -> Path | None:
-    """
-    Archive the existing project configuration before an apply step.
-    """
+def archive_project_config(root: Path, target: Path, stamp: str) -> Path | None:
     if not (target / ".opencode").exists() and not (target / ".ralph").exists():
         return None
     destination = backup_root(target) / stamp
     script = root / "scripts/maintenance/backup-config.sh"
     if not script.is_file():
         raise OteError(f"backup script not found: {script}")
-    run(["bash", str(script), "--project-only", str(destination)], cwd=target)
+    run_command(["bash", str(script), "--project-only", str(destination)], cwd=target)
     return destination
 
 
-def _write_state(target: Path, payload: dict[str, Any]) -> None:
-    """
-    Persist the last operation for rerun memory and rollback.
-    """
+def write_operation_state(target: Path, payload: dict[str, Any]) -> None:
     write_json(state_path(target), payload)
 
 
-def _run_installer(root: Path, target: Path, components: list[str], apply: bool, clean: bool) -> str:
-    """
-    Invoke the repository installer and return its combined output.
-    """
+def run_shell_installer(root: Path, target: Path, components: list[str], apply: bool, clean: bool) -> str:
     script = root / "scripts/installation/install.sh"
     command = [
         "bash",
@@ -178,7 +148,7 @@ def _run_installer(root: Path, target: Path, components: list[str], apply: bool,
     ]
     if clean:
         command.append("--clean")
-    code, stdout, stderr = capture(command, cwd=root)
+    code, stdout, stderr = capture_command(command, cwd=root)
     if code != 0:
         raise OteError(f"installer failed with exit {code}:\n{stdout}\n{stderr}")
     return "\n".join(part for part in (stdout, stderr) if part)
@@ -193,13 +163,10 @@ def install(
     force: bool = False,
     clean: bool = False,
 ) -> dict[str, Any]:
-    """
-    Plan or perform an installation and return a machine-readable result.
-    """
     planned = plan_files(root, target, components)
-    summary = summarize(planned, target)
+    summary = summarize_file_changes(planned, target)
     existing_lock = read_lock(lock_path(target))
-    current = _is_current(existing_lock, target, profile, components, planned)
+    current = installation_is_current(existing_lock, target, profile, components, planned)
 
     result: dict[str, Any] = {
         "target": str(target),
@@ -212,7 +179,7 @@ def install(
     }
 
     if not apply:
-        result["output"] = _run_installer(root, target, components, apply=False, clean=clean)
+        result["output"] = run_shell_installer(root, target, components, apply=False, clean=clean)
         return result
 
     if current and not force:
@@ -225,10 +192,10 @@ def install(
 
     target.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    backup = _backup(root, target, stamp)
+    backup = archive_project_config(root, target, stamp)
     result["backup"] = str(backup) if backup else None
 
-    result["output"] = _run_installer(root, target, components, apply=True, clean=clean)
+    result["output"] = run_shell_installer(root, target, components, apply=True, clean=clean)
 
     missing = [item.destination for item in planned if not item.destination.is_file()]
     if missing:
@@ -237,7 +204,7 @@ def install(
     lock = build_lock(root, target, profile, components, planned, source_metadata(root))
     lock["source"]["digest"] = source_digest(planned, target)
     write_json(lock_path(target), lock)
-    _write_state(
+    write_operation_state(
         target,
         {
             "schema_version": STATE_SCHEMA_VERSION,
@@ -260,9 +227,6 @@ def uninstall(
     force: bool = False,
     purge: bool = False,
 ) -> dict[str, Any]:
-    """
-    Plan or remove every file recorded in the lock.
-    """
     lock = read_lock(lock_path(target))
     if lock is None:
         raise OteError(f"no lock file found at {lock_path(target)}; nothing to uninstall")
@@ -316,7 +280,7 @@ def uninstall(
         lock_path(target).unlink(missing_ok=True)
         result["purged"] = True
     else:
-        _write_state(
+        write_operation_state(
             target,
             {
                 "schema_version": STATE_SCHEMA_VERSION,
@@ -330,9 +294,6 @@ def uninstall(
 
 
 def list_backups(target: Path) -> list[dict[str, Any]]:
-    """
-    Return the CLI backups available for a target project, newest first.
-    """
     root = backup_root(target)
     if not root.is_dir():
         return []
@@ -346,9 +307,6 @@ def list_backups(target: Path) -> list[dict[str, Any]]:
 
 
 def read_state(target: Path) -> dict[str, Any] | None:
-    """
-    Read the last operation state, if present.
-    """
     path = state_path(target)
     if not path.is_file():
         return None

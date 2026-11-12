@@ -85,7 +85,7 @@ never be installed.
 ## What the integration tests assert
 
 - `scripts/validation/validate.sh` exits zero on the repository.
-- The comment policy scans `scripts/`, `packages/`, `skills/`, and `tests/`, plus TypeScript and C# sources; Python docstrings must use block form with the quotes on their own lines. Only `tests/fixtures/` is exempt because those files must contain prohibited patterns.
+- The comment policy scans `scripts/`, `packages/`, `skills/`, and `tests/`, plus TypeScript and C# sources; Python docstrings are optional; when present they must use block form with the quotes on their own lines. Only `tests/fixtures/` is exempt because those files must contain prohibited patterns.
 - `validate_config.py` exits zero and prints a `checked:` count.
 - Every benchmark task dry-runs without an OpenCode binary and without a model.
 - The installer defaults to check-only and creates no files.
@@ -99,6 +99,7 @@ never be installed.
 - Governance contracts, budgets, loop/deadlock limits, and risk gates are evaluated deterministically.
 - Memory scopes, deduplication, credential rejection, expiry, export, and preamble budgets are tested.
 - Spec creation, criterion/task mapping, and evidence verification are tested.
+- Stats parsing and rendering, deterministic eval cases, and pilot planning are tested.
 
 The OpenCode checks skip cleanly when `opencode` is not on `PATH`, so contributors without
 the binary still get a green suite.

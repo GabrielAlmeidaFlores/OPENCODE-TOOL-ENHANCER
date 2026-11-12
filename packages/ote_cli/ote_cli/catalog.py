@@ -1,8 +1,8 @@
 """
 Verified artifact catalog access and validation.
 
-Public API: :func:`load_catalog`, :func:`search`, :func:`verify`, :func:`build`,
-and :func:`drift`.
+Public API: :func:`load_catalog`, :func:`search_catalog`, :func:`verify_catalog`,
+:func:`build_catalog`, and :func:`check_catalog_drift`.
 
 Side effects: reads ``catalog/registry.json`` and ``catalog/schema``. The build
 and drift functions execute the generator script; the others are read-only.
@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from .paths import OteError
-from .process import capture
+from .process import capture_command
 
 CATALOG = Path("catalog/registry.json")
 SCHEMA = Path("catalog/schema/entry.schema.json")
@@ -23,9 +23,6 @@ BUILDER = Path("scripts/catalog/build_catalog.py")
 
 
 def load_catalog(root: Path) -> dict[str, Any]:
-    """
-    Load the generated catalog document.
-    """
     path = root / CATALOG
     if not path.is_file():
         raise OteError(f"catalog not found at {path}; run 'ote catalog build'")
@@ -38,10 +35,7 @@ def load_catalog(root: Path) -> dict[str, Any]:
     return document
 
 
-def _artifact_schema(root: Path) -> dict[str, Any]:
-    """
-    Return the artifact definition from the committed schema.
-    """
+def load_artifact_schema(root: Path) -> dict[str, Any]:
     path = root / SCHEMA
     if not path.is_file():
         raise OteError(f"catalog schema not found at {path}")
@@ -52,10 +46,7 @@ def _artifact_schema(root: Path) -> dict[str, Any]:
     return schema.get("definitions", {}).get("artifact", {})
 
 
-def search(document: dict[str, Any], query: str) -> list[dict[str, Any]]:
-    """
-    Return artifacts whose metadata contains the query, case-insensitively.
-    """
+def search_catalog(document: dict[str, Any], query: str) -> list[dict[str, Any]]:
     needle = query.strip().lower()
     if not needle:
         return []
@@ -68,16 +59,10 @@ def search(document: dict[str, Any], query: str) -> list[dict[str, Any]]:
     return matches
 
 
-def verify(root: Path, document: dict[str, Any] | None = None) -> list[dict[str, str]]:
-    """
-    Validate the catalog against its schema and the local filesystem.
-    """
+def verify_catalog(root: Path, document: dict[str, Any] | None = None) -> list[dict[str, str]]:
     results: list[dict[str, str]] = []
 
     def record(check: str, status: str, detail: str) -> None:
-        """
-        Append one verification result.
-        """
         results.append({"check": check, "status": status, "detail": detail})
 
     document = document if document is not None else load_catalog(root)
@@ -91,7 +76,7 @@ def verify(root: Path, document: dict[str, Any] | None = None) -> list[dict[str,
         record("artifacts", "fail", "artifacts must be a list")
         return results
 
-    schema = _artifact_schema(root)
+    schema = load_artifact_schema(root)
     required = schema.get("required", [])
     allowed_types = schema.get("properties", {}).get("type", {}).get("enum", [])
     seen: set[tuple[str, str]] = set()
@@ -133,29 +118,20 @@ def verify(root: Path, document: dict[str, Any] | None = None) -> list[dict[str,
     return results
 
 
-def _run_builder(root: Path, check: bool) -> tuple[int, str]:
-    """
-    Execute the catalog generator and return its exit code and output.
-    """
+def run_catalog_builder(root: Path, check: bool) -> tuple[int, str]:
     command = [sys.executable, str(root / BUILDER)]
     if check:
         command.append("--check")
-    code, stdout, stderr = capture(command, cwd=root)
+    code, stdout, stderr = capture_command(command, cwd=root)
     return code, "\n".join(part for part in (stdout, stderr) if part)
 
 
-def build(root: Path, check: bool = False) -> dict[str, Any]:
-    """
-    Generate the catalog, or check it for drift without writing.
-    """
+def build_catalog(root: Path, check: bool = False) -> dict[str, Any]:
     if not (root / BUILDER).is_file():
         raise OteError(f"catalog builder not found at {root / BUILDER}")
-    code, output = _run_builder(root, check)
+    code, output = run_catalog_builder(root, check)
     return {"status": "ok" if code == 0 else "fail", "exit_code": code, "output": output}
 
 
-def drift(root: Path) -> dict[str, Any]:
-    """
-    Compare generated catalog files with the provenance registry.
-    """
+def check_catalog_drift(root: Path) -> dict[str, Any]:
     return build(root, check=True)

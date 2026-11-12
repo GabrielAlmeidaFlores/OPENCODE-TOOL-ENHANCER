@@ -1,7 +1,8 @@
 """
 Governance contracts, budgets, loop detection, and risk gates.
 
-Public API: :func:`contracts`, :func:`evaluate_record`, and :func:`risk_gate`.
+Public API: :func:`load_agent_contracts`, :func:`evaluate_record`, and
+:func:`required_gates_for_risk`.
 
 Contracts are derived from the effective permissions in each
 ``agents/<role>/AGENT.md`` file, so there is one source of truth. Budgets and
@@ -52,10 +53,7 @@ RISK_GATES: dict[str, tuple[str, ...]] = {
 }
 
 
-def _frontmatter(path: Path) -> tuple[str, list[dict[str, str]]]:
-    """
-    Extract the mode and permission list from an agent document.
-    """
+def render_memory_frontmatter(path: Path) -> tuple[str, list[dict[str, str]]]:
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---"):
         raise OteError(f"{path}: missing frontmatter")
@@ -95,17 +93,14 @@ def _frontmatter(path: Path) -> tuple[str, list[dict[str, str]]]:
     return mode, permissions
 
 
-def contracts(root: Path) -> list[dict[str, Any]]:
-    """
-    Return each agent's effective contract and any governance violations.
-    """
+def load_agent_contracts(root: Path) -> list[dict[str, Any]]:
     results: list[dict[str, Any]] = []
     agents = sorted((root / "agents").glob("*/AGENT.md"))
     if not agents:
         raise OteError(f"no agents found under {root / 'agents'}")
     for path in agents:
         role = path.parent.name
-        mode, permissions = _frontmatter(path)
+        mode, permissions = render_memory_frontmatter(path)
         denied = {item["action"] for item in permissions if item.get("effect") == "deny"}
         allowed = {item["action"] for item in permissions if item.get("effect") == "allow"}
         read_only = role in READ_ONLY_ROLES
@@ -134,9 +129,6 @@ def contracts(root: Path) -> list[dict[str, Any]]:
 
 
 def _number(settings: dict[str, Any], key: str) -> float:
-    """
-    Return a positive numeric setting or its documented default.
-    """
     value = settings.get(key, DEFAULTS[key])
     if not isinstance(value, (int, float)) or value < 0:
         raise OteError(f"governance.{key} must be a non-negative number")
@@ -144,9 +136,6 @@ def _number(settings: dict[str, Any], key: str) -> float:
 
 
 def evaluate_record(record: dict[str, Any], settings: dict[str, Any]) -> dict[str, Any]:
-    """
-    Evaluate one run record against budgets, loop limits, and deadlock limits.
-    """
     violations: list[dict[str, str]] = []
     for record_key, setting_key, label in BUDGETS:
         value = record.get(record_key, 0)
@@ -188,10 +177,7 @@ def evaluate_record(record: dict[str, Any], settings: dict[str, Any]) -> dict[st
     }
 
 
-def risk_gate(risk: str) -> dict[str, Any]:
-    """
-    Return the required gates for a risk level.
-    """
+def required_gates_for_risk(risk: str) -> dict[str, Any]:
     key = risk.lower()
     if key not in RISK_GATES:
         raise OteError(f"unknown risk level: {risk}")

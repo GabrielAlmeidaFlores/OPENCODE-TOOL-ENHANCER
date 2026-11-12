@@ -40,9 +40,6 @@ app.add_middleware(
 
 
 class UserStatus(str, Enum):
-    """
-    Lifecycle states for a user account.
-    """
 
     ACTIVE = "active"
     INACTIVE = "inactive"
@@ -50,9 +47,6 @@ class UserStatus(str, Enum):
 
 
 class UserBase(BaseModel):
-    """
-    Fields shared by every user representation.
-    """
 
     email: EmailStr
     name: str = Field(..., min_length=1, max_length=100)
@@ -60,17 +54,11 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    """
-    Payload accepted when creating a user.
-    """
 
     password: str = Field(..., min_length=8)
 
 
 class UserUpdate(BaseModel):
-    """
-    Partial payload accepted when updating a user.
-    """
 
     email: Optional[EmailStr] = None
     name: Optional[str] = Field(None, min_length=1, max_length=100)
@@ -78,9 +66,6 @@ class UserUpdate(BaseModel):
 
 
 class User(UserBase):
-    """
-    User representation returned by the API.
-    """
 
     id: str
     created_at: datetime
@@ -90,18 +75,12 @@ class User(UserBase):
 
 
 class PaginationParams(BaseModel):
-    """
-    Validated pagination parameters for list endpoints.
-    """
 
     page: int = Field(1, ge=1)
     page_size: int = Field(20, ge=1, le=100)
 
 
 class PaginatedResponse(BaseModel):
-    """
-    Envelope returned by list endpoints.
-    """
 
     items: List[Any]
     total: int
@@ -111,9 +90,6 @@ class PaginatedResponse(BaseModel):
 
 
 class ErrorDetail(BaseModel):
-    """
-    Machine-readable detail attached to a failed request.
-    """
 
     field: Optional[str] = None
     message: str
@@ -121,9 +97,6 @@ class ErrorDetail(BaseModel):
 
 
 class ErrorResponse(BaseModel):
-    """
-    Standard error envelope returned by the API.
-    """
 
     error: str
     message: str
@@ -132,9 +105,6 @@ class ErrorResponse(BaseModel):
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc):
-    """
-    Convert an HTTPException into the standard error envelope.
-    """
     return JSONResponse(
         status_code=exc.status_code,
         content=ErrorResponse(
@@ -182,9 +152,6 @@ async def list_users(
 
 @app.post("/api/users", response_model=User, status_code=status.HTTP_201_CREATED, tags=["Users"])
 async def create_user(user: UserCreate):
-    """
-    Create a user and return the stored representation.
-    """
     return User(
         id="123",
         email=user.email,
@@ -197,9 +164,6 @@ async def create_user(user: UserCreate):
 
 @app.get("/api/users/{user_id}", response_model=User, tags=["Users"])
 async def get_user(user_id: str = Path(..., description="User ID")):
-    """
-    Return one user or raise a structured 404.
-    """
     if user_id == "999":
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -223,9 +187,6 @@ async def get_user(user_id: str = Path(..., description="User ID")):
 
 @app.patch("/api/users/{user_id}", response_model=User, tags=["Users"])
 async def update_user(user_id: str, update: UserUpdate):
-    """
-    Apply the provided fields to an existing user.
-    """
     existing = await get_user(user_id)
     update_data = update.model_dump(exclude_unset=True)
     for field, value in update_data.items():
@@ -237,9 +198,6 @@ async def update_user(user_id: str, update: UserUpdate):
 
 @app.delete("/api/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["Users"])
 async def delete_user(user_id: str):
-    """
-    Delete a user after confirming that it exists.
-    """
     await get_user(user_id)
     return None
 

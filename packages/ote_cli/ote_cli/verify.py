@@ -1,8 +1,8 @@
 """
 Deterministic verification engine for ``ote verify``.
 
-Public API: :class:`Check`, :class:`Result`, :func:`load_config`,
-:func:`run_checks`, and :func:`failure_class`.
+Public API: :class:`Check`, :class:`Result`, :func:`load_verification_config`,
+:func:`run_verification_checks`, and :func:`classify_failure`.
 
 Configuration: ``.ote/config.toml`` with a ``[verify]`` table and one
 ``[verify.checks.<name>]`` table per check. TOML is used because Python 3.11
@@ -34,9 +34,6 @@ NAME_PATTERN = r"^[a-z0-9][a-z0-9_-]*$"
 
 @dataclass(frozen=True)
 class Check:
-    """
-    One configured verification command.
-    """
 
     name: str
     command: str
@@ -46,9 +43,6 @@ class Check:
 
 @dataclass(frozen=True)
 class Result:
-    """
-    One verification result.
-    """
 
     name: str
     status: str
@@ -60,18 +54,12 @@ class Result:
     cached: bool
 
 
-def _validate_name(name: str) -> None:
-    """
-    Reject check names that are not filesystem- and CLI-safe.
-    """
+def validate_check_name(name: str) -> None:
     if not re.match(NAME_PATTERN, name):
         raise OteError(f"invalid check name: {name}")
 
 
-def load_config(root: Path, path: Path | None = None) -> tuple[dict[str, Check], dict[str, Any]]:
-    """
-    Load and validate the verification and governance configuration.
-    """
+def load_verification_config(root: Path, path: Path | None = None) -> tuple[dict[str, Check], dict[str, Any]]:
     config_path = path or root / ".ote/config.toml"
     if not config_path.is_file():
         raise OteError(f"missing verification config: {config_path}")
@@ -95,7 +83,7 @@ def load_config(root: Path, path: Path | None = None) -> tuple[dict[str, Check],
 
     checks: dict[str, Check] = {}
     for name, entry in checks_section.items():
-        _validate_name(name)
+        validate_check_name(name)
         if not isinstance(entry, dict):
             raise OteError(f"{config_path}: verify.checks.{name} must be a table")
         command = entry.get("command")
@@ -122,10 +110,7 @@ def load_config(root: Path, path: Path | None = None) -> tuple[dict[str, Check],
     return checks, governance
 
 
-def failure_class(name: str, exit_code: int, timed_out: bool) -> str:
-    """
-    Classify a failed check for reports and rework analysis.
-    """
+def classify_failure(name: str, exit_code: int, timed_out: bool) -> str:
     if timed_out:
         return "timeout"
     if exit_code == 127:
@@ -145,16 +130,13 @@ def failure_class(name: str, exit_code: int, timed_out: bool) -> str:
     return "command-failure"
 
 
-def _digest_paths(root: Path, inputs: tuple[str, ...]) -> str:
-    """
-    Return a digest over the declared input files and directories.
-    """
+def digest_input_paths(root: Path, inputs: tuple[str, ...]) -> str:
     digest = hashlib.sha256()
     for relative in sorted(inputs):
         path = root / relative
         if not path.exists():
             raise OteError(f"cache input does not exist: {relative}")
-        files = [path] if path.is_file() else sorted(item for item in path.rglob("*") if _is_input_file(item))
+        files = [path] if path.is_file() else sorted(item for item in path.rglob("*") if is_cache_input_file(item))
         for file in files:
             digest.update(file.relative_to(root).as_posix().encode("utf-8"))
             digest.update(b"\0")
@@ -163,10 +145,7 @@ def _digest_paths(root: Path, inputs: tuple[str, ...]) -> str:
     return digest.hexdigest()
 
 
-def _is_input_file(path: Path) -> bool:
-    """
-    Exclude generated and operating-system files from input digests.
-    """
+def is_cache_input_file(path: Path) -> bool:
     if not path.is_file():
         return False
     if path.name == ".DS_Store" or path.suffix in {".pyc", ".pyo"}:
@@ -175,9 +154,6 @@ def _is_input_file(path: Path) -> bool:
 
 
 def cache_key(check: Check, root: Path) -> str:
-    """
-    Return a deterministic cache key for one check.
-    """
     digest = hashlib.sha256()
     digest.update(check.name.encode("utf-8"))
     digest.update(b"\0")
@@ -188,21 +164,15 @@ def cache_key(check: Check, root: Path) -> str:
     digest.update(sys.version.encode("utf-8"))
     if check.inputs:
         digest.update(b"\0")
-        digest.update(_digest_paths(root, check.inputs).encode("ascii"))
+        digest.update(digest_input_paths(root, check.inputs).encode("ascii"))
     return digest.hexdigest()
 
 
-def _truncate(value: str) -> str:
-    """
-    Bound captured output so cache files and reports stay small.
-    """
+def truncate_output(value: str) -> str:
     return value if len(value) <= MAX_OUTPUT else value[-MAX_OUTPUT:]
 
 
-def _read_cache(path: Path, key: str, name: str) -> Result | None:
-    """
-    Read a cached result when it matches the current key.
-    """
+def read_cached_result(path: Path, key: str, name: str) -> Result | None:
     if not path.is_file():
         return None
     try:
@@ -230,10 +200,7 @@ def _read_cache(path: Path, key: str, name: str) -> Result | None:
         return None
 
 
-def _write_cache(path: Path, key: str, result: Result) -> None:
-    """
-    Persist a successful or failed result for the current key.
-    """
+def write_cached_result(path: Path, key: str, result: Result) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "schema_version": CACHE_SCHEMA_VERSION,
@@ -248,10 +215,7 @@ def _write_cache(path: Path, key: str, result: Result) -> None:
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
-def _execute(root: Path, check: Check) -> Result:
-    """
-    Run one check and return its result.
-    """
+def execute_check(root: Path, check: Check) -> Result:
     started = time.monotonic()
     try:
         process = subprocess.run(
@@ -272,8 +236,8 @@ def _execute(root: Path, check: Check) -> Result:
             exit_code=124,
             seconds=round(time.monotonic() - started, 2),
             failure_class="timeout",
-            stdout=_truncate(stdout),
-            stderr=_truncate(stderr or f"timed out after {check.timeout}s"),
+            stdout=truncate_output(stdout),
+            stderr=truncate_output(stderr or f"timed out after {check.timeout}s"),
             cached=False,
         )
     seconds = round(time.monotonic() - started, 2)
@@ -283,23 +247,20 @@ def _execute(root: Path, check: Check) -> Result:
         status="pass" if exit_code == 0 else "fail",
         exit_code=exit_code,
         seconds=seconds,
-        failure_class="" if exit_code == 0 else failure_class(check.name, exit_code, False),
-        stdout=_truncate(process.stdout),
-        stderr=_truncate(process.stderr),
+        failure_class="" if exit_code == 0 else classify_failure(check.name, exit_code, False),
+        stdout=truncate_output(process.stdout),
+        stderr=truncate_output(process.stderr),
         cached=False,
     )
 
 
-def run_checks(
+def run_verification_checks(
     root: Path,
     checks: dict[str, Check],
     only: list[str] | None = None,
     use_cache: bool = True,
     cache_dir: Path | None = None,
 ) -> list[Result]:
-    """
-    Run the selected checks in configuration order and return their results.
-    """
     selected = list(only) if only else list(checks)
     unknown = [name for name in selected if name not in checks]
     if unknown:
@@ -311,21 +272,18 @@ def run_checks(
         key = cache_key(check, root)
         cached: Result | None = None
         if use_cache and check.inputs:
-            cached = _read_cache(directory / f"{name}.json", key, name)
+            cached = read_cached_result(directory / f"{name}.json", key, name)
         if cached is not None:
             results.append(cached)
             continue
-        result = _execute(root, check)
+        result = execute_check(root, check)
         if use_cache and check.inputs and result.status == "pass":
-            _write_cache(directory / f"{name}.json", key, result)
+            write_cached_result(directory / f"{name}.json", key, result)
         results.append(result)
     return results
 
 
-def summarize(results: list[Result]) -> dict[str, Any]:
-    """
-    Return counts and the overall status for a set of results.
-    """
+def summarize_results(results: list[Result]) -> dict[str, Any]:
     failures = [result for result in results if result.status == "fail"]
     return {
         "total": len(results),

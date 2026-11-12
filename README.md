@@ -60,6 +60,8 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 | Governance | Contracts, budgets, loop detection, risk gates | [`docs/governance/`](docs/governance) |
 | Memory | Markdown decisions, constraints, conventions, failures | [`docs/memory/`](docs/memory) |
 | Specs | Requirements, design, tasks, evidence workflow | [`docs/specs/`](docs/specs) |
+| Observability | Cost, tokens, tool failures, arm comparison | [`docs/cost-optimization/observability.md`](docs/cost-optimization/observability.md) |
+| Evals and pilots | Deterministic checks and isolated real-repository runs | [`docs/evals/`](docs/evals), [`docs/pilots/`](docs/pilots) |
 | Examples | TypeScript, C#, multi-agent workflows | [`examples/`](examples) |
 | Benchmarks | Methodology, tasks, harness, results | [`benchmarks/`](benchmarks) |
 | Documentation | Research, decisions, guides, provenance | [`docs/`](docs) |
@@ -78,11 +80,12 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 | Benchmarks | Deferred by decision; no published results |
 | Real-repository pilots | Repositories selected and pinned; execution pending |
 | CI | Green on Ubuntu and macOS for run [43260145360](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/actions/runs/43260145360); six jobs including `cli` |
-| Repository tests | 229 unit and integration tests; run with `make test` |
+| Repository tests | 258 unit and integration tests; run with `make test` |
 | `ote` CLI | Install, uninstall, update check, rollback, doctor verified locally and in the `cli` job |
 | Profiles and catalog | Three manifests and 34 catalog entries verified locally and in run 43260145360 |
 | Verification and governance | `ote verify` and `ote govern contracts` verified locally; CI runs both |
 | Memory and specs | Verified locally and in run 43260145360 |
+| Stats, eval, pilots | `ote stats` and `ote eval` verified locally; pilot runner has dry-run coverage |
 
 ## Architecture
 
@@ -657,6 +660,8 @@ The benchmark harness is reproducible, but **no results are published yet**. Thi
 | [Governance](docs/governance/README.md) | Contracts, budgets, loop detection, risk gates |
 | [Project memory](docs/memory/README.md) | Markdown memory, TTL, preamble, secret rejection |
 | [Spec workflow](docs/specs/README.md) | Requirements, design, tasks, evidence |
+| [Deterministic evals](docs/evals/README.md) | Profile, catalog, governance, and validator checks |
+| [Pilot runner](docs/pilots/README.md) | Pinned repositories, isolation, artifacts |
 | [Install the CLI](docs/installation/ote-cli.md) | uv, pipx, wheel, verification |
 | [Agent roles](docs/agents/roles.md) | Responsibilities and delegation rules |
 | [Artifact compatibility](docs/agents/compatibility.md) | OpenCode compatibility and runtime status |

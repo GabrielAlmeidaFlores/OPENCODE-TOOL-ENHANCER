@@ -57,6 +57,13 @@ Use this checklist before tagging a release. A checked item must have reproducib
 - [ ] Governance limits and risk gates match the documented defaults.
 - [ ] Ralph `code-assist` finalizer references `ote verify`.
 
+## Stats, evals, and pilots
+
+- [ ] `ote stats` and `ote eval` pass.
+- [ ] Pilot dry-run works for all three repositories.
+- [ ] No pilot result is published without correctness and rework data.
+- [ ] Reporting artifacts contain no credentials.
+
 ## Memory and specs
 
 - [ ] Memory and spec commands are covered by tests.

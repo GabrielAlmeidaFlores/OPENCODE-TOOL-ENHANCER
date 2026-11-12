@@ -65,6 +65,12 @@
 | `ote verify` runs a stale result | A passing cached result exists for unchanged inputs | Run with `--no-cache`, or change the declared inputs |
 | `ote govern contracts` fails | An agent's mode or edit permission violates its role | Fix `agents/<role>/AGENT.md`; rerun the validator |
 | `ote govern check` blocks a run | A budget, loop, or deadlock limit was exceeded | Inspect the violation kind and increase the limit only with justification |
+| `ote stats` shows no runs | The results directory has no `meta.json` runs | Run the harness or point `--results` at the right directory |
+| `ote stats --budget` exits 1 | Recorded cost exceeds the ceiling | Review the runs; the guard is post-run only |
+| `ote eval` fails | A profile, catalog, contract, or validator invariant broke | Fix the reported case; see `docs/evals/README.md` |
+| A pilot clone check out fails | The pinned commit is unavailable or the network is blocked | Verify the commit and access; rerun with `--dry-run` first |
+| A pilot verification fails | The task was not completed correctly | Keep the artifacts; record rework separately |
+
 | `ote memory add` refuses text | The text matches a credential pattern | Remove the secret; store a reference instead |
 | `ote memory add` reports a duplicate | The same title exists in that scope | Use a distinct title or `--force` |
 | A memory entry never appears | It expired or exceeded the preamble budget | Check `expires`; raise `memory.token_budget` |

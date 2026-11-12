@@ -1,7 +1,7 @@
 """
 Update checks for an installed target project.
 
-Public API: :func:`check`.
+Public API: :func:`check_for_updates`.
 
 Side effects: reads the lock and local files. Network access happens only when
 ``remote=True`` and uses ``git ls-remote`` without modifying the repository.
@@ -16,10 +16,7 @@ from .paths import lock_path
 from .process import git_commit, git_remote_head
 
 
-def check(root: Path, target: Path, remote: bool = False) -> dict[str, Any]:
-    """
-    Compare the lock, the current source commit, and optionally the remote head.
-    """
+def check_for_updates(root: Path, target: Path, remote: bool = False) -> dict[str, Any]:
     path = lock_path(target)
     lock = read_lock(path)
     if lock is None:

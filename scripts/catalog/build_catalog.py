@@ -39,9 +39,6 @@ REQUIRED = (
 
 
 def load_registry(path: Path) -> dict:
-    """
-    Load the provenance registry with PyYAML, which is a build-time dependency.
-    """
     try:
         import yaml
     except ImportError as error:
@@ -57,10 +54,7 @@ def load_registry(path: Path) -> dict:
 
 
 def artifact_entries(registry: dict) -> list[dict[str, str]]:
-    """
-    Flatten the registry sections into typed catalog entries.
-    """
-    entries: list[dict[str, str]] = []
+    catalog_entries: list[dict[str, str]] = []
     for section, artifact_type in SECTIONS.items():
         items = registry.get(section, [])
         if not isinstance(items, list):
@@ -72,30 +66,24 @@ def artifact_entries(registry: dict) -> list[dict[str, str]]:
             entry = {field: str(item[field]) for field in REQUIRED}
             entry["type"] = artifact_type
             entry["section"] = section
-            entries.append(entry)
+            catalog_entries.append(entry)
     order = {"agent": 0, "skill": 1, "command": 2, "hat": 3}
-    return sorted(entries, key=lambda entry: (order.get(entry["type"], 9), entry["id"]))
+    return sorted(catalog_entries, key=lambda entry: (order.get(entry["type"], 9), entry["id"]))
 
 
-def build_document(entries: list[dict[str, str]]) -> dict:
-    """
-    Build the catalog document with stable ordering and counts.
-    """
+def build_document(catalog_entries: list[dict[str, str]]) -> dict:
     counts: dict[str, int] = {}
-    for entry in entries:
+    for entry in catalog_entries:
         counts[entry["type"]] = counts.get(entry["type"], 0) + 1
     return {
         "schema_version": 1,
         "generated_from": "docs/provenance/registry.yml",
         "counts": dict(sorted(counts.items())),
-        "artifacts": entries,
+        "artifacts": catalog_entries,
     }
 
 
 def render_index(document: dict) -> str:
-    """
-    Render the human-readable catalog index.
-    """
     lines = [
         "# Artifact Catalog",
         "",
@@ -115,9 +103,6 @@ def render_index(document: dict) -> str:
 
 
 def check_drift(document: dict, index: str) -> int:
-    """
-    Compare generated content with the committed files and report drift.
-    """
     failures = 0
     expected_json = json.dumps(document, indent=2, sort_keys=True) + "\n"
     if not OUTPUT.is_file() or OUTPUT.read_text(encoding="utf-8") != expected_json:
@@ -132,9 +117,6 @@ def check_drift(document: dict, index: str) -> int:
 
 
 def main(argv: list[str]) -> int:
-    """
-    Generate or verify the catalog and return a process exit code.
-    """
     check = "--check" in argv
     registry = load_registry(REGISTRY)
     document = build_document(artifact_entries(registry))

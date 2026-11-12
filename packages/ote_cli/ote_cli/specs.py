@@ -1,7 +1,8 @@
 """
 Spec-driven development artifacts for ``ote spec``.
 
-Public API: :func:`create`, :func:`list_specs`, :func:`plan`, and :func:`verify`.
+Public API: :func:`create_spec_artifacts`, :func:`list_specs`,
+:func:`validate_spec_plan`, and :func:`verify_spec_evidence`.
 
 Each spec lives under ``specs/<slug>/`` with four Markdown artifacts:
 requirements, design, tasks, and evidence. Every task must reference an
@@ -21,32 +22,23 @@ TASK = re.compile(r"^- \[[ xX]\] (T-\d+):\s*(.+?)\s*\(criterion:\s*(AC-\d+)\)\s*
 EVIDENCE = re.compile(r"^- (AC-\d+):\s*(.+)$")
 
 
-def slug(feature: str) -> str:
-    """
-    Convert a feature name into a directory-safe slug.
-    """
+def slugify_feature_name(feature: str) -> str:
     value = re.sub(r"[^a-z0-9]+", "-", feature.lower()).strip("-")
     if not value:
         raise OteError("feature name must contain letters or digits")
     return value[:60]
 
 
-def _placeholders(text: str) -> bool:
-    """
-    Return True when a line still contains an angle-bracket placeholder.
-    """
+def contains_placeholder(text: str) -> bool:
     return "<" in text and ">" in text
 
 
-def create(root: Path, feature: str, criteria: list[str]) -> Path:
-    """
-    Create the four spec artifacts for a feature.
-    """
-    directory = root / "specs" / slug(feature)
+def create_spec_artifacts(root: Path, feature: str, criteria: list[str]) -> Path:
+    directory = root / "specs" / slugify_feature_name(feature)
     if directory.exists():
         raise OteError(f"spec already exists: {directory}")
     cleaned = [item.strip() for item in criteria if item.strip()]
-    invalid = [item for item in cleaned if _placeholders(item)]
+    invalid = [item for item in cleaned if contains_placeholder(item)]
     if invalid:
         raise OteError("criteria must not contain angle-bracket placeholders")
     directory.mkdir(parents=True)
@@ -112,9 +104,6 @@ Record the command and observed result for every criterion.
 
 
 def list_specs(root: Path) -> list[dict[str, Any]]:
-    """
-    Return the spec directories and whether the four artifacts exist.
-    """
     directory = root / "specs"
     if not directory.is_dir():
         return []
@@ -132,26 +121,20 @@ def list_specs(root: Path) -> list[dict[str, Any]]:
     return results
 
 
-def _read(path: Path) -> str:
-    """
-    Read an artifact, failing with a clear message when it is absent.
-    """
+def read_spec_artifact(path: Path) -> str:
     if not path.is_file():
         raise OteError(f"missing spec artifact: {path}")
     return path.read_text(encoding="utf-8")
 
 
-def _criteria(text: str) -> dict[str, str]:
-    """
-    Parse acceptance criteria, rejecting placeholders and duplicates.
-    """
+def parse_acceptance_criteria(text: str) -> dict[str, str]:
     results: dict[str, str] = {}
     for line in text.splitlines():
         match = CRITERION.match(line.strip())
         if not match:
             continue
         identifier, description = match.group(1), match.group(2).strip()
-        if _placeholders(description):
+        if contains_placeholder(description):
             continue
         if identifier in results:
             raise OteError(f"duplicate criterion: {identifier}")
@@ -159,33 +142,27 @@ def _criteria(text: str) -> dict[str, str]:
     return results
 
 
-def _tasks(text: str) -> list[dict[str, str]]:
-    """
-    Parse tasks and their criterion references.
-    """
+def parse_spec_tasks(text: str) -> list[dict[str, str]]:
     results: list[dict[str, str]] = []
     for line in text.splitlines():
         match = TASK.match(line.strip())
         if not match:
             continue
         description = match.group(2).strip()
-        if _placeholders(description):
+        if contains_placeholder(description):
             continue
         results.append({"id": match.group(1), "description": description, "criterion": match.group(3)})
     return results
 
 
-def _evidence(text: str) -> dict[str, str]:
-    """
-    Parse evidence entries keyed by criterion.
-    """
+def parse_spec_evidence(text: str) -> dict[str, str]:
     results: dict[str, str] = {}
     for line in text.splitlines():
         match = EVIDENCE.match(line.strip())
         if not match:
             continue
         value = match.group(2).strip()
-        if _placeholders(value):
+        if contains_placeholder(value):
             continue
         if match.group(1) in results:
             raise OteError(f"duplicate evidence for {match.group(1)}")
@@ -193,13 +170,10 @@ def _evidence(text: str) -> dict[str, str]:
     return results
 
 
-def plan(root: Path, feature: str) -> dict[str, Any]:
-    """
-    Validate requirements and task mapping before implementation.
-    """
-    directory = root / "specs" / slug(feature)
-    criteria = _criteria(_read(directory / "requirements.md"))
-    tasks = _tasks(_read(directory / "tasks.md"))
+def validate_spec_plan(root: Path, feature: str) -> dict[str, Any]:
+    directory = root / "specs" / slugify_feature_name(feature)
+    criteria = parse_acceptance_criteria(read_spec_artifact(directory / "requirements.md"))
+    tasks = parse_spec_tasks(read_spec_artifact(directory / "tasks.md"))
     issues: list[str] = []
     if not criteria:
         issues.append("no acceptance criteria found")
@@ -213,7 +187,7 @@ def plan(root: Path, feature: str) -> dict[str, Any]:
         if identifier not in covered:
             issues.append(f"{identifier} has no task")
     return {
-        "feature": slug(feature),
+        "feature": slugify_feature_name(feature),
         "path": str(directory),
         "criteria": criteria,
         "tasks": tasks,
@@ -222,16 +196,13 @@ def plan(root: Path, feature: str) -> dict[str, Any]:
     }
 
 
-def verify(root: Path, feature: str) -> dict[str, Any]:
-    """
-    Verify tasks and evidence against the acceptance criteria.
-    """
-    directory = root / "specs" / slug(feature)
+def verify_spec_evidence(root: Path, feature: str) -> dict[str, Any]:
+    directory = root / "specs" / slugify_feature_name(feature)
     missing = [name for name in FILES if not (directory / name).is_file()]
     if missing:
         raise OteError(f"missing spec artifacts: {', '.join(missing)}")
-    base = plan(root, feature)
-    evidence = _evidence(_read(directory / "evidence.md"))
+    base = validate_spec_plan(root, feature)
+    evidence = parse_spec_evidence(read_spec_artifact(directory / "evidence.md"))
     issues = list(base["issues"])
     for identifier in base["criteria"]:
         if identifier not in evidence:

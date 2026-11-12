@@ -50,6 +50,9 @@ REQUIRED = [
     "specs/README.md",
     "docs/memory/README.md",
     "docs/specs/README.md",
+    "docs/evals/README.md",
+    "configs/pilots/pilots.toml",
+    "tests/evals/cases.json",
     "catalog/registry.json",
     "catalog/schema/entry.schema.json",
     "profiles/minimal.yml",
@@ -92,24 +95,15 @@ warnings: list[str] = []
 checked = 0
 
 
-def fail(message: str) -> None:
-    """
-    Record a validation failure.
-    """
+def record_error(message: str) -> None:
     errors.append(message)
 
 
-def warn(message: str) -> None:
-    """
-    Record a validation warning.
-    """
+def record_warning(message: str) -> None:
     warnings.append(message)
 
 
 def strip_jsonc(text: str) -> str:
-    """
-    Remove JSONC comments and trailing commas while preserving string contents.
-    """
     out: list[str] = []
     index = 0
     length = len(text)
@@ -150,29 +144,23 @@ def strip_jsonc(text: str) -> str:
 
 
 def check_jsonc(path: Path) -> None:
-    """
-    Validate a JSONC file and its OpenCode V2 shape.
-    """
     global checked
     checked += 1
     try:
         data = json.loads(strip_jsonc(path.read_text(encoding="utf-8")))
     except Exception as exc:  # noqa: BLE001 - report any parser failure as a validation error
-        fail(f"{path.relative_to(ROOT)}: invalid JSONC: {exc}")
+        record_error(f"{path.relative_to(ROOT)}: invalid JSONC: {exc}")
         return
     if not isinstance(data, dict):
-        fail(f"{path.relative_to(ROOT)}: root must be an object")
+        record_error(f"{path.relative_to(ROOT)}: root must be an object")
         return
     if "$schema" not in data:
-        warn(f"{path.relative_to(ROOT)}: missing $schema")
+            record_warning(f"{path.relative_to(ROOT)}: missing $schema")
     if "mcp" in data and "servers" not in data["mcp"]:
-        fail(f"{path.relative_to(ROOT)}: V2 requires mcp.servers")
+        record_error(f"{path.relative_to(ROOT)}: V2 requires mcp.servers")
 
 
 def check_yaml(path: Path) -> None:
-    """
-    Validate a YAML file with PyYAML when available, otherwise with Ruby.
-    """
     global checked
     checked += 1
     try:
@@ -186,43 +174,37 @@ def check_yaml(path: Path) -> None:
                 check=False,
             )
         except FileNotFoundError:
-            warn("No YAML parser (PyYAML or Ruby); YAML syntax checks skipped")
+            record_warning("No YAML parser (PyYAML or Ruby); YAML syntax checks skipped")
             return
         if process.returncode != 0:
-            fail(f"{path.relative_to(ROOT)}: invalid YAML: {process.stderr.strip()[:200]}")
+            record_error(f"{path.relative_to(ROOT)}: invalid YAML: {process.stderr.strip()[:200]}")
         return
     try:
         yaml.safe_load(path.read_text(encoding="utf-8"))
     except Exception as exc:  # noqa: BLE001 - report any parser failure as a validation error
-        fail(f"{path.relative_to(ROOT)}: invalid YAML: {exc}")
+        record_error(f"{path.relative_to(ROOT)}: invalid YAML: {exc}")
 
 
 def check_tasks() -> None:
-    """
-    Validate benchmark task definitions and their working directories.
-    """
     global checked
     for path in sorted((ROOT / "benchmarks/tasks").glob("*.json")):
         checked += 1
         try:
             task = json.loads(path.read_text(encoding="utf-8"))
         except Exception as exc:  # noqa: BLE001 - report any parser failure as a validation error
-            fail(f"{path.relative_to(ROOT)}: invalid JSON: {exc}")
+            record_error(f"{path.relative_to(ROOT)}: invalid JSON: {exc}")
             continue
         for field in ("id", "prompt", "verification", "working_directory"):
             value = task.get(field)
             if not isinstance(value, str) or not value.strip():
-                fail(f"{path.relative_to(ROOT)}: missing or empty {field}")
+                record_error(f"{path.relative_to(ROOT)}: missing or empty {field}")
         working_directory = task.get("working_directory")
         if isinstance(working_directory, str) and working_directory.strip():
             if not (ROOT / working_directory).is_dir():
-                fail(f"{path.relative_to(ROOT)}: working_directory does not exist: {working_directory}")
+                record_error(f"{path.relative_to(ROOT)}: working_directory does not exist: {working_directory}")
 
 
-def frontmatter(path: Path) -> dict[str, str]:
-    """
-    Return the simple top-level string fields from a Markdown frontmatter block.
-    """
+def read_frontmatter(path: Path) -> dict[str, str]:
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---"):
         return {}
@@ -239,75 +221,63 @@ def frontmatter(path: Path) -> dict[str, str]:
 
 
 def check_agents() -> None:
-    """
-    Validate required agent files and their frontmatter fields.
-    """
     global checked
     for role in AGENT_ROLES:
         path = ROOT / "agents" / role / "AGENT.md"
         checked += 1
         if not path.exists():
-            fail(f"missing agent: {path.relative_to(ROOT)}")
+            record_error(f"missing agent: {path.relative_to(ROOT)}")
             continue
-        metadata = frontmatter(path)
+        metadata = read_frontmatter(path)
         if not metadata.get("description"):
-            fail(f"{path.relative_to(ROOT)}: missing description")
+            record_error(f"{path.relative_to(ROOT)}: missing description")
         if metadata.get("mode") not in {"primary", "subagent", "all"}:
-            fail(f"{path.relative_to(ROOT)}: invalid or missing mode")
+            record_error(f"{path.relative_to(ROOT)}: invalid or missing mode")
         if role == "coordinator" and metadata.get("mode") != "primary":
-            fail("coordinator must be mode: primary")
+            record_error("coordinator must be mode: primary")
         if role != "coordinator" and metadata.get("mode") != "subagent":
-            fail(f"{role} must be mode: subagent")
+            record_error(f"{role} must be mode: subagent")
 
 
 def check_skills() -> None:
-    """
-    Validate required skill files, names, descriptions, and naming format.
-    """
     global checked
     pattern = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
     for name in SKILLS:
         path = ROOT / "skills" / name / "SKILL.md"
         checked += 1
         if not path.exists():
-            fail(f"missing skill: {path.relative_to(ROOT)}")
+            record_error(f"missing skill: {path.relative_to(ROOT)}")
             continue
-        metadata = frontmatter(path)
+        metadata = read_frontmatter(path)
         if metadata.get("name") != name:
-            fail(f"{path.relative_to(ROOT)}: name must match directory ({name})")
+            record_error(f"{path.relative_to(ROOT)}: name must match directory ({name})")
         if not pattern.match(name):
-            fail(f"{name}: invalid skill name")
+            record_error(f"{name}: invalid skill name")
         description = metadata.get("description", "")
         if not (1 <= len(description) <= 1024):
-            fail(f"{path.relative_to(ROOT)}: description length {len(description)} not in 1..1024")
+            record_error(f"{path.relative_to(ROOT)}: description length {len(description)} not in 1..1024")
 
 
 def check_commands() -> None:
-    """
-    Validate every command file and its target agent.
-    """
     global checked
     for path in sorted((ROOT / "commands").glob("*.md")):
         checked += 1
-        metadata = frontmatter(path)
+        metadata = read_frontmatter(path)
         if not metadata.get("description"):
-            fail(f"{path.relative_to(ROOT)}: missing description")
+            record_error(f"{path.relative_to(ROOT)}: missing description")
         agent = metadata.get("agent")
         if not agent:
-            fail(f"{path.relative_to(ROOT)}: missing agent")
+            record_error(f"{path.relative_to(ROOT)}: missing agent")
         elif agent not in AGENT_ROLES:
-            fail(f"{path.relative_to(ROOT)}: unknown agent: {agent}")
+            record_error(f"{path.relative_to(ROOT)}: unknown agent: {agent}")
 
 
 def check_provenance() -> None:
-    """
-    Enforce AGENTS.md Section 2A across registered artifacts.
-    """
     global checked
     registry = ROOT / "docs/provenance/registry.yml"
     checked += 1
     if not registry.exists():
-        fail("missing docs/provenance/registry.yml")
+        record_error("missing docs/provenance/registry.yml")
         return
     text = registry.read_text(encoding="utf-8")
 
@@ -317,7 +287,7 @@ def check_provenance() -> None:
                 continue
             checked += 1
             if not (ROOT / part).exists():
-                fail(f"provenance registry points to missing path: {part}")
+                record_error(f"provenance registry points to missing path: {part}")
 
     for subdirectory in ("agents", "commands"):
         for path in sorted((ROOT / subdirectory).rglob("*.md")):
@@ -326,31 +296,28 @@ def check_provenance() -> None:
             checked += 1
             head = path.read_text(encoding="utf-8")[:1200]
             if "# source:" not in head or "# upstream_commit:" not in head:
-                fail(f"{path.relative_to(ROOT)}: missing provenance header (source/upstream_commit)")
+                record_error(f"{path.relative_to(ROOT)}: missing provenance header (source/upstream_commit)")
             if "# author:" not in head or "# author_url:" not in head:
-                fail(f"{path.relative_to(ROOT)}: missing author attribution (author/author_url)")
+                record_error(f"{path.relative_to(ROOT)}: missing author attribution (author/author_url)")
 
     for path in sorted((ROOT / "skills").rglob("SKILL.md")):
         checked += 1
         head = path.read_text(encoding="utf-8")[:1600]
         for key in ("author:", "author_url:", "source:", "upstream_path:", "upstream_commit:", "license:"):
             if key not in head:
-                fail(f"{path.relative_to(ROOT)}: missing metadata.{key}")
+                record_error(f"{path.relative_to(ROOT)}: missing metadata.{key}")
                 break
 
     for path in sorted((ROOT / "configs/ralph/hats").glob("*.yml")):
         checked += 1
         head = path.read_text(encoding="utf-8")[:1200]
         if "# source:" not in head or "# upstream_commit:" not in head:
-            fail(f"{path.relative_to(ROOT)}: missing provenance header")
+            record_error(f"{path.relative_to(ROOT)}: missing provenance header")
         if "# author:" not in head or "# author_url:" not in head:
-            fail(f"{path.relative_to(ROOT)}: missing author attribution")
+            record_error(f"{path.relative_to(ROOT)}: missing author attribution")
 
 
 def parse_permissions(frontmatter_text: str) -> list[dict[str, str]]:
-    """
-    Parse the action, resource, and effect fields from agent permissions.
-    """
     permissions: list[dict[str, str]] = []
     current: dict[str, str] = {}
     in_permissions = False
@@ -381,9 +348,6 @@ def parse_permissions(frontmatter_text: str) -> list[dict[str, str]]:
 
 
 def check_git_permissions() -> None:
-    """
-    Verify that every agent resolves git write commands to deny as the last matching rule.
-    """
     global checked
     commands = [
         "git add -A",
@@ -402,11 +366,11 @@ def check_git_permissions() -> None:
             continue
         text = path.read_text(encoding="utf-8")
         if not text.startswith("---"):
-            fail(f"{path.relative_to(ROOT)}: missing frontmatter")
+            record_error(f"{path.relative_to(ROOT)}: missing frontmatter")
             continue
         end = text.find("\n---", 3)
         if end == -1:
-            fail(f"{path.relative_to(ROOT)}: unterminated frontmatter")
+            record_error(f"{path.relative_to(ROOT)}: unterminated frontmatter")
             continue
         permissions = parse_permissions(text[3:end])
         checked += 1
@@ -418,16 +382,13 @@ def check_git_permissions() -> None:
                 if fnmatch.fnmatchcase(command, rule.get("resource", "")):
                     effect = rule.get("effect")
             if effect != "deny":
-                fail(
+                record_error(
                     f"{path.relative_to(ROOT)}: `{command}` resolves to {effect or 'no rule'} "
                     "instead of deny; add the git deny rules at the end of permissions"
                 )
 
 
 def jsonc_comment_lines(text: str) -> list[int]:
-    """
-    Return the 1-based line numbers of comments outside JSON strings.
-    """
     lines: list[int] = []
     index = 0
     line = 1
@@ -472,9 +433,6 @@ def jsonc_comment_lines(text: str) -> list[int]:
 
 
 def shell_inline_comment(line: str) -> bool:
-    """
-    Return True when a shell line contains a comment after executable text.
-    """
     in_single = False
     in_double = False
     escaped = False
@@ -519,22 +477,13 @@ def shell_inline_comment(line: str) -> bool:
 
 
 def python_sources(base: Path) -> list[Path]:
-    """
-    Return Python sources under a directory, excluding build and cache output.
-    """
     def excluded(part: str) -> bool:
-        """
-        Return True for generated directories that policy checks must skip.
-        """
         return part in {"build", "__pycache__"} or part.endswith(".egg-info")
 
     return [path for path in sorted(base.rglob("*.py")) if not any(excluded(part) for part in path.parts)]
 
 
 def is_test_fixture(path: Path) -> bool:
-    """
-    Return True for files under tests/fixtures, which may contain prohibited patterns.
-    """
     try:
         path.resolve().relative_to((ROOT / "tests" / "fixtures").resolve())
     except ValueError:
@@ -543,9 +492,6 @@ def is_test_fixture(path: Path) -> bool:
 
 
 def check_comment_policy() -> None:
-    """
-    Enforce the documentation-comment policy from AGENTS.md Section 2C.
-    """
     global checked
 
     for path in sorted((ROOT / "configs").rglob("*.jsonc")):
@@ -553,28 +499,28 @@ def check_comment_policy() -> None:
         text = path.read_text(encoding="utf-8")
         header = "\n".join(text.splitlines()[:10])
         if "// Name:" not in header or "// Purpose:" not in header:
-            fail(f"{path.relative_to(ROOT)}: missing JSONC documentation header")
+            record_error(f"{path.relative_to(ROOT)}: missing JSONC documentation header")
             continue
         body_line = next(
             (number for number, line in enumerate(text.splitlines(), start=1) if line.strip().startswith("{")),
             None,
         )
         if body_line is None:
-            fail(f"{path.relative_to(ROOT)}: missing JSON object")
+            record_error(f"{path.relative_to(ROOT)}: missing JSON object")
             continue
         for comment_line in jsonc_comment_lines(text):
             if comment_line >= body_line:
-                fail(f"{path.relative_to(ROOT)}:{comment_line}: inline JSONC comments are prohibited")
+                record_error(f"{path.relative_to(ROOT)}:{comment_line}: inline JSONC comments are prohibited")
 
     for path in sorted((ROOT / "scripts").rglob("*.sh")) + sorted((ROOT / "benchmarks/harness").rglob("*.sh")) + sorted((ROOT / "skills").rglob("*.sh")):
         checked += 1
         lines = path.read_text(encoding="utf-8").splitlines()
         header = "\n".join(lines[:12])
         if "# Name:" not in header or "# Purpose:" not in header:
-            fail(f"{path.relative_to(ROOT)}: missing shell documentation header")
+            record_error(f"{path.relative_to(ROOT)}: missing shell documentation header")
         for number, line in enumerate(lines, start=1):
             if shell_inline_comment(line):
-                fail(f"{path.relative_to(ROOT)}:{number}: inline shell comments are prohibited")
+                record_error(f"{path.relative_to(ROOT)}:{number}: inline shell comments are prohibited")
 
     for path in python_sources(ROOT / "scripts") + python_sources(ROOT / "packages") + python_sources(ROOT / "skills") + python_sources(ROOT / "tests"):
         if is_test_fixture(path):
@@ -582,7 +528,7 @@ def check_comment_policy() -> None:
         checked += 1
         text = path.read_text(encoding="utf-8")
         if ast.get_docstring(ast.parse(text)) is None:
-            fail(f"{path.relative_to(ROOT)}: missing module docstring")
+            record_error(f"{path.relative_to(ROOT)}: missing module docstring")
         try:
             tokens = tokenize.generate_tokens(io.StringIO(text).readline)
             for token in tokens:
@@ -593,15 +539,12 @@ def check_comment_policy() -> None:
                     continue
                 if re.match(r"#\s*(noqa|type:|pragma:|shellcheck|fmt:)", value):
                     continue
-                fail(f"{path.relative_to(ROOT)}:{token.start[0]}: non-documentation Python comment")
+                record_error(f"{path.relative_to(ROOT)}:{token.start[0]}: non-documentation Python comment")
         except tokenize.TokenError as exc:
-            fail(f"{path.relative_to(ROOT)}: tokenization failed: {exc}")
+            record_error(f"{path.relative_to(ROOT)}: tokenization failed: {exc}")
 
 
 def check_docs_status() -> None:
-    """
-    Enforce the Phase 0 documentation status block on every docs page.
-    """
     global checked
     allowed = {"Stable", "Experimental", "Planned", "Deprecated"}
     for path in sorted((ROOT / "docs").rglob("*.md")):
@@ -612,21 +555,18 @@ def check_docs_status() -> None:
         head = "\n".join(path.read_text(encoding="utf-8").splitlines()[:8])
         missing = [marker for marker in ("**Status:**", "**Last verified:**", "**Evidence:**") if marker not in head]
         if missing:
-            fail(f"{relative}: missing documentation status field {missing[0]}")
+            record_error(f"{relative}: missing documentation status field {missing[0]}")
             continue
         match = re.search(r"\*\*Status:\*\*\s*([A-Za-z]+)", head)
         if match is None:
-            fail(f"{relative}: missing documentation status value")
+            record_error(f"{relative}: missing documentation status value")
         elif match.group(1) not in allowed:
-            fail(f"{relative}: unknown documentation status {match.group(1)}")
+            record_error(f"{relative}: unknown documentation status {match.group(1)}")
         if not re.search(r"\*\*Last verified:\*\*\s*\d{4}-\d{2}-\d{2}", head):
-            fail(f"{relative}: last verified date must be ISO 8601")
+            record_error(f"{relative}: last verified date must be ISO 8601")
 
 
 def code_line_comment(line: str) -> int | None:
-    """
-    Return the index of a ``//`` comment outside string literals, or None.
-    """
     in_single = False
     in_double = False
     in_template = False
@@ -661,9 +601,6 @@ def code_line_comment(line: str) -> int | None:
 
 
 def check_source_comments() -> None:
-    """
-    Enforce documentation-only comments in TypeScript and C# sources.
-    """
     global checked
     bases = [ROOT / "examples", ROOT / "skills"]
     patterns = ("*.ts", "*.tsx", "*.cs")
@@ -685,7 +622,7 @@ def check_source_comments() -> None:
                             in_block = True
                         continue
                     if stripped.startswith("/*"):
-                        fail(f"{path.relative_to(ROOT)}:{number}: block comments are prohibited")
+                        record_error(f"{path.relative_to(ROOT)}:{number}: block comments are prohibited")
                         if "*/" not in stripped:
                             in_block = True
                         continue
@@ -694,16 +631,16 @@ def check_source_comments() -> None:
                         continue
                     if line[index : index + 3] == "///":
                         continue
-                    fail(f"{path.relative_to(ROOT)}:{number}: line comments are prohibited; use JSDoc or XML documentation")
+                    record_error(f"{path.relative_to(ROOT)}:{number}: line comments are prohibited; use JSDoc or XML documentation")
 
 
 def check_docstring_form() -> None:
     """
-    Enforce block-form docstrings on every module, class, and function.
+    Require a module docstring and enforce block form on any function or class docstring.
 
-    A block-form docstring places the opening and closing triple quotes on their
-    own lines. Single-line docstrings are rejected because they read as inline
-    comments rather than documentation.
+    Function and class docstrings are optional; descriptive names are preferred.
+    When a docstring is present, the opening and closing triple quotes must be on
+    their own lines. Single-line docstrings read as inline comments and are rejected.
     """
     global checked
     for base in (ROOT / "scripts", ROOT / "packages", ROOT / "skills", ROOT / "tests"):
@@ -715,7 +652,7 @@ def check_docstring_form() -> None:
             try:
                 tree = ast.parse(source)
             except SyntaxError as error:
-                fail(f"{path.relative_to(ROOT)}: cannot parse: {error}")
+                record_error(f"{path.relative_to(ROOT)}: cannot parse: {error}")
                 continue
             lines = source.splitlines()
             nodes: list[ast.AST] = [tree]
@@ -728,7 +665,7 @@ def check_docstring_form() -> None:
                 name = getattr(node, "name", "module")
                 body = getattr(node, "body", [])
                 if not body:
-                    fail(f"{path.relative_to(ROOT)}:{getattr(node, 'lineno', 1)}: {name} has no body")
+                    record_error(f"{path.relative_to(ROOT)}:{getattr(node, 'lineno', 1)}: {name} has no body")
                     continue
                 first = body[0]
                 is_docstring = (
@@ -737,20 +674,18 @@ def check_docstring_form() -> None:
                     and isinstance(first.value.value, str)
                 )
                 if not is_docstring:
-                    fail(f"{path.relative_to(ROOT)}:{getattr(node, 'lineno', 1)}: {name} is missing a docstring")
+                    if isinstance(node, ast.Module):
+                        record_error(f"{path.relative_to(ROOT)}:1: module is missing a docstring")
                     continue
                 start = first.lineno - 1
                 end = first.end_lineno - 1
                 if lines[start].strip() != '"""' or lines[end].strip() != '"""':
-                    fail(
+                    record_error(
                         f"{path.relative_to(ROOT)}:{first.lineno}: {name} docstring must place the triple quotes on their own lines"
                     )
 
 
 def check_links() -> None:
-    """
-    Check external HTTP links found in documentation.
-    """
     global checked
     urls: set[str] = set()
     for path in list(ROOT.glob("docs/**/*.md")) + [ROOT / "README.md"]:
@@ -765,22 +700,19 @@ def check_links() -> None:
         try:
             with urllib.request.urlopen(request, timeout=10) as response:
                 if response.status >= 400:
-                    warn(f"link {url}: HTTP {response.status}")
+                    record_warning(f"link {url}: HTTP {response.status}")
         except Exception as exc:  # noqa: BLE001 - report unreachable links as warnings
-            warn(f"link {url}: {exc}")
+            record_warning(f"link {url}: {exc}")
 
 
 def main() -> int:
-    """
-    Run every validation check and return a process exit code.
-    """
     parser = argparse.ArgumentParser()
     parser.add_argument("--links", action="store_true", help="check external links")
     args = parser.parse_args()
 
     for relative in REQUIRED:
         if not (ROOT / relative).exists():
-            fail(f"missing required file: {relative}")
+            record_error(f"missing required file: {relative}")
 
     for path in sorted((ROOT / "configs").rglob("*.jsonc")):
         check_jsonc(path)

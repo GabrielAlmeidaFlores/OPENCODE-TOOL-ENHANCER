@@ -30,9 +30,6 @@ _ALLOWED_KEYS = {"name", "description", "components"}
 
 @dataclass(frozen=True)
 class Profile:
-    """
-    One installable profile manifest.
-    """
 
     name: str
     description: str
@@ -40,10 +37,7 @@ class Profile:
     path: Path
 
 
-def _parse_simple_yaml(text: str, source: Path) -> dict[str, str | list[str]]:
-    """
-    Parse the restricted YAML subset used by profile manifests.
-    """
+def parse_profile_yaml(text: str, source: Path) -> dict[str, str | list[str]]:
     data: dict[str, str | list[str]] = {}
     current: str | None = None
     for number, line in enumerate(text.splitlines(), start=1):
@@ -73,10 +67,7 @@ def _parse_simple_yaml(text: str, source: Path) -> dict[str, str | list[str]]:
 
 
 def load_profile(path: Path) -> Profile:
-    """
-    Load and validate one profile manifest.
-    """
-    data = _parse_simple_yaml(path.read_text(encoding="utf-8"), path)
+    data = parse_profile_yaml(path.read_text(encoding="utf-8"), path)
     name = data.get("name")
     description = data.get("description")
     components = data.get("components")
@@ -98,9 +89,6 @@ def load_profile(path: Path) -> Profile:
 
 
 def load_profiles(root: Path) -> dict[str, Profile]:
-    """
-    Load every profile manifest under ``profiles/``.
-    """
     directory = root / "profiles"
     if not directory.is_dir():
         raise OteError(f"missing profiles directory: {directory}")
@@ -116,9 +104,6 @@ def load_profiles(root: Path) -> dict[str, Profile]:
 
 
 def resolve_components(profiles: dict[str, Profile], name: str, only: str | None) -> list[str]:
-    """
-    Resolve a profile name or an explicit component list.
-    """
     if only:
         selected = [item.strip() for item in only.split(",") if item.strip()]
         unknown = [item for item in selected if item not in KNOWN_COMPONENTS]
@@ -132,9 +117,6 @@ def resolve_components(profiles: dict[str, Profile], name: str, only: str | None
 
 
 def verify_profiles(root: Path) -> list[dict[str, str]]:
-    """
-    Validate every manifest, returning one result per file instead of raising.
-    """
     results: list[dict[str, str]] = []
     directory = root / "profiles"
     for path in sorted(directory.glob("*.yml")):

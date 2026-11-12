@@ -16,14 +16,8 @@ from ote_cli.locking import write_json
 
 
 class PlanTests(unittest.TestCase):
-    """
-    Tests for the file plan derived from components.
-    """
 
     def test_minimal_plan_covers_every_artifact_type(self) -> None:
-        """
-        The minimal plan includes config, agents, commands, skills, and Ralph files.
-        """
         planned = installer.plan_files(
             support.REPO_ROOT,
             support.REPO_ROOT / "target",
@@ -39,9 +33,6 @@ class PlanTests(unittest.TestCase):
         self.assertEqual(sum(1 for item in planned if item.component == "agents"), 12)
 
     def test_tool_only_components_produce_no_files(self) -> None:
-        """
-        External tool components are delegated to the shell installer.
-        """
         planned = installer.plan_files(
             support.REPO_ROOT,
             support.REPO_ROOT / "target",
@@ -50,22 +41,13 @@ class PlanTests(unittest.TestCase):
         self.assertEqual(planned, [])
 
     def test_every_planned_source_exists(self) -> None:
-        """
-        Planning fails early when an artifact is missing.
-        """
         planned = installer.plan_files(support.REPO_ROOT, Path("/tmp/ote-plan"), list(FILE_COMPONENTS))
         self.assertTrue(all(item.source.is_file() for item in planned))
 
 
 class GeneratedFileTests(unittest.TestCase):
-    """
-    Tests that cache and operating-system files never enter the plan.
-    """
 
     def test_generated_files_are_skipped(self) -> None:
-        """
-        __pycache__, .pyc, .DS_Store, and node_modules are excluded.
-        """
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             skill = root / "skills/demo"
@@ -85,14 +67,8 @@ class GeneratedFileTests(unittest.TestCase):
 
 
 class SummaryTests(unittest.TestCase):
-    """
-    Tests for new, updated, and unchanged classification.
-    """
 
     def test_summary_tracks_changes(self) -> None:
-        """
-        A missing file is new, an identical file is unchanged, a changed file is updated.
-        """
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             target = root / "target"
@@ -109,19 +85,13 @@ class SummaryTests(unittest.TestCase):
                 installer.PlannedFile(source=source, destination=target / source.name, component="agents")
                 for source in sources
             ]
-            summary = installer.summarize(planned, target)
+            summary = installer.summarize_file_changes(planned, target)
             self.assertEqual(summary, {"new": 1, "updated": 1, "unchanged": 1})
 
 
 class UninstallTests(unittest.TestCase):
-    """
-    Tests for safe removal based on the lock.
-    """
 
     def _target(self) -> tuple[Path, dict]:
-        """
-        Create a target with one unmodified and one modified managed file.
-        """
         directory = tempfile.TemporaryDirectory()
         self.addCleanup(directory.cleanup)
         target = Path(directory.name)
@@ -142,9 +112,6 @@ class UninstallTests(unittest.TestCase):
         return target, lock
 
     def test_plan_does_not_remove(self) -> None:
-        """
-        Planning leaves every file in place.
-        """
         target, _ = self._target()
         result = installer.uninstall(target, apply=False)
         self.assertFalse(result["applied"])
@@ -153,56 +120,35 @@ class UninstallTests(unittest.TestCase):
         self.assertEqual(len(result["skipped"]), 1)
 
     def test_apply_removes_clean_and_keeps_modified(self) -> None:
-        """
-        Unmodified files are removed; modified files are preserved without --force.
-        """
         target, _ = self._target()
         installer.uninstall(target, apply=True)
         self.assertFalse((target / ".opencode/agents/clean.md").exists())
         self.assertTrue((target / ".opencode/agents/changed.md").exists())
 
     def test_force_removes_modified(self) -> None:
-        """
-        --force removes files that drifted from the lock.
-        """
         target, _ = self._target()
         installer.uninstall(target, apply=True, force=True)
         self.assertFalse((target / ".opencode/agents/changed.md").exists())
 
     def test_purge_removes_state_and_lock(self) -> None:
-        """
-        --purge removes the lock and .ote state.
-        """
         target, _ = self._target()
         installer.uninstall(target, apply=True, force=True, purge=True)
         self.assertFalse((target / "ote.lock.json").exists())
         self.assertFalse((target / ".ote").exists())
 
     def test_missing_lock_is_an_error(self) -> None:
-        """
-        Uninstall without a lock must not guess what to delete.
-        """
         with tempfile.TemporaryDirectory() as directory:
             with self.assertRaises(installer.OteError):
                 installer.uninstall(Path(directory), apply=False)
 
 
 class BackupTests(unittest.TestCase):
-    """
-    Tests for backup listing.
-    """
 
     def test_missing_backup_directory_returns_empty(self) -> None:
-        """
-        A target without backups reports none.
-        """
         with tempfile.TemporaryDirectory() as directory:
             self.assertEqual(installer.list_backups(Path(directory)), [])
 
     def test_backups_are_listed_newest_first(self) -> None:
-        """
-        Backup directories sort in reverse chronological order.
-        """
         with tempfile.TemporaryDirectory() as directory:
             target = Path(directory)
             root = target / ".ote/backups"

@@ -1,7 +1,7 @@
 """
 OpenCode V1 and V2 compatibility matrix.
 
-Public API: :data:`MATRIX`, :func:`as_dict`, and :func:`render_text`.
+Public API: :data:`MATRIX`, :func:`as_compatibility_dict`, and :func:`render_text`.
 
 The matrix records only behaviour documented in ``docs/decisions/ADR-001`` or
 verified in this repository. Cells that were not verified are marked as such.
@@ -78,10 +78,7 @@ MATRIX: tuple[dict[str, str], ...] = (
 )
 
 
-def as_dict() -> dict[str, Any]:
-    """
-    Return the matrix as a JSON-serializable document.
-    """
+def as_compatibility_dict() -> dict[str, Any]:
     return {
         "tool": "opencode",
         "versions": ["v1", "v2"],
@@ -91,9 +88,6 @@ def as_dict() -> dict[str, Any]:
 
 
 def render_text() -> str:
-    """
-    Render the matrix as a fixed-width table for terminal output.
-    """
     headers = ("Feature", "V1", "V2", "Note")
     rows = [(row["feature"], row["v1"], row["v2"], row["note"]) for row in MATRIX]
     widths = [

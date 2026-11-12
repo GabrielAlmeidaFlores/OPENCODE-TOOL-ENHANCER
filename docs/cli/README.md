@@ -42,12 +42,11 @@ The package requires Python 3.11 or newer and has no runtime dependencies.
 | `ote govern` | Available | Contracts, budgets, loop/deadlock detection, risk gates |
 | `ote memory` | Available | Markdown project memory |
 | `ote spec` | Available | Spec-driven development artifacts |
-| `ote stats` | Phase 6 | Cost and token reports |
-| `ote eval` | Phase 6 | Evaluation harness |
-| `ote pilot` | Phase 6 | Real-repository pilots |
+| `ote stats` | Available | Cost, token, failure, and arm comparison reports |
+| `ote eval` | Available | Deterministic repository evaluations |
+| `ote pilot` | Available | Real-repository pilot runner |
 
-A command that belongs to a later phase is registered and exits with code 2. It never
-pretends to succeed.
+Unknown commands are rejected by the argument parser with exit code 2.
 
 ## `ote profile`
 
@@ -135,6 +134,41 @@ ote spec verify user-authentication
 ```
 
 Creates requirements, design, tasks, and evidence artifacts; `plan` and `verify` enforce criterion-to-task-to-evidence mapping. See `docs/specs/README.md`.
+
+## `ote stats`
+
+```bash
+ote stats
+ote stats --format json
+ote stats --format csv
+ote stats --results /path/to/results
+ote stats --budget 5.00
+```
+
+Aggregates `meta.json` and `session.jsonl` artifacts by run, agent, model, and tool. `--budget`
+exits 1 when the recorded total exceeds the ceiling. See `docs/cost-optimization/observability.md`.
+
+## `ote eval`
+
+```bash
+ote eval
+ote eval --only profiles
+ote eval --json
+```
+
+Runs deterministic checks for profiles, catalog, governance, and the validator. No model calls.
+See `docs/evals/README.md`.
+
+## `ote pilot`
+
+```bash
+ote pilot list
+ote pilot run hono --dry-run
+OPENCODE_PILOT_MODEL=provider/model ote pilot run hono --prompt "..." --verify "npm test" --workspace /tmp/pilot
+```
+
+Clones a pinned repository into a disposable workspace, installs the profile, runs one prompt, and
+records verification, cost, and tokens. See `docs/pilots/README.md`.
 
 ## `ote doctor`
 

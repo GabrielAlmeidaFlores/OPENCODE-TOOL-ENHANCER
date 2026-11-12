@@ -6,44 +6,38 @@ Public API: :func:`main`.
 Side effects: delegates to the selected command. Commands that write files do so
 only after an explicit ``--apply`` and never stage or commit Git changes.
 
-Module constants: ``DEFERRED`` maps commands owned by later phases to the phase
-that implements them.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
 from typing import Any, Sequence
 
 from . import __version__
-from .doctor import as_dict as doctor_dict
-from .doctor import run_checks, summarize
+from .doctor import checks_as_dict as doctor_dict
+from .doctor import run_diagnostic_checks, summarize_checks
 from . import catalog as catalog_module
 from . import compat as compat_module
+from . import eval as eval_module
 from . import governance as governance_module
 from . import memory as memory_module
+from . import pilot as pilot_module
 from . import specs as specs_module
+from . import stats as stats_module
 from . import verify as verify_module
 from .installer import install, list_backups, uninstall
 from .paths import OteError, find_repo_root, resolve_target
-from .process import run
+from .process import run_command
 from .profiles import DEFAULT_PROFILE, load_profiles, resolve_components, verify_profiles
-from .updater import check as update_check
-
-DEFERRED = {
-    "stats": "Phase 6 (observability)",
-    "eval": "Phase 6 (evaluations)",
-    "pilot": "Phase 6 (pilot runner)",
-}
+from .updater import check_for_updates
 
 
-def _build_parser() -> argparse.ArgumentParser:
-    """
-    Build the full argument parser.
-    """
+
+def build_argument_parser() -> argparse.ArgumentParser:
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument("--repo", help="repository root (defaults to the current checkout)")
     common.add_argument("--target", help="project directory (defaults to the current directory)")
@@ -180,17 +174,36 @@ def _build_parser() -> argparse.ArgumentParser:
     spec_verify = spec_commands.add_parser("verify", parents=[common], help="verify tasks and evidence")
     spec_verify.add_argument("feature")
 
-    for name, phase in DEFERRED.items():
-        command = subparsers.add_parser(name, parents=[common], help=f"available in {phase}")
-        command.set_defaults(deferred=name, phase=phase)
+    stats_parser = subparsers.add_parser(
+        "stats", parents=[common], help="report cost, tokens, failures, and arm comparisons"
+    )
+    stats_parser.add_argument("--results", action="append", help="result directory; repeatable")
+    stats_parser.add_argument("--format", default="markdown", choices=["markdown", "json", "csv"])
+    stats_parser.add_argument("--budget", type=float, help="fail when total cost exceeds this amount in USD")
+
+    eval_parser = subparsers.add_parser(
+        "eval", parents=[common], help="run deterministic evaluation cases"
+    )
+    eval_parser.add_argument("--only", action="append", default=[], help="run only the named case")
+
+    pilot_parser = subparsers.add_parser(
+        "pilot", parents=[common], help="list or run real-repository pilots"
+    )
+    pilot_commands = pilot_parser.add_subparsers(dest="pilot_command", required=True)
+    pilot_commands.add_parser("list", parents=[common], help="list configured pilots")
+    pilot_run = pilot_commands.add_parser("run", parents=[common], help="run one pilot")
+    pilot_run.add_argument("name")
+    pilot_run.add_argument("--workspace", help="workspace directory (defaults to a temporary directory)")
+    pilot_run.add_argument("--prompt", help="task prompt")
+    pilot_run.add_argument("--verify", help="verification command")
+    pilot_run.add_argument("--profile", default="minimal")
+    pilot_run.add_argument("--keep", action="store_true", help="keep the disposable clone")
+    pilot_run.add_argument("--dry-run", action="store_true", help="print the plan without cloning")
 
     return parser
 
 
-def _emit(payload: Any, as_json: bool) -> None:
-    """
-    Print a payload as JSON or as formatted text.
-    """
+def emit_payload(payload: Any, as_json: bool) -> None:
     if as_json:
         print(json.dumps(payload, indent=2, sort_keys=True))
         return
@@ -198,21 +211,15 @@ def _emit(payload: Any, as_json: bool) -> None:
         print(payload)
 
 
-def _print_checks(checks: list[Any]) -> None:
-    """
-    Print diagnostic checks with aligned status labels.
-    """
+def print_checks(checks: list[Any]) -> None:
     width = max((len(check.id) for check in checks), default=0)
     for check in checks:
         print(f"{check.status.upper():<4} {check.id:<{width}} {check.detail}")
-    summary = summarize(checks)
+    summary = summarize_checks(checks)
     print(f"\nsummary: {summary['ok']} ok, {summary['warn']} warn, {summary['fail']} fail")
 
 
-def _print_install(result: dict[str, Any]) -> None:
-    """
-    Print an installation result.
-    """
+def print_install_result(result: dict[str, Any]) -> None:
     print(f"target:   {result['target']}")
     print(f"profile:  {result['profile']}")
     print(f"components: {', '.join(result['components'])}")
@@ -239,24 +246,18 @@ def _print_install(result: dict[str, Any]) -> None:
 
 
 def _command_doctor(args: argparse.Namespace) -> int:
-    """
-    Run diagnostics.
-    """
-    root = _repo(args)
+    root = resolve_repository_root(args)
     target = resolve_target(args.target)
-    checks = run_checks(root, target, mcp=not args.no_mcp)
+    checks = run_diagnostic_checks(root, target, mcp=not args.no_mcp)
     if args.json:
-        _emit(doctor_dict(checks), True)
+        emit_payload(doctor_dict(checks), True)
     else:
-        _print_checks(checks)
-    return 1 if summarize(checks)["fail"] else 0
+        print_checks(checks)
+    return 1 if summarize_checks(checks)["fail"] else 0
 
 
 def _command_install(args: argparse.Namespace) -> int:
-    """
-    Plan or apply an installation.
-    """
-    root = _repo(args)
+    root = resolve_repository_root(args)
     target = resolve_target(args.target)
     profiles = load_profiles(root)
     components = resolve_components(profiles, args.profile, args.only)
@@ -271,22 +272,19 @@ def _command_install(args: argparse.Namespace) -> int:
         clean=args.clean,
     )
     if args.json:
-        _emit(result, True)
+        emit_payload(result, True)
     else:
-        _print_install(result)
+        print_install_result(result)
     return 0
 
 
 def _command_uninstall(args: argparse.Namespace) -> int:
-    """
-    Plan or remove managed files.
-    """
     target = resolve_target(args.target)
     if args.apply and not args.yes:
         raise OteError("refusing to remove files without --yes")
     result = uninstall(target=target, apply=args.apply, force=args.force, purge=args.purge)
     if args.json:
-        _emit(result, True)
+        emit_payload(result, True)
         return 0
     print(f"target: {result['target']}")
     for path in result["removable"]:
@@ -301,14 +299,11 @@ def _command_uninstall(args: argparse.Namespace) -> int:
 
 
 def _command_update(args: argparse.Namespace) -> int:
-    """
-    Report update state.
-    """
-    root = _repo(args)
+    root = resolve_repository_root(args)
     target = resolve_target(args.target)
-    result = update_check(root, target, remote=args.remote)
+    result = check_for_updates(root, target, remote=args.remote)
     if args.json:
-        _emit(result, True)
+        emit_payload(result, True)
     else:
         print(f"status:  {result['status']}")
         print(f"message: {result['message']}")
@@ -325,14 +320,11 @@ def _command_update(args: argparse.Namespace) -> int:
 
 
 def _command_rollback(args: argparse.Namespace) -> int:
-    """
-    List or restore configuration backups.
-    """
     target = resolve_target(args.target)
     backups = list_backups(target)
     if not args.apply:
         if args.json:
-            _emit({"target": str(target), "backups": backups}, True)
+            emit_payload({"target": str(target), "backups": backups}, True)
             return 0
         if not backups:
             print(f"no backups under {target / '.ote' / 'backups'}")
@@ -349,17 +341,14 @@ def _command_rollback(args: argparse.Namespace) -> int:
     backup = Path(args.backup).expanduser().resolve()
     if not backup.is_dir():
         raise OteError(f"backup directory not found: {backup}")
-    script = _repo(args) / "scripts/maintenance/restore-config.sh"
-    run(["bash", str(script), str(backup), "project"], cwd=target)
+    script = resolve_repository_root(args) / "scripts/maintenance/restore-config.sh"
+    run_command(["bash", str(script), str(backup), "project"], cwd=target)
     print(f"restored {backup} into {target}")
     return 0
 
 
 def _command_profile(args: argparse.Namespace) -> int:
-    """
-    List, show, verify, or apply profile manifests.
-    """
-    root = _repo(args)
+    root = resolve_repository_root(args)
     action = args.profile_command
     if action == "list":
         profiles = load_profiles(root)
@@ -368,7 +357,7 @@ def _command_profile(args: argparse.Namespace) -> int:
             for profile in profiles.values()
         ]
         if args.json:
-            _emit(payload, True)
+            emit_payload(payload, True)
             return 0
         for profile in profiles.values():
             print(f"{profile.name:<10} {profile.description}")
@@ -385,7 +374,7 @@ def _command_profile(args: argparse.Namespace) -> int:
             "path": str(profile.path),
         }
         if args.json:
-            _emit(payload, True)
+            emit_payload(payload, True)
             return 0
         print(f"name:        {profile.name}")
         print(f"description: {profile.description}")
@@ -395,7 +384,7 @@ def _command_profile(args: argparse.Namespace) -> int:
     if action == "verify":
         results = verify_profiles(root)
         if args.json:
-            _emit({"profiles": results}, True)
+            emit_payload({"profiles": results}, True)
         else:
             for result in results:
                 print(f"{result['status'].upper():<4} {result['profile']:<10} {result['detail']}")
@@ -413,20 +402,17 @@ def _command_profile(args: argparse.Namespace) -> int:
         clean=args.clean,
     )
     if args.json:
-        _emit(result, True)
+        emit_payload(result, True)
     else:
-        _print_install(result)
+        print_install_result(result)
     return 0
 
 
 def _command_catalog(args: argparse.Namespace) -> int:
-    """
-    List, search, verify, or build the artifact catalog.
-    """
-    root = _repo(args)
+    root = resolve_repository_root(args)
     action = args.catalog_command
     if action == "build":
-        result = catalog_module.build(root)
+        result = catalog_module.build_catalog(root)
         print(result["output"])
         return 0 if result["status"] == "ok" else 2
     document = catalog_module.load_catalog(root)
@@ -436,25 +422,25 @@ def _command_catalog(args: argparse.Namespace) -> int:
         if args.type:
             selected = [entry for entry in artifacts if entry.get("type") == args.type]
         if args.json:
-            _emit({"artifacts": selected, "count": len(selected)}, True)
+            emit_payload({"artifacts": selected, "count": len(selected)}, True)
             return 0
         for entry in selected:
             print(f"{entry['type']:<8} {entry['id']:<28} {entry['author']:<22} {entry['license']}")
         print(f"\n{len(selected)} artifact(s)")
         return 0
     if action == "search":
-        matches = catalog_module.search(document, args.query)
+        matches = catalog_module.search_catalog(document, args.query)
         if args.json:
-            _emit({"artifacts": matches, "count": len(matches)}, True)
+            emit_payload({"artifacts": matches, "count": len(matches)}, True)
             return 0
         for entry in matches:
             print(f"{entry['type']:<8} {entry['id']:<28} {entry['author']:<22} {entry['license']}")
         print(f"\n{len(matches)} match(es)")
         return 0
-    results = catalog_module.verify(root, document)
+    results = catalog_module.verify_catalog(root, document)
     failures = [result for result in results if result["status"] == "fail"]
     if args.check_drift:
-        drift = catalog_module.drift(root)
+        drift = catalog_module.check_catalog_drift(root)
         results.append(
             {
                 "check": "drift",
@@ -464,7 +450,7 @@ def _command_catalog(args: argparse.Namespace) -> int:
         )
         failures = [result for result in results if result["status"] == "fail"]
     if args.json:
-        _emit({"results": results, "failures": len(failures)}, True)
+        emit_payload({"results": results, "failures": len(failures)}, True)
     else:
         for result in results:
             print(f"{result['status'].upper():<4} {result['check']:<24} {result['detail']}")
@@ -473,35 +459,29 @@ def _command_catalog(args: argparse.Namespace) -> int:
 
 
 def _command_compat(args: argparse.Namespace) -> int:
-    """
-    Print the OpenCode V1/V2 compatibility matrix.
-    """
     if args.json:
-        _emit(compat_module.as_dict(), True)
+        emit_payload(compat_module.as_compatibility_dict(), True)
     else:
         print(compat_module.render_text())
     return 0
 
 
 def _command_verify(args: argparse.Namespace) -> int:
-    """
-    Run the configured verification checks.
-    """
-    root = _repo(args)
+    root = resolve_repository_root(args)
     config_path = None
     if args.config:
         candidate = Path(args.config).expanduser()
         config_path = candidate if candidate.is_absolute() else root / candidate
-    checks, _ = verify_module.load_config(root, config_path)
-    results = verify_module.run_checks(
+    checks, _ = verify_module.load_verification_config(root, config_path)
+    results = verify_module.run_verification_checks(
         root,
         checks,
         only=args.only or None,
         use_cache=not args.no_cache,
     )
-    summary = verify_module.summarize(results)
+    summary = verify_module.summarize_results(results)
     if args.json:
-        _emit(
+        emit_payload(
             {
                 "results": [
                     {
@@ -534,16 +514,13 @@ def _command_verify(args: argparse.Namespace) -> int:
 
 
 def _command_govern(args: argparse.Namespace) -> int:
-    """
-    Inspect contracts or evaluate governance limits.
-    """
-    root = _repo(args)
+    root = resolve_repository_root(args)
     action = args.govern_command
     if action == "contracts":
-        results = governance_module.contracts(root)
+        results = governance_module.load_agent_contracts(root)
         failures = [result for result in results if result["status"] == "fail"]
         if args.json:
-            _emit({"contracts": results, "failures": len(failures)}, True)
+            emit_payload({"contracts": results, "failures": len(failures)}, True)
         else:
             for result in results:
                 label = "read-only" if result["read_only"] else "writer"
@@ -553,9 +530,9 @@ def _command_govern(args: argparse.Namespace) -> int:
             print(f"\n{len(failures)} failure(s)")
         return 1 if failures else 0
     if action == "gate":
-        gate = governance_module.risk_gate(args.risk)
+        gate = governance_module.required_gates_for_risk(args.risk)
         if args.json:
-            _emit(gate, True)
+            emit_payload(gate, True)
         else:
             print(f"risk: {gate['risk']}")
             for requirement in gate["required"]:
@@ -570,10 +547,10 @@ def _command_govern(args: argparse.Namespace) -> int:
         raise OteError(f"{record_path}: invalid JSON: {error}") from error
     if not isinstance(record, dict):
         raise OteError(f"{record_path}: run record must be a JSON object")
-    _, governance = verify_module.load_config(root)
+    _, governance = verify_module.load_verification_config(root)
     evaluation = governance_module.evaluate_record(record, governance)
     if args.json:
-        _emit(evaluation, True)
+        emit_payload(evaluation, True)
     else:
         print(f"allowed: {evaluation['allowed']}")
         print(f"validator_mode: {evaluation['validator_mode']}")
@@ -583,13 +560,10 @@ def _command_govern(args: argparse.Namespace) -> int:
 
 
 def _command_memory(args: argparse.Namespace) -> int:
-    """
-    Add, search, prune, export, or render Markdown memory.
-    """
-    root = _repo(args)
+    root = resolve_repository_root(args)
     action = args.memory_command
     if action == "add":
-        entry = memory_module.add(
+        entry = memory_module.add_memory_entry(
             root=root,
             text=args.text,
             entry_type=args.type,
@@ -602,14 +576,14 @@ def _command_memory(args: argparse.Namespace) -> int:
             force=args.force,
         )
         if args.json:
-            _emit({"id": entry.identifier, "scope": entry.scope, "title": entry.title, "path": str(entry.path)}, True)
+            emit_payload({"id": entry.identifier, "scope": entry.scope, "title": entry.title, "path": str(entry.path)}, True)
         else:
             print(f"added {entry.scope}/{entry.identifier} ({entry.entry_type})")
         return 0
     if action == "search":
-        results = memory_module.search(root, args.query, entry_type=args.type, scope=args.scope)
+        results = memory_module.search_memory_entries(root, args.query, entry_type=args.type, scope=args.scope)
         if args.json:
-            _emit({"entries": [{"id": item.identifier, "scope": item.scope, "type": item.entry_type, "title": item.title, "expires": item.expires, "expired": item.expired()} for item in results]}, True)
+            emit_payload({"entries": [{"id": item.identifier, "scope": item.scope, "type": item.entry_type, "title": item.title, "expires": item.expires, "expired": item.expired()} for item in results]}, True)
         else:
             for item in results:
                 marker = " (expired)" if item.expired() else ""
@@ -619,9 +593,9 @@ def _command_memory(args: argparse.Namespace) -> int:
     if action == "prune":
         if args.apply and not args.yes:
             raise OteError("refusing to delete memory without --yes")
-        expired = memory_module.prune(root, apply=args.apply)
+        expired = memory_module.prune_expired_entries(root, apply=args.apply)
         if args.json:
-            _emit({"expired": [item.identifier for item in expired], "applied": args.apply}, True)
+            emit_payload({"expired": [item.identifier for item in expired], "applied": args.apply}, True)
         else:
             for item in expired:
                 print(f"{item.scope}/{item.identifier} ({item.expires})")
@@ -630,23 +604,20 @@ def _command_memory(args: argparse.Namespace) -> int:
                 print("plan only. Re-run with --apply --yes to delete.")
         return 0
     if action == "export":
-        output = memory_module.export(root, "json" if args.json else args.format)
+        output = memory_module.export_memory_entries(root, "json" if args.json else args.format)
         print(output, end="" if output.endswith("\n") else "\n")
         return 0
-    print(memory_module.preamble(root, args.budget), end="")
+    print(memory_module.render_memory_preamble(root, args.budget), end="")
     return 0
 
 
 def _command_spec(args: argparse.Namespace) -> int:
-    """
-    Create, list, plan, or verify spec artifacts.
-    """
-    root = _repo(args)
+    root = resolve_repository_root(args)
     action = args.spec_command
     if action == "new":
-        directory = specs_module.create(root, args.feature, args.criterion)
+        directory = specs_module.create_spec_artifacts(root, args.feature, args.criterion)
         if args.json:
-            _emit({"feature": directory.name, "path": str(directory), "files": list(specs_module.FILES)}, True)
+            emit_payload({"feature": directory.name, "path": str(directory), "files": list(specs_module.FILES)}, True)
         else:
             print(f"created {directory}")
             for name in specs_module.FILES:
@@ -655,16 +626,16 @@ def _command_spec(args: argparse.Namespace) -> int:
     if action == "list":
         results = specs_module.list_specs(root)
         if args.json:
-            _emit({"specs": results}, True)
+            emit_payload({"specs": results}, True)
         else:
             for result in results:
                 state = "complete" if result["complete"] else f"missing {', '.join(result['missing'])}"
                 print(f"{result['name']:<30} {state}")
             print(f"\n{len(results)} spec(s)")
         return 0
-    result = specs_module.plan(root, args.feature) if action == "plan" else specs_module.verify(root, args.feature)
+    result = specs_module.validate_spec_plan(root, args.feature) if action == "plan" else specs_module.verify_spec_evidence(root, args.feature)
     if args.json:
-        _emit(result, True)
+        emit_payload(result, True)
     else:
         print(f"feature: {result['feature']}")
         print(f"status:  {result['status']}")
@@ -673,30 +644,83 @@ def _command_spec(args: argparse.Namespace) -> int:
     return 0 if result["status"] == "ok" else 1
 
 
-def _command_deferred(args: argparse.Namespace) -> int:
-    """
-    Report that a planned command is not implemented yet.
-    """
-    print(
-        f"ote {args.deferred}: not available until {args.phase}. "
-        "See docs/cli/README.md for the current command surface.",
-        file=sys.stderr,
+def _command_stats(args: argparse.Namespace) -> int:
+    root = resolve_repository_root(args)
+    paths = [Path(item).expanduser() for item in (args.results or [str(root / "benchmarks/results")])]
+    runs = stats_module.load_runs(paths)
+    output = {
+        "markdown": stats_module.render_markdown,
+        "json": stats_module.render_json,
+        "csv": stats_module.render_csv,
+    }["json" if args.json else args.format](runs)
+    print(output, end="" if output.endswith("\n") else "\n")
+    if args.budget is not None:
+        total = stats_module.aggregate_totals(runs)["cost"]
+        if total > args.budget:
+            print(f"budget exceeded: ${total:.6f} > ${args.budget:.6f}", file=sys.stderr)
+            return 1
+    return 0
+
+
+def _command_eval(args: argparse.Namespace) -> int:
+    root = resolve_repository_root(args)
+    results = eval_module.run_evaluation_cases(root, only=args.only or None)
+    failures = [result for result in results if result["status"] == "fail"]
+    if args.json:
+        emit_payload({"results": results, "failures": len(failures)}, True)
+    else:
+        for result in results:
+            print(f"{result['status'].upper():<4} {result['id']:<12} {result['detail']}")
+        print(f"\n{len(failures)} failure(s)")
+    return 1 if failures else 0
+
+
+def _command_pilot(args: argparse.Namespace) -> int:
+    root = resolve_repository_root(args)
+    if args.pilot_command == "list":
+        pilots = pilot_module.list_pilots(root)
+        if args.json:
+            emit_payload({"pilots": pilots}, True)
+        else:
+            for pilot in pilots:
+                print(f"{pilot['name']:<20} {pilot['stack']:<22} {pilot['commit'][:12]}  {pilot['focus']}")
+        return 0
+    result = pilot_module.run_pilot(
+        root=root,
+        name=args.name,
+        workspace=Path(args.workspace).expanduser() if args.workspace else None,
+        prompt=args.prompt,
+        verify_command=args.verify,
+        profile=args.profile,
+        keep=args.keep,
+        dry_run=args.dry_run,
+        model=os.environ.get("OPENCODE_PILOT_MODEL"),
     )
-    return 2
+    if args.json:
+        emit_payload(result, True)
+    elif result.get("dry_run"):
+        print(f"pilot: {result['pilot']}")
+        print(f"workspace: {result['workspace']}")
+        for step in result["steps"]:
+            print(f"  {step}")
+    else:
+        print(f"pilot: {result['pilot']}")
+        print(f"opencode exit: {result['opencode_exit']}")
+        print(f"verification exit: {result['verification_exit']}")
+        print(f"success: {result['success']}")
+        print(f"cost: ${result['cost']:.6f}")
+        print(f"artifacts: {result['workspace']}/artifacts")
+    if result.get("dry_run"):
+        return 0
+    return 0 if result.get("success") else 1
 
 
-def _repo(args: argparse.Namespace) -> Path:
-    """
-    Resolve the repository root from arguments and environment.
-    """
+def resolve_repository_root(args: argparse.Namespace) -> Path:
     return find_repo_root(Path(args.repo) if args.repo else None)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    """
-    Run the CLI and return a process exit code.
-    """
-    parser = _build_parser()
+    parser = build_argument_parser()
     args = parser.parse_args(argv)
     handlers = {
         "doctor": _command_doctor,
@@ -711,10 +735,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         "govern": _command_govern,
         "memory": _command_memory,
         "spec": _command_spec,
+        "stats": _command_stats,
+        "eval": _command_eval,
+        "pilot": _command_pilot,
     }
     try:
-        handler = handlers.get(args.command, _command_deferred)
-        return handler(args)
+        return handlers[args.command](args)
     except OteError as error:
         print(f"ote: {error}", file=sys.stderr)
         return error.exit_code

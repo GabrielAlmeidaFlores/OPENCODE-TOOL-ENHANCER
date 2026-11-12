@@ -22,9 +22,6 @@ REPO_ROOT = support.REPO_ROOT
 
 
 def run_ote(*args: str, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
-    """
-    Run the CLI module with the package on PYTHONPATH.
-    """
     environment = dict(os.environ)
     environment["PYTHONPATH"] = str(support.CLI_PACKAGE)
     return subprocess.run(
@@ -39,15 +36,9 @@ def run_ote(*args: str, cwd: Path | None = None) -> subprocess.CompletedProcess[
 
 
 class DoctorCommandTests(unittest.TestCase):
-    """
-    Tests for ``ote doctor`` against the real repository.
-    """
 
     @unittest.skipUnless(shutil.which("opencode"), "opencode binary is not installed")
     def test_doctor_json_reports_no_failures(self) -> None:
-        """
-        Doctor exits zero and emits a machine-readable summary.
-        """
         result = run_ote("doctor", "--json", "--no-mcp")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         payload = json.loads(result.stdout)
@@ -57,31 +48,19 @@ class DoctorCommandTests(unittest.TestCase):
         self.assertTrue({"python", "repository", "opencode", "validator"}.issubset(identifiers))
 
     def test_doctor_text_mode_lists_checks(self) -> None:
-        """
-        Text mode prints one line per check and a summary.
-        """
         result = run_ote("doctor", "--no-mcp")
         self.assertIn("python", result.stdout)
         self.assertIn("summary:", result.stdout)
 
 
 class InstallLifecycleTests(unittest.TestCase):
-    """
-    Tests for install, update, and uninstall across a temporary target.
-    """
 
     def setUp(self) -> None:
-        """
-        Create a temporary target directory.
-        """
         self.directory = tempfile.TemporaryDirectory(prefix="ote-cli-")
         self.addCleanup(self.directory.cleanup)
         self.target = Path(self.directory.name) / "project"
 
     def test_dry_run_writes_nothing(self) -> None:
-        """
-        The default plan lists files and leaves the target absent.
-        """
         result = run_ote("install", "--profile", "minimal", "--target", str(self.target), "--dry-run")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("plan only", result.stdout)
@@ -89,9 +68,6 @@ class InstallLifecycleTests(unittest.TestCase):
         self.assertFalse(self.target.exists())
 
     def test_apply_creates_lock_and_state(self) -> None:
-        """
-        Apply writes artifacts, a lock with digests, and state.
-        """
         result = run_ote("install", "--profile", "minimal", "--target", str(self.target), "--apply")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertTrue((self.target / ".opencode/agents/coordinator.md").is_file())
@@ -106,9 +82,6 @@ class InstallLifecycleTests(unittest.TestCase):
         self.assertTrue((self.target / ".ote/state.json").is_file())
 
     def test_reapply_is_idempotent(self) -> None:
-        """
-        A second apply reports no work and does not rewrite the lock.
-        """
         first = run_ote("install", "--profile", "minimal", "--target", str(self.target), "--apply")
         self.assertEqual(first.returncode, 0, first.stderr)
         lock_path = self.target / "ote.lock.json"
@@ -119,9 +92,6 @@ class InstallLifecycleTests(unittest.TestCase):
         self.assertEqual(lock_path.read_bytes(), before)
 
     def test_force_creates_backup(self) -> None:
-        """
-        --force re-runs the installer and archives the previous configuration.
-        """
         run_ote("install", "--profile", "minimal", "--target", str(self.target), "--apply")
         result = run_ote(
             "install", "--profile", "minimal", "--target", str(self.target), "--apply", "--force"
@@ -134,9 +104,6 @@ class InstallLifecycleTests(unittest.TestCase):
         self.assertNotIn("global-config.tar.gz", archives)
 
     def test_reapply_refreshes_stale_source_commit(self) -> None:
-        """
-        A no-op apply updates the recorded commit so update checks stay clean.
-        """
         run_ote("install", "--profile", "minimal", "--target", str(self.target), "--apply")
         lock_path = self.target / "ote.lock.json"
         lock = json.loads(lock_path.read_text(encoding="utf-8"))
@@ -157,9 +124,6 @@ class InstallLifecycleTests(unittest.TestCase):
         self.assertEqual(update.returncode, 0, update.stdout + update.stderr)
 
     def test_update_detects_modified_file(self) -> None:
-        """
-        A tampered managed file makes update --check exit non-zero.
-        """
         run_ote("install", "--profile", "minimal", "--target", str(self.target), "--apply")
         clean = run_ote("update", "--target", str(self.target), "--check")
         self.assertEqual(clean.returncode, 0, clean.stdout + clean.stderr)
@@ -170,18 +134,12 @@ class InstallLifecycleTests(unittest.TestCase):
         self.assertIn("modified", dirty.stdout)
 
     def test_uninstall_requires_confirmation(self) -> None:
-        """
-        --apply without --yes is refused.
-        """
         run_ote("install", "--profile", "minimal", "--target", str(self.target), "--apply")
         result = run_ote("uninstall", "--target", str(self.target), "--apply")
         self.assertEqual(result.returncode, 2)
         self.assertIn("--yes", result.stderr)
 
     def test_uninstall_plan_keeps_files(self) -> None:
-        """
-        Planning a removal changes nothing.
-        """
         run_ote("install", "--profile", "minimal", "--target", str(self.target), "--apply")
         result = run_ote("uninstall", "--target", str(self.target))
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -189,9 +147,6 @@ class InstallLifecycleTests(unittest.TestCase):
         self.assertTrue((self.target / ".opencode/agents/coordinator.md").is_file())
 
     def test_uninstall_apply_removes_managed_files(self) -> None:
-        """
-        Confirmed removal deletes unmodified managed files.
-        """
         run_ote("install", "--profile", "minimal", "--target", str(self.target), "--apply")
         result = run_ote("uninstall", "--target", str(self.target), "--apply", "--yes")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
@@ -200,39 +155,24 @@ class InstallLifecycleTests(unittest.TestCase):
 
 
 class ProfileAndCatalogTests(unittest.TestCase):
-    """
-    Tests for the Phase 3 profile, catalog, and compatibility commands.
-    """
 
     def test_profile_list(self) -> None:
-        """
-        Profile list prints every manifest.
-        """
         result = run_ote("profile", "list")
         self.assertEqual(result.returncode, 0, result.stderr)
         for name in ("minimal", "standard", "full"):
             self.assertIn(name, result.stdout)
 
     def test_profile_show(self) -> None:
-        """
-        Profile show prints components from the manifest.
-        """
         result = run_ote("profile", "show", "standard")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("ast-grep", result.stdout)
 
     def test_profile_verify(self) -> None:
-        """
-        Profile verify validates every manifest.
-        """
         result = run_ote("profile", "verify")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("OK", result.stdout)
 
     def test_profile_use_dry_run(self) -> None:
-        """
-        Profile use plans an installation without writing.
-        """
         with tempfile.TemporaryDirectory() as directory:
             target = Path(directory) / "project"
             result = run_ote("profile", "use", "minimal", "--target", str(target), "--dry-run")
@@ -241,9 +181,6 @@ class ProfileAndCatalogTests(unittest.TestCase):
             self.assertFalse(target.exists())
 
     def test_catalog_list_and_search(self) -> None:
-        """
-        Catalog list and search read the generated catalog.
-        """
         listed = run_ote("catalog", "list", "--type", "agent")
         self.assertEqual(listed.returncode, 0, listed.stderr)
         self.assertIn("coordinator", listed.stdout)
@@ -252,17 +189,11 @@ class ProfileAndCatalogTests(unittest.TestCase):
         self.assertIn("security", found.stdout)
 
     def test_catalog_verify(self) -> None:
-        """
-        Catalog verify validates entries and local paths.
-        """
         result = run_ote("catalog", "verify")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("0 failure(s)", result.stdout)
 
     def test_compat_json(self) -> None:
-        """
-        Compatibility output is machine-readable.
-        """
         result = run_ote("compat", "--json")
         self.assertEqual(result.returncode, 0, result.stderr)
         payload = json.loads(result.stdout)
@@ -271,14 +202,8 @@ class ProfileAndCatalogTests(unittest.TestCase):
 
 
 class VerificationCommandTests(unittest.TestCase):
-    """
-    Tests for ote verify and ote govern.
-    """
 
     def _config(self, directory: str) -> Path:
-        """
-        Write a minimal verification configuration in a temporary directory.
-        """
         path = Path(directory) / "config.toml"
         path.write_text(
             '[verify]\ntimeout = 10\n'
@@ -289,9 +214,6 @@ class VerificationCommandTests(unittest.TestCase):
         return path
 
     def test_verify_pass_and_fail(self) -> None:
-        """
-        Verify reports pass and exit codes for configured checks.
-        """
         with tempfile.TemporaryDirectory() as directory:
             config = self._config(directory)
             passed = run_ote("verify", "--config", str(config), "--only", "ok", "--json")
@@ -302,26 +224,17 @@ class VerificationCommandTests(unittest.TestCase):
             self.assertEqual(json.loads(failed.stdout)["summary"]["failed"], 1)
 
     def test_govern_contracts(self) -> None:
-        """
-        Contracts are derived from agent permissions.
-        """
         result = run_ote("govern", "contracts")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("coordinator", result.stdout)
         self.assertIn("0 failure(s)", result.stdout)
 
     def test_govern_gate(self) -> None:
-        """
-        Risk gates are machine-readable.
-        """
         result = run_ote("govern", "gate", "--risk", "high", "--json")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(json.loads(result.stdout)["required"], ["verify", "review", "security"])
 
     def test_govern_check(self) -> None:
-        """
-        A record over budget is blocked with a non-zero exit.
-        """
         with tempfile.TemporaryDirectory() as directory:
             record = Path(directory) / "record.json"
             record.write_text(json.dumps({"iterations": 999}), encoding="utf-8")
@@ -330,15 +243,63 @@ class VerificationCommandTests(unittest.TestCase):
             self.assertFalse(json.loads(result.stdout)["allowed"])
 
 
+class PhaseSixCommandTests(unittest.TestCase):
+
+    def _run(self, root: Path, name: str, cost: float) -> None:
+        run = root / name
+        run.mkdir(parents=True)
+        (run / "meta.json").write_text(
+            json.dumps(
+                {
+                    "run_id": name,
+                    "arm": "baseline",
+                    "task_id": "task",
+                    "model": "provider/model",
+                    "agent": "coordinator",
+                    "verification_exit": 0,
+                }
+            ),
+            encoding="utf-8",
+        )
+        (run / "session.jsonl").write_text(
+            json.dumps(
+                {
+                    "type": "step_finish",
+                    "part": {"cost": cost, "tokens": {"input": 10, "output": 5}},
+                }
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+    def test_stats_json_and_budget(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self._run(root, "run", 0.5)
+            result = run_ote("stats", "--results", str(root), "--format", "json")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertAlmostEqual(json.loads(result.stdout)["totals"]["cost"], 0.5)
+            over = run_ote("stats", "--results", str(root), "--format", "json", "--budget", "0.1")
+            self.assertEqual(over.returncode, 1)
+            self.assertIn("budget exceeded", over.stderr)
+
+    def test_eval_profiles(self) -> None:
+        result = run_ote("eval", "--only", "profiles")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("OK", result.stdout)
+
+    def test_pilot_list_and_dry_run(self) -> None:
+        listed = run_ote("pilot", "list")
+        self.assertEqual(listed.returncode, 0, listed.stderr)
+        self.assertIn("hono", listed.stdout)
+        planned = run_ote("pilot", "run", "hono", "--dry-run")
+        self.assertEqual(planned.returncode, 0, planned.stderr)
+        self.assertIn("checkout --detach", planned.stdout)
+
+
 class MemoryAndSpecReadTests(unittest.TestCase):
-    """
-    Read-only checks for memory and spec commands against the repository.
-    """
 
     def test_memory_search_and_export(self) -> None:
-        """
-        Searching and exporting memory do not require entries to exist.
-        """
         search = run_ote("memory", "search", "decision")
         self.assertEqual(search.returncode, 0, search.stderr)
         exported = run_ote("memory", "export", "--format", "json")
@@ -346,48 +307,25 @@ class MemoryAndSpecReadTests(unittest.TestCase):
         self.assertIn("entries", json.loads(exported.stdout))
 
     def test_memory_preamble(self) -> None:
-        """
-        The preamble renders within its budget.
-        """
         result = run_ote("memory", "preamble", "--budget", "100")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("# Project Memory", result.stdout)
 
     def test_spec_list(self) -> None:
-        """
-        Listing specs works even when only the README exists.
-        """
         result = run_ote("spec", "list")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("spec(s)", result.stdout)
 
 
 class CommandSurfaceTests(unittest.TestCase):
-    """
-    Tests for command registration and safety defaults.
-    """
-
-    def test_deferred_command_exits_two(self) -> None:
-        """
-        A planned command reports the owning phase.
-        """
-        result = run_ote("stats")
-        self.assertEqual(result.returncode, 2)
-        self.assertIn("Phase 6", result.stderr)
 
     def test_rollback_without_backups(self) -> None:
-        """
-        Rollback lists an empty backup set without failing.
-        """
         with tempfile.TemporaryDirectory() as directory:
             result = run_ote("rollback", "--target", directory)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn("no backups", result.stdout)
 
     def test_help_lists_commands(self) -> None:
-        """
-        The help output exposes the implemented and planned commands.
-        """
         result = run_ote("--help")
         self.assertEqual(result.returncode, 0)
         for command in ("doctor", "install", "uninstall", "update", "rollback", "catalog"):

@@ -17,9 +17,6 @@ _REPO_VERSION = _PACKAGE_DIR.parents[2] / "VERSION"
 
 
 def _detect_version() -> str:
-    """
-    Return the repository version when running from a checkout, else the installed version.
-    """
     if _REPO_VERSION.is_file():
         return _REPO_VERSION.read_text(encoding="utf-8").strip()
     try:

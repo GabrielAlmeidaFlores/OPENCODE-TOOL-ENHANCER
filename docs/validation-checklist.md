@@ -31,7 +31,7 @@ Then complete the manual checks for your environment.
 - [ ] Every agent, command, and hat has a provenance header.
 - [ ] `docs/provenance/registry.yml` points only to existing local paths.
 - [ ] Every `docs/` page outside `decisions/` has status, last-verified, and evidence fields.
-- [ ] Comments follow AGENTS.md Section 2C across `scripts/`, `packages/`, `skills/`, and `tests/`: file headers and function documentation only, with block-form Python docstrings, JSDoc for TypeScript, and XML documentation for C#.
+- [ ] Comments follow AGENTS.md Section 2C across `scripts/`, `packages/`, `skills/`, and `tests/`: file headers and contract docstrings only, with block-form Python docstrings when present, JSDoc for TypeScript, and XML documentation for C#.
 - [ ] No inline comments or commented-out code in scripts, configs, or examples.
 - [ ] Relative documentation links resolve.
 - [ ] External links use maintained sources (run `--links` when useful).
@@ -46,6 +46,16 @@ Then complete the manual checks for your environment.
 - [ ] `ote update --check` exits 0 on a clean target and 1 after a managed file is modified.
 - [ ] `ote uninstall` without `--yes` refuses; with `--apply --yes` removes only unmodified managed files.
 - [ ] `ote rollback` lists backups without changing files.
+
+## Stats, evals, and pilots
+
+- [ ] `ote stats` renders Markdown, JSON, and CSV from result artifacts.
+- [ ] Baseline and optimized runs produce a comparison row.
+- [ ] `ote stats --budget` exits 1 when recorded cost exceeds the ceiling.
+- [ ] `ote eval` passes with no model call.
+- [ ] `ote pilot list` shows the three selected repositories.
+- [ ] `ote pilot run hono --dry-run` prints the planned commands and writes nothing.
+- [ ] A real pilot records verification, cost, tokens, and tool errors under `artifacts/`.
 
 ## Memory and specs
 

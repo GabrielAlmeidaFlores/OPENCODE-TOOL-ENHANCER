@@ -12,6 +12,23 @@ The pilots validate the profile on real codebases instead of only the bundled fi
 | [ardalis/CleanArchitecture](https://github.com/ardalis/CleanArchitecture) | C# | `302e8ac4d631f45f015413950dcb97d0d146169b` | MIT | Validation, endpoints, tests |
 | [vercel/turborepo](https://github.com/vercel/turborepo) | Multi-language monorepo | `4e3bdf1eff825764acff269b8e71760e5e5c9300` | MIT | Package boundaries, dependency graph |
 
+## Runner
+
+```bash
+ote pilot list
+ote pilot run hono --dry-run
+OPENCODE_PILOT_MODEL=provider/model ote pilot run hono \
+  --prompt "Fix the routing regression and add a test" \
+  --verify "npm test -- router" \
+  --workspace /tmp/ote-pilot-hono \
+  --keep
+```
+
+The runner clones the pinned commit into a disposable directory, installs the profile into that
+clone, runs one prompt, executes the verification command, and writes `artifacts/meta.json`,
+`session.jsonl`, `verification.log`, and `summary.md`. It removes the clone unless `--keep` is
+used. It never stages or commits in the main repository and never runs Ralph.
+
 ## Procedure
 
 1. Clone the pinned commit into a disposable directory.
@@ -48,9 +65,12 @@ The pilots validate the profile on real codebases instead of only the bundled fi
 
 | Pilot | Status |
 | --- | --- |
-| `honojs/hono` | Selected; execution pending |
-| `ardalis/CleanArchitecture` | Selected; execution pending |
-| `vercel/turborepo` | Selected; execution pending |
+| `honojs/hono` | Runner ready; execution pending |
+| `ardalis/CleanArchitecture` | Runner ready; execution pending |
+| `vercel/turborepo` | Runner ready; execution pending |
+
+Runner capability is not evidence. A pilot is complete only after the artifacts exist and the
+verification command has been reviewed independently.
 
 ## Constraints
 

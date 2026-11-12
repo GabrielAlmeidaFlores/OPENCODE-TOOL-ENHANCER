@@ -1,8 +1,9 @@
 """
 Markdown project memory for ``ote memory``.
 
-Public API: :class:`Entry`, :func:`add`, :func:`search`, :func:`prune`,
-:func:`export`, and :func:`preamble`.
+Public API: :class:`Entry`, :func:`add_memory_entry`, :func:`search_memory_entries`,
+:func:`prune_expired_entries`, :func:`export_memory_entries`, and
+:func:`render_memory_preamble`.
 
 Memory is plain Markdown with a small frontmatter block. There are no
 embeddings, no background service, and no network access. Search is lexical.
@@ -40,9 +41,6 @@ SECRET_PATTERNS = (
 
 @dataclass
 class Entry:
-    """
-    One memory entry and its metadata.
-    """
 
     path: Path
     scope: str
@@ -57,9 +55,6 @@ class Entry:
     body: str = ""
 
     def expired(self, today: date | None = None) -> bool:
-        """
-        Return True when the entry is past its expiry date.
-        """
         current = today or datetime.now(timezone.utc).date()
         try:
             return date.fromisoformat(self.expires) < current
@@ -68,9 +63,6 @@ class Entry:
 
 
 def settings(root: Path) -> dict[str, int]:
-    """
-    Return memory settings from ``.ote/config.toml`` with defaults.
-    """
     values = {"token_budget": DEFAULT_TOKEN_BUDGET, "ttl_days": DEFAULT_TTL_DAYS}
     path = root / ".ote/config.toml"
     if not path.is_file():
@@ -91,42 +83,27 @@ def settings(root: Path) -> dict[str, int]:
     return values
 
 
-def _memory_root(root: Path) -> Path:
-    """
-    Return the memory directory, creating it when needed.
-    """
+def ensure_memory_directory(root: Path) -> Path:
     directory = root / ".ote/memory"
     for scope in SCOPES:
         (directory / scope).mkdir(parents=True, exist_ok=True)
     return directory
 
 
-def _slug(value: str) -> str:
-    """
-    Convert a title into a safe identifier fragment.
-    """
+def slugify_memory_title(value: str) -> str:
     slug = re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
     return slug[:60] or "entry"
 
 
-def _today() -> date:
-    """
-    Return the current UTC date.
-    """
+def current_utc_date() -> date:
     return datetime.now(timezone.utc).date()
 
 
 def scan_secrets(text: str) -> list[str]:
-    """
-    Return the names of credential patterns found in the text.
-    """
     return [pattern.pattern for pattern in SECRET_PATTERNS if pattern.search(text)]
 
 
-def _frontmatter(entry_type: str, title: str, created: str, source: str, confidence: float, expires: str, links: list[str]) -> str:
-    """
-    Render the documented frontmatter block.
-    """
+def render_memory_frontmatter(entry_type: str, title: str, created: str, source: str, confidence: float, expires: str, links: list[str]) -> str:
     link_value = ", ".join(links)
     return (
         "---\n"
@@ -141,10 +118,7 @@ def _frontmatter(entry_type: str, title: str, created: str, source: str, confide
     )
 
 
-def _parse(path: Path, scope: str) -> Entry:
-    """
-    Parse one memory file, rejecting malformed metadata.
-    """
+def parse_memory_entry(path: Path, scope: str) -> Entry:
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---"):
         raise OteError(f"{path}: missing frontmatter")
@@ -184,25 +158,19 @@ def _parse(path: Path, scope: str) -> Entry:
     )
 
 
-def entries(root: Path, scope: str | None = None) -> list[Entry]:
-    """
-    Return memory entries sorted by scope precedence and identifier.
-    """
-    directory = _memory_root(root)
+def load_memory_entries(root: Path, scope: str | None = None) -> list[Entry]:
+    directory = ensure_memory_directory(root)
     selected = (scope,) if scope else SCOPES
     if scope and scope not in SCOPES:
         raise OteError(f"unknown scope: {scope}")
     results: list[Entry] = []
     for current in selected:
         for path in sorted((directory / current).glob("*.md")):
-            results.append(_parse(path, current))
+            results.append(parse_memory_entry(path, current))
     return results
 
 
-def _write_catalog(root: Path, items: list[Entry]) -> None:
-    """
-    Regenerate the memory catalog index.
-    """
+def write_memory_catalog(root: Path, items: list[Entry]) -> None:
     directory = root / ".ote/memory"
     lines = [
         "# Memory Catalog",
@@ -224,7 +192,7 @@ def _write_catalog(root: Path, items: list[Entry]) -> None:
     target.write_text("\n".join(lines), encoding="utf-8")
 
 
-def add(
+def add_memory_entry(
     root: Path,
     text: str,
     entry_type: str,
@@ -236,9 +204,6 @@ def add(
     ttl_days: int | None = None,
     force: bool = False,
 ) -> Entry:
-    """
-    Add one memory entry, rejecting duplicates and credentials.
-    """
     if entry_type not in TYPES:
         raise OteError(f"unknown type: {entry_type}")
     if scope not in SCOPES:
@@ -251,11 +216,14 @@ def add(
     resolved_title = (title or body.splitlines()[0]).strip()
     if not resolved_title:
         raise OteError("memory title is required")
+    for label, value in (("title", resolved_title), ("source", source), *((f"link {index}", link) for index, link in enumerate(links, start=1))):
+        if "\n" in value or "\r" in value or value.strip() == "---":
+            raise OteError(f"{label} must be a single line without a frontmatter separator")
     found = scan_secrets("\n".join([resolved_title, body, source, " ".join(links)]))
     if found:
         raise OteError("refusing to store a possible credential (matched a secret pattern)")
 
-    existing = entries(root, scope)
+    existing = load_memory_entries(root, scope)
     normalized = re.sub(r"\s+", " ", resolved_title.lower())
     for entry in existing:
         if re.sub(r"\s+", " ", entry.title.lower()) == normalized and not force:
@@ -264,9 +232,9 @@ def add(
     ttl = settings(root)["ttl_days"] if ttl_days is None else ttl_days
     if ttl < 0:
         raise OteError("ttl must not be negative")
-    created = _today()
+    created = current_utc_date()
     expires = created + timedelta(days=ttl)
-    identifier = f"{created.isoformat()}-{_slug(resolved_title)}"
+    identifier = f"{created.isoformat()}-{slugify_memory_title(resolved_title)}"
     target = root / ".ote/memory" / scope / f"{identifier}.md"
     suffix = 2
     while target.exists():
@@ -274,7 +242,7 @@ def add(
         suffix += 1
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(
-        _frontmatter(
+        render_memory_frontmatter(
             entry_type,
             resolved_title,
             created.isoformat(),
@@ -286,20 +254,17 @@ def add(
         + f"{body}\n",
         encoding="utf-8",
     )
-    result = _parse(target, scope)
-    _write_catalog(root, entries(root))
+    result = parse_memory_entry(target, scope)
+    write_memory_catalog(root, load_memory_entries(root))
     return result
 
 
-def search(root: Path, query: str, entry_type: str | None = None, scope: str | None = None) -> list[Entry]:
-    """
-    Search entries lexically across title, body, source, and type.
-    """
+def search_memory_entries(root: Path, query: str, entry_type: str | None = None, scope: str | None = None) -> list[Entry]:
     needle = query.strip().lower()
     if not needle:
         return []
     results: list[Entry] = []
-    for entry in entries(root, scope):
+    for entry in load_memory_entries(root, scope):
         if entry_type and entry.entry_type != entry_type:
             continue
         haystack = " ".join([entry.title, entry.body, entry.source, entry.entry_type]).lower()
@@ -308,23 +273,17 @@ def search(root: Path, query: str, entry_type: str | None = None, scope: str | N
     return results
 
 
-def prune(root: Path, apply: bool) -> list[Entry]:
-    """
-    Return expired entries, deleting them when ``apply`` is true.
-    """
-    expired = [entry for entry in entries(root) if entry.expired()]
+def prune_expired_entries(root: Path, apply: bool) -> list[Entry]:
+    expired = [entry for entry in load_memory_entries(root) if entry.expired()]
     if apply:
         for entry in expired:
             entry.path.unlink(missing_ok=True)
-        _write_catalog(root, entries(root))
+        write_memory_catalog(root, load_memory_entries(root))
     return expired
 
 
-def export(root: Path, output: str = "markdown") -> str:
-    """
-    Export every entry as Markdown or JSON.
-    """
-    items = entries(root)
+def export_memory_entries(root: Path, output: str = "markdown") -> str:
+    items = load_memory_entries(root)
     if output == "json":
         return json.dumps(
             {
@@ -369,14 +328,11 @@ def export(root: Path, output: str = "markdown") -> str:
     return "\n".join(lines).rstrip() + "\n"
 
 
-def preamble(root: Path, budget_tokens: int | None = None) -> str:
-    """
-    Build a deterministic, token-bounded preamble ordered by scope precedence.
-    """
+def render_memory_preamble(root: Path, budget_tokens: int | None = None) -> str:
     limit = settings(root)["token_budget"] if budget_tokens is None else budget_tokens
     if limit <= 0:
         raise OteError("budget must be a positive integer")
-    items = [entry for entry in entries(root) if not entry.expired()]
+    items = [entry for entry in load_memory_entries(root) if not entry.expired()]
     order = {scope: index for index, scope in enumerate(PRECEDENCE)}
     items.sort(key=lambda entry: (order.get(entry.scope, 99), entry.identifier))
     lines = ["# Project Memory", ""]

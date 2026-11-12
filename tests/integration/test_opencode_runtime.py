@@ -21,22 +21,13 @@ REPO_ROOT = support.REPO_ROOT
 
 
 def _opencode() -> str | None:
-    """
-    Return the OpenCode executable path when available.
-    """
     return shutil.which("opencode")
 
 
 @unittest.skipUnless(_opencode(), "opencode binary is not installed")
 class AgentDiscoveryTests(unittest.TestCase):
-    """
-    Tests for agent discovery through the OpenCode CLI.
-    """
 
     def test_all_agents_are_discovered(self) -> None:
-        """
-        Installing the agents exposes all twelve agents to OpenCode V2.
-        """
         with tempfile.TemporaryDirectory(prefix="ote-discovery-") as directory:
             target = Path(directory)
             install = subprocess.run(
@@ -75,9 +66,6 @@ class AgentDiscoveryTests(unittest.TestCase):
             self.assertEqual(sorted(identifiers & set(support.AGENT_ROLES)), sorted(support.AGENT_ROLES))
 
     def test_coordinator_is_primary(self) -> None:
-        """
-        The coordinator is exposed with primary mode.
-        """
         with tempfile.TemporaryDirectory(prefix="ote-discovery-") as directory:
             target = Path(directory)
             subprocess.run(
@@ -116,14 +104,8 @@ class AgentDiscoveryTests(unittest.TestCase):
 
 @unittest.skipUnless(_opencode(), "opencode binary is not installed")
 class ConfigurationValidationTests(unittest.TestCase):
-    """
-    Tests that the shipped configurations parse in OpenCode V2.
-    """
 
     def test_minimal_profile_parses(self) -> None:
-        """
-        The minimal profile is accepted by the OpenCode configuration loader.
-        """
         result = subprocess.run(
             ["opencode", "--standalone", "debug", "config"],
             cwd=REPO_ROOT,

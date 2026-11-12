@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "description": "Deterministic evaluation cases for the repository profile. No model calls are made.",
+  "cases": [
+    {
+      "id": "profiles",
+      "description": "Every profile manifest loads and validates."
+    },
+    {
+      "id": "catalog",
+      "description": "The generated catalog matches its schema, counts, and local paths."
+    },
+    {
+      "id": "governance",
+      "description": "Every agent contract satisfies its role rules."
+    },
+    {
+      "id": "validator",
+      "description": "The repository validator exits zero.",
+      "expected": {
+        "exit_code": 0
+      }
+    }
+  ]
+}

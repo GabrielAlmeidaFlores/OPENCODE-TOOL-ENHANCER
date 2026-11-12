@@ -11,14 +11,8 @@ from ote_cli import compat
 
 
 class CompatMatrixTests(unittest.TestCase):
-    """
-    Tests for matrix shape and rendering.
-    """
 
     def test_rows_have_required_fields(self) -> None:
-        """
-        Every row documents both versions and a note.
-        """
         self.assertTrue(compat.MATRIX)
         for row in compat.MATRIX:
             self.assertTrue({"feature", "v1", "v2", "note"}.issubset(row))
@@ -26,27 +20,18 @@ class CompatMatrixTests(unittest.TestCase):
             self.assertTrue(row["note"])
 
     def test_documented_v2_only_features(self) -> None:
-        """
-        Features verified as V2-only are marked as unavailable on V1.
-        """
         rows = {row["feature"]: row for row in compat.MATRIX}
         self.assertEqual(rows["Code Mode"]["v1"], "no")
         self.assertEqual(rows["Native LSP navigation"]["v2"], "no")
 
     def test_as_dict_is_json_ready(self) -> None:
-        """
-        The JSON form exposes tool, versions, and features.
-        """
-        payload = compat.as_dict()
+        payload = compat.as_compatibility_dict()
         self.assertEqual(payload["tool"], "opencode")
         self.assertEqual(payload["versions"], ["v1", "v2"])
         self.assertEqual(len(payload["features"]), len(compat.MATRIX))
         self.assertIn("not performance or benchmark", payload["disclaimer"])
 
     def test_render_text_contains_header_and_rows(self) -> None:
-        """
-        Text output contains a header and the first feature.
-        """
         rendered = compat.render_text()
         self.assertIn("Feature", rendered)
         self.assertIn("V1", rendered)

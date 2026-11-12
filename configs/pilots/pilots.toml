@@ -1,0 +1,17 @@
+[pilots.hono]
+repository = "https://github.com/honojs/hono"
+commit = "f6fbaf0299c48eea9e656e03e2ffe7ac755e8823"
+stack = "TypeScript"
+focus = "Routing, middleware, tests"
+
+[pilots.clean-architecture]
+repository = "https://github.com/ardalis/CleanArchitecture"
+commit = "302e8ac4d631f45f015413950dcb97d0d146169b"
+stack = "C#"
+focus = "Validation, endpoints, tests"
+
+[pilots.turborepo]
+repository = "https://github.com/vercel/turborepo"
+commit = "4e3bdf1eff825764acff269b8e71760e5e5c9300"
+stack = "Multi-language monorepo"
+focus = "Package boundaries, dependency graph"

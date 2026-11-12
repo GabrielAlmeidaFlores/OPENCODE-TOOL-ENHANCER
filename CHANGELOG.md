@@ -6,6 +6,13 @@ All notable changes to this repository are documented here.
 
 ### Added
 
+- `ote stats` with Markdown, JSON, and CSV reports; per-agent/model/tool aggregation; tool-error counts; baseline comparison; and a post-run budget guard.
+- `ote eval` with deterministic case definitions in `tests/evals/cases.json`; no model calls.
+- `ote pilot list|run` with a disposable clone, pinned commit, profile installation, one prompt, verification, and local artifacts.
+- `configs/pilots/pilots.toml` for the three selected repositories.
+- CI smoke checks for stats, eval, pilot listing, and pilot dry-run.
+- Phase 6 tests for stats parsing/rendering/comparison, eval cases, and pilot planning/validation.
+
 - `ote memory add|search|prune|export|preamble` with three scopes, TTL, deduplication, credential rejection, catalog generation, and a bounded preamble.
 - `.ote/memory/` layout with tracked project/shared scopes and a gitignored user scope.
 - `ote spec new|list|plan|verify` with requirements, design, tasks, and evidence artifacts and criterion/task/evidence validation.
@@ -77,6 +84,8 @@ All notable changes to this repository are documented here.
 - Bare `make` prints help via `.DEFAULT_GOAL`; run `make validate` for the previous behavior.
 
 ### Changed
+
+- Adopted naming over comments: removed redundant one-line docstrings, made function/class docstrings optional, and kept module docstrings plus contract detail. The validator now enforces block form only when a docstring exists.
 
 - Normalized every repository file to AGENTS.md Section 2C: vendored skill assets now use docstrings and documented functions instead of inline comments, the provenance registry and `.gitignore` use standardized header blocks, and the validator scans `skills/` and `tests/` in addition to `scripts/` and `packages/`, rejects non-documentation TypeScript and C# comments, and requires block-form Python docstrings with the triple quotes on their own lines.
 - `tests/fixtures/` is the only documented exception, because those files must contain prohibited patterns to exercise the validator.

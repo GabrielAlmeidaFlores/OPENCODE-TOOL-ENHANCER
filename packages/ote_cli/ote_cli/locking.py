@@ -24,9 +24,6 @@ SCHEMA_VERSION = 1
 
 @dataclass(frozen=True)
 class PlannedFile:
-    """
-    One file that an installation writes into the target project.
-    """
 
     source: Path
     destination: Path
@@ -34,9 +31,6 @@ class PlannedFile:
 
 
 def sha256_file(path: Path) -> str:
-    """
-    Return the hexadecimal SHA-256 digest of a file.
-    """
     digest = hashlib.sha256()
     with path.open("rb") as handle:
         for chunk in iter(lambda: handle.read(65536), b""):
@@ -45,9 +39,6 @@ def sha256_file(path: Path) -> str:
 
 
 def write_json(path: Path, data: dict[str, Any]) -> None:
-    """
-    Write JSON atomically, creating parent directories as needed.
-    """
     path.parent.mkdir(parents=True, exist_ok=True)
     handle = tempfile.NamedTemporaryFile(
         "w", encoding="utf-8", dir=path.parent, prefix=f".{path.name}.", delete=False
@@ -63,9 +54,6 @@ def write_json(path: Path, data: dict[str, Any]) -> None:
 
 
 def read_json(path: Path) -> dict[str, Any] | None:
-    """
-    Read a JSON object, returning None when the file is absent.
-    """
     if not path.is_file():
         return None
     with path.open(encoding="utf-8") as handle:
@@ -76,9 +64,6 @@ def read_json(path: Path) -> dict[str, Any] | None:
 
 
 def read_lock(path: Path) -> dict[str, Any] | None:
-    """
-    Read and validate the lock file structure.
-    """
     data = read_json(path)
     if data is None:
         return None
@@ -97,9 +82,6 @@ def build_lock(
     planned: list[PlannedFile],
     source: dict[str, str],
 ) -> dict[str, Any]:
-    """
-    Build a lock document from the planned files and their source metadata.
-    """
     files: list[dict[str, str]] = []
     for item in planned:
         if not item.destination.is_file():
@@ -123,9 +105,6 @@ def build_lock(
 
 
 def lock_drift(lock: dict[str, Any], target: Path) -> list[dict[str, str]]:
-    """
-    Compare locked file digests with the current target, returning every difference.
-    """
     drift: list[dict[str, str]] = []
     for entry in lock.get("files", []):
         relative = entry.get("path", "")

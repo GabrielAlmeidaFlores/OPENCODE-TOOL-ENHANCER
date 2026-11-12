@@ -20,14 +20,8 @@ SAFE_PATH = f"{PYTHON_BIN}:/usr/bin:/bin"
 
 
 class ValidationEntryPointTests(unittest.TestCase):
-    """
-    Tests for scripts/validation/validate.sh and validate_config.py.
-    """
 
     def test_validate_config_script_passes(self) -> None:
-        """
-        The Python validator exits zero on the repository.
-        """
         result = subprocess.run(
             ["python3", "scripts/validation/validate_config.py"],
             cwd=REPO_ROOT,
@@ -40,9 +34,6 @@ class ValidationEntryPointTests(unittest.TestCase):
         self.assertIn("OK", result.stdout)
 
     def test_validate_shell_entrypoint_passes(self) -> None:
-        """
-        The shell entry point exits zero on the repository.
-        """
         result = subprocess.run(
             ["bash", "scripts/validation/validate.sh"],
             cwd=REPO_ROOT,
@@ -54,9 +45,6 @@ class ValidationEntryPointTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def test_validator_reports_checked_count(self) -> None:
-        """
-        The validator prints the number of checks it performed.
-        """
         result = subprocess.run(
             ["python3", "scripts/validation/validate_config.py"],
             cwd=REPO_ROOT,
@@ -69,14 +57,8 @@ class ValidationEntryPointTests(unittest.TestCase):
 
 
 class BenchmarkHarnessTests(unittest.TestCase):
-    """
-    Tests for benchmarks/harness/run.sh dry-run behaviour.
-    """
 
     def test_every_task_supports_dry_run_without_opencode(self) -> None:
-        """
-        Dry-run validates task inputs without requiring an OpenCode binary.
-        """
         tasks = sorted((REPO_ROOT / "benchmarks/tasks").glob("*.json"))
         self.assertTrue(tasks, "no benchmark tasks found")
         for task in tasks:
@@ -93,9 +75,6 @@ class BenchmarkHarnessTests(unittest.TestCase):
             self.assertIn("would run:", result.stdout, task.name)
 
     def test_dry_run_rejects_unknown_arm(self) -> None:
-        """
-        An unknown arm exits with the usage code.
-        """
         task = next((REPO_ROOT / "benchmarks/tasks").glob("*.json"))
         result = subprocess.run(
             ["bash", "benchmarks/harness/run.sh", "--arm", "nonsense", "--task", str(task), "--dry-run"],
@@ -109,9 +88,6 @@ class BenchmarkHarnessTests(unittest.TestCase):
         self.assertIn("unknown arm", result.stdout + result.stderr)
 
     def test_dry_run_rejects_missing_task(self) -> None:
-        """
-        A missing task file exits with the usage code.
-        """
         result = subprocess.run(
             ["bash", "benchmarks/harness/run.sh", "--arm", "baseline", "--task", "missing.json", "--dry-run"],
             cwd=REPO_ROOT,
@@ -125,14 +101,8 @@ class BenchmarkHarnessTests(unittest.TestCase):
 
 
 class InstallationDryRunTests(unittest.TestCase):
-    """
-    Tests for installation safety defaults.
-    """
 
     def test_default_mode_is_check_only(self) -> None:
-        """
-        Running the installer without --apply performs no writes.
-        """
         with tempfile.TemporaryDirectory(prefix="ote-install-") as directory:
             target = Path(directory) / "project"
             result = subprocess.run(
@@ -147,9 +117,6 @@ class InstallationDryRunTests(unittest.TestCase):
             self.assertFalse(target.exists(), "default mode must not create the target")
 
     def test_dry_run_lists_planned_actions(self) -> None:
-        """
-        Dry-run lists actions without creating files.
-        """
         with tempfile.TemporaryDirectory(prefix="ote-install-") as directory:
             target = Path(directory) / "project"
             result = subprocess.run(

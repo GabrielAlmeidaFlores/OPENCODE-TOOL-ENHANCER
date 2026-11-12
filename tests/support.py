@@ -59,9 +59,6 @@ GIT_DENY_RULES = [
 
 
 def load_validator() -> ModuleType:
-    """
-    Import the repository validator as a fresh module instance.
-    """
     spec = importlib.util.spec_from_file_location("ote_validate_config", VALIDATOR_PATH)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"cannot load validator from {VALIDATOR_PATH}")
@@ -72,9 +69,6 @@ def load_validator() -> ModuleType:
 
 @contextlib.contextmanager
 def isolated_root(validator: ModuleType) -> Iterator[Path]:
-    """
-    Point the validator at a temporary repository root and reset its state.
-    """
     original_root = validator.ROOT
     with tempfile.TemporaryDirectory(prefix="ote-test-") as directory:
         root = Path(directory)
@@ -88,18 +82,12 @@ def isolated_root(validator: ModuleType) -> Iterator[Path]:
 
 
 def reset_state(validator: ModuleType) -> None:
-    """
-    Clear accumulated errors, warnings, and counters.
-    """
     validator.errors.clear()
     validator.warnings.clear()
     validator.checked = 0
 
 
 def write_file(root: Path, relative: str, content: str) -> Path:
-    """
-    Write content under root, creating parent directories as needed.
-    """
     path = root / relative
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
@@ -107,9 +95,6 @@ def write_file(root: Path, relative: str, content: str) -> Path:
 
 
 def agent_text(role: str, *, mode: str = "subagent", description: str = "Test agent.", deny_git: bool = True) -> str:
-    """
-    Build a provenance-complete agent document for fixtures.
-    """
     lines = [
         "---",
         "# Provenance",
@@ -143,9 +128,6 @@ def agent_text(role: str, *, mode: str = "subagent", description: str = "Test ag
 
 
 def skill_text(name: str, *, description: str = "Fixture skill used by tests.") -> str:
-    """
-    Build a skill document with complete provenance metadata.
-    """
     return "\n".join(
         [
             "---",
@@ -171,9 +153,6 @@ def skill_text(name: str, *, description: str = "Fixture skill used by tests.") 
 
 
 def command_text(agent: str, *, description: str = "Fixture command.") -> str:
-    """
-    Build a command document with complete provenance metadata.
-    """
     return "\n".join(
         [
             "---",
@@ -197,9 +176,6 @@ def command_text(agent: str, *, description: str = "Fixture command.") -> str:
 
 
 def registry_text(entries: list[tuple[str, str]]) -> str:
-    """
-    Build a provenance registry with local paths for the given id and path pairs.
-    """
     lines = ["version: 1", 'updated: "2026-11-12"', "", "sources:", "  fixture:", '    repository: "https://example.com/upstream"', '    commit: "0000000000000000000000000000000000000000"', '    license: "MIT"', '    owner: "Fixture Author"', '    author: "Fixture Author"', '    author_url: "https://example.com/author"', "", "agents:"]
     for identifier, local in entries:
         lines.extend(
