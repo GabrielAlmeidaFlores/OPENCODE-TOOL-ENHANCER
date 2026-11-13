@@ -20,11 +20,144 @@ Cost per fully scoped success is the clearest summary. The baseline spent **$0.0
 
 ## What this document answers
 
-This page answers one narrow question:
+ToolWright is provider-neutral. The benchmark question applies to **any AI coding tool**, not only OpenCode:
 
-> Does the ToolWright optimized configuration complete the same tasks correctly at a lower total cost than a stock OpenCode configuration?
+> Does the ToolWright optimized configuration complete the same tasks correctly at a lower total cost than the stock configuration of the same AI coding tool?
 
-It does not answer whether ToolWright is useful for every repository, every model, or every task size. The result is specific to five small tasks, one model, one source commit, and three repeats.
+This published run executes that question with **OpenCode 2.2.7 as the reference adapter**. It does **not** measure Claude Code, GitHub Copilot, or ChatGPT/Codex. Those adapters have their own generated files and runtime behavior, so this result must not be presented as a cross-tool result.
+
+The result is also specific to five small tasks, one model, one source commit, and three repeats. It does not answer whether ToolWright is useful for every repository, every model, every tool, or every task size.
+
+## What the AI was asked to perform
+
+This section lists the exact tasks. Each task supplied the same prompt, working directory, acceptance criteria, and verification command to both arms. The harness did not add task-specific hints.
+
+### Task 1: `cs-validation`
+
+**Working directory:** `examples/csharp`
+
+**Prompt given to the agent:**
+
+> Add validation to the example C# endpoint. Return a problem response for invalid input. Add tests for valid, missing, and malformed payloads. Run dotnet test Example.Tests/Example.Tests.csproj.
+
+**Acceptance criteria:**
+
+- Invalid payloads produce a problem response;
+- Valid payloads succeed;
+- Tests cover three cases;
+- dotnet test Example.Tests/Example.Tests.csproj passes.
+
+**Verification command:** `dotnet test Example.Tests/Example.Tests.csproj`
+
+**Quality outcome:** all three runs in both arms passed verification. Median score was 4/4 for both arms. The optimized arm was also cheaper and faster on this task.
+
+### Task 2: `ts-validation`
+
+**Working directory:** `examples/typescript`
+
+**Prompt given to the agent:**
+
+> Add input validation to the example endpoint. Reject missing and malformed fields with a 400 response. Add tests for the valid and invalid cases. Run the project checks.
+
+**Acceptance criteria:**
+
+- invalid input returns 400;
+- valid input still succeeds;
+- tests cover both cases;
+- lint and typecheck pass.
+
+**Verification command:** `npm test`, which builds the TypeScript project and runs the compiled tests.
+
+**Quality outcome:** all three runs in both arms passed verification. The baseline median score was 4/4; the optimized median was 3/4 because one optimized run changed the example README and another changed the example AGENTS file outside the declared task area.
+
+### Task 3: `ts-perf`
+
+**Working directory:** `examples/typescript`
+
+**Prompt given to the agent:**
+
+> The example service issues one query per item. Replace it with a batched query while preserving ordering and error semantics. Add a test that fails if the query count exceeds one per request.
+
+**Acceptance criteria:**
+
+- query count is constant per request;
+- ordering is preserved;
+- errors are unchanged;
+- a regression test protects the query count.
+
+**Verification command:** `npm test`
+
+**Quality outcome:** all three runs in both arms passed verification. Baseline median score was 4/4; optimized median was 3/4 because two optimized runs also edited example documentation outside the declared task area.
+
+### Task 4: `ts-refactor`
+
+**Working directory:** `examples/typescript`
+
+**Prompt given to the agent:**
+
+> Extract the duplicated pricing logic in the example TypeScript project into a single function. Do not change behavior. Ensure the existing tests still pass and add one characterization test if coverage is missing.
+
+**Acceptance criteria:**
+
+- no duplicated pricing branch remains;
+- public behavior is unchanged;
+- existing tests pass;
+- no unrelated formatting changes.
+
+**Verification command:** `npm test`
+
+**Quality outcome:** all three runs in both arms passed verification and scored 4/4. The optimized arm nevertheless cost 67.5% more, the largest relative cost regression in the set.
+
+### Task 5: `ts-security`
+
+**Working directory:** `examples/typescript`
+
+**Prompt given to the agent:**
+
+> The example file endpoint joins a user-supplied name to a base directory. Fix the path traversal without changing the response shape for valid names. Add tests for valid, traversal, and encoded traversal inputs.
+
+**Acceptance criteria:**
+
+- traversal inputs are rejected;
+- encoded traversal is rejected;
+- valid names still resolve;
+- tests cover all three cases.
+
+**Verification command:** `npm test`
+
+**Quality outcome:** all three runs in both arms passed verification and scored 4/4. The optimized arm cost 53.7% more.
+
+## What tools were used
+
+This section separates three things that are often conflated: the tool under test, the software stack used to run it, and the tools the model actually invoked.
+
+**Tool under test:** OpenCode `2.2.7`, the reference adapter for this run. The baseline used OpenCode's stock configuration and `build` agent. The optimized arm used [`configs/opencode/opencode.jsonc`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/configs/opencode/opencode.jsonc), the `coordinator` agent, and the minimal ToolWright profile. Claude Code, GitHub Copilot, and ChatGPT/Codex were not run.
+
+**Model:** `deepseek/deepseek-flash`, DeepSeek-V4.1-Flash-1017, through the `deepseek` provider. Thinking mode was enabled with the provider default; the benchmark did not force a reasoning variant.
+
+**Runtime stack:** macOS 26.5.2 on arm64, Node `24.18.0`, npm `11.16.0`, .NET `10.0.403`, and Python `3.14.7`.
+
+**When it ran:** 2026-11-13 from **18:08:23 UTC** to **18:46:33 UTC**, an off-peak DeepSeek pricing window. The benchmark was not run during peak hours.
+
+**Configured tools:** the optimized config declares Serena and CodeGraph MCP servers alongside OpenCode's native read, grep, glob, edit, write, shell, and task tools. The baseline declares no MCP servers.
+
+**Observed tools:** the next table counts actual tool calls from `session.jsonl` across all 15 runs per arm. The **Tool** column names the tool, **Baseline calls** and **Optimized calls** are total invocations, and **What it does** explains the capability. These are observed calls, not configuration claims.
+
+| Tool | Baseline calls | Optimized calls | What it does |
+|---|---:|---:|---|
+| `read` | 103 | 74 | Reads file contents into context |
+| `shell` | 95 | 139 | Runs commands, tests, and file edits via the shell |
+| `edit` | 40 | 0 | Applies targeted file edits |
+| `write` | 18 | 0 | Writes whole files |
+| `grep` | 13 | 12 | Searches file contents |
+| `glob` | 9 | 2 | Finds files by path pattern |
+| `todowrite` | 0 | 5 | Updates the task checklist |
+| `execute` | 0 | 1 | Runs Code Mode tool calls, including MCP-backed tools |
+
+Two observations matter for quality and cost:
+
+- The optimized arm made **no `edit` or `write` tool calls**. It changed files through `shell` commands instead. That still passed verification, but shell edits are harder to audit from tool traces and may explain part of the extra shell activity.
+- Serena and CodeGraph were configured, but no named Serena or CodeGraph tool calls appear in these sessions. One Code Mode `execute` call appears in the refactor task. This benchmark therefore does **not** prove that those MCP servers improved retrieval or quality.
 
 ## Experiment setup
 
@@ -33,14 +166,14 @@ Before reading any result, this table defines the experiment. The **Parameter** 
 | Parameter | Value | Why it matters |
 |---|---|---|
 | Model | `deepseek/deepseek-flash` | Pricing, reasoning behavior, tool use, and latency are model-specific. |
-| OpenCode | `2.2.7` | Harness behavior and configuration support can change between versions. |
+| AI tool under test | OpenCode `2.2.7` | The current harness executes the OpenCode reference adapter. Claude, Copilot, and Codex were not measured in this run. |
 | Source commit | `a7983f8` (`v0.4.0`) | Both arms must run the same code to make a fair comparison. |
 | Tasks | 5 (C# validation, TypeScript validation, performance, refactor, security) | The task mix determines whether the result generalizes. |
 | Repeats | 3 per task per arm | Three repeats expose some variance but are not a significance test. |
 | Runs | 30 total (5 tasks × 2 arms × 3 repeats) | Total cost and total tokens below are sums over these runs. |
 | Isolation | One fresh clone per run | Prevents one run from inheriting another run's file changes. |
-| Baseline arm | Stock OpenCode config, `build` agent | Represents the default starting point. |
-| Optimized arm | [`configs/opencode/opencode.jsonc`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/configs/opencode/opencode.jsonc), `coordinator` agent, minimal installed profile | Represents ToolWright's customized workflow. |
+| Baseline arm | Stock configuration of the tool under test (OpenCode `build` agent) | Represents that tool's default starting point. |
+| Optimized arm | ToolWright configuration for the same tool ([`configs/opencode/opencode.jsonc`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/configs/opencode/opencode.jsonc) in this run), `coordinator`, minimal installed profile | Represents ToolWright's customized workflow. |
 | Environment | macOS 26.5.2, Apple silicon | Wall time is hardware- and OS-dependent. |
 | Pricing window | DeepSeek off-peak rates | Peak rates are twice as high, so cost comparisons must use one pricing window. |
 
@@ -50,14 +183,14 @@ The optimized arm also installed the minimal ToolWright profile, which supplies 
 
 The next table defines the two arms. This is the most important table on the page because every later number depends on the difference between these two configurations.
 
-The **Arm** column names the comparison group. The **Configuration** column shows the configuration file or stock setup that OpenCode loaded. The **Agent** column shows which primary agent handled the prompt. The **What it represents** column explains the role of that arm in the experiment.
+The **Arm** column names the comparison group. The **Configuration** column shows the configuration loaded by the tool under test; for this run that is OpenCode. The **Agent** column shows which primary agent handled the prompt. The **What it represents** column explains the role of that arm in the experiment.
 
 | Arm | Configuration | Agent | What it represents |
 |---|---|---|---|
-| **Baseline** | Stock OpenCode config | `build` | The default starting point |
+| **Baseline** | Stock configuration for the tool under test (OpenCode in this run) | `build` | That tool's default starting point |
 | **Optimized** | [`configs/opencode/opencode.jsonc`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/configs/opencode/opencode.jsonc) | `coordinator` | ToolWright's customized workflow |
 
-The baseline is not an empty model call. It is a capable coding agent with the default OpenCode behavior. The optimized arm adds ToolWright's coordinator, permissions, instructions, and configuration.
+The baseline is not an empty model call. It is a capable coding agent with the tool's default behavior. In this run, that is OpenCode with the stock `build` agent. The optimized arm adds ToolWright's coordinator, permissions, instructions, and configuration for the same tool.
 
 ### Data source and correction
 
@@ -236,7 +369,15 @@ Reading the table:
 
 ## Correctness
 
-Correctness is scored separately from cost. The next table defines the rubric before it is applied. The **Score** column is the numeric value assigned to a run. The **Meaning** column states the exact condition required for that score. Verification is the task's declared test command. Scope is the set of files the task is allowed to change.
+Correctness is scored separately from cost. “Quality” on this page means two measurable things: the task's verification command passed, and the changed files stayed inside the task's declared area. It does **not** mean that an independent reviewer approved the code, that every acceptance criterion was tested, or that the change is production-ready.
+
+The quality assessment has three limits:
+
+- The verification command is the task's only automated gate. A passing test does not prove every acceptance criterion.
+- Scope is checked from changed paths, not from a semantic review of every diff.
+- No follow-up prompts or human fixes were issued, so rework was not exercised.
+
+The next table defines the rubric before it is applied. The **Score** column is the numeric value assigned to a run. The **Meaning** column states the exact condition required for that score. Verification is the task's declared test command. Scope is the set of files the task is allowed to change.
 
 | Score | Meaning |
 |---:|---|

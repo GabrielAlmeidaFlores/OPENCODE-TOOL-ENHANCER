@@ -718,7 +718,7 @@ This repository distinguishes **verified**, **documented**, and **not yet measur
 | Command runtime | All eight commands verified on the TypeScript fixture through the reference adapter |
 | Skill runtime | All ten skills verified through the `skill` tool |
 | MCP startup overhead | Narrow `debug agents` measurement recorded |
-| Benchmarks | One published DeepSeek Flash result set; optimized configuration cost 14.2% more overall, with task-dependent wins and losses |
+| Benchmarks | One published DeepSeek Flash result set on the OpenCode reference adapter; optimized configuration cost 14.2% more overall, with task-dependent wins and losses |
 | Real-repository pilots | Discovery 15/15; Hono 5/5, CleanArchitecture 5/5, turborepo 4/5 reviewed |
 | CI | Green on Ubuntu and macOS for run [43402329992](https://github.com/GabrielAlmeidaFlores/ToolWright/actions/runs/43402329992); nine jobs |
 | Repository tests | 305 unit and integration tests |
@@ -831,7 +831,7 @@ See [testing the repository](docs/architecture/testing.md) and [CI diagnosis](do
 
 ## Benchmarks
 
-The benchmark harness is reproducible. One result set is published for `deepseek/deepseek-flash`: 30 isolated runs across five tasks and three repeats. The optimized configuration cost **14.2% more overall**; it was cheaper on two tasks and more expensive on three. See the result and limitations before reusing the claim.
+The benchmark harness is reproducible and the question is tool-neutral. The first result set uses `deepseek/deepseek-flash` on the OpenCode reference adapter: 30 isolated runs across five tasks and three repeats. The optimized configuration cost **14.2% more overall**; it was cheaper on two tasks and more expensive on three. This is not a Claude, Copilot, or Codex result. See the result and limitations before reusing the claim.
 
 - [Methodology](docs/benchmarks/methodology.md)
 - [DeepSeek Flash results](docs/benchmarks/results-deepseek-flash.md)
