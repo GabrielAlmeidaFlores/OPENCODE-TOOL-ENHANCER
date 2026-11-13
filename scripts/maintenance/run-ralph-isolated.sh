@@ -10,6 +10,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+source "$ROOT/scripts/lib/strings.sh"
 DRY=0
 APPLY=0
 CLEANUP=0
@@ -37,7 +38,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ ${#RALPH_ARGS[@]} -eq 0 ]]; then
-  echo "missing Ralph arguments"
+  echo "${SH_MISSING_RALPH_ARGUMENTS}"
   usage
   exit 2
 fi
@@ -57,7 +58,7 @@ PATCH="$PATCH_DIR/$STAMP.patch"
 
 if [[ "$DRY" == "1" ]]; then
   echo "would copy the working tree to: $CLONE"
-  echo "would create a baseline commit inside the clone"
+  echo "${SH_WOULD_CREATE_A_BASELINE_COMMIT_INSIDE_THE_CLONE}"
   echo "would run: ralph run ${RALPH_ARGS[*]}"
   echo "would write patch: $PATCH"
   [[ "$APPLY" == "1" ]] && echo "would apply the patch unstaged to: $ROOT"
@@ -66,20 +67,20 @@ fi
 
 mkdir -p "$CLONE" "$PATCH_DIR"
 tar -C "$ROOT" \
-  --exclude='./.git' \
-  --exclude='./.ralph/agent' \
-  --exclude='./.ralph-isolated' \
-  --exclude='./.codegraph' \
-  --exclude='./node_modules' \
-  --exclude='./.opencode/node_modules' \
-  --exclude='./examples/csharp/bin' \
-  --exclude='./examples/csharp/obj' \
+  --exclude="${SH_GIT}" \
+  --exclude="${SH_RALPH_AGENT}" \
+  --exclude="${SH_RALPH_ISOLATED}" \
+  --exclude="${SH_CODEGRAPH}" \
+  --exclude="${SH_NODE_MODULES}" \
+  --exclude="${SH_OPENCODE_NODE_MODULES}" \
+  --exclude="${SH_EXAMPLES_CSHARP_BIN}" \
+  --exclude="${SH_EXAMPLES_CSHARP_OBJ}" \
   -cf - . | tar -C "$CLONE" -xf -
 
 git -C "$CLONE" init -q
 git -C "$CLONE" add -A
-git -C "$CLONE" -c user.name="Ralph Isolated" -c user.email="ralph@example.invalid" \
-  commit -qm "baseline for isolated Ralph run"
+git -C "$CLONE" -c user.name="${SH_RALPH_ISOLATED_2}" -c user.email="${SH_RALPH_EXAMPLE_INVALID}" \
+  commit -qm "${SH_BASELINE_FOR_ISOLATED_RALPH_RUN}"
 BASE="$(git -C "$CLONE" rev-parse HEAD)"
 
 set +e

@@ -10,7 +10,8 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-MODE="check"
+source "$ROOT/scripts/lib/strings.sh"
+MODE="$TW_MODE_CHECK"
 ONLY=""
 TARGET="$ROOT"
 CLEAN=0
@@ -36,20 +37,20 @@ EOF
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --check) MODE="check"; shift ;;
-    --dry-run) MODE="dry-run"; shift ;;
-    --apply) MODE="apply"; shift ;;
-    --all) ONLY="opencode,agents,commands,skills,ralph,ast-grep,serena,codegraph"; shift ;;
+    --check) MODE="$TW_MODE_CHECK"; shift ;;
+    --dry-run) MODE="$TW_MODE_DRY_RUN"; shift ;;
+    --apply) MODE="$TW_MODE_APPLY"; shift ;;
+    --all) ONLY="${SH_OPENCODE_AGENTS_COMMANDS_SKILLS_RALPH_AST_GREP_SER}"; shift ;;
     --only) ONLY="${2:-}"; shift 2 ;;
     --target) TARGET="${2:-}"; shift 2 ;;
     --clean) CLEAN=1; shift ;;
     -h|--help) usage; exit 0 ;;
-    *) echo "unknown option: $1"; usage; exit 2 ;;
+    *) echo "${TW_MESSAGE_UNKNOWN_OPTION}$1"; usage; exit 2 ;;
   esac
 done
 
-if [[ -z "$ONLY" && "$MODE" != "check" ]]; then
-  echo "Select components with --all or --only. Refusing to guess."
+if [[ -z "$ONLY" && "$MODE" != "$TW_MODE_CHECK" ]]; then
+  echo "${SH_SELECT_COMPONENTS_WITH_ALL_OR_ONLY_REFUSING_TO_GUE}"
   exit 2
 fi
 
@@ -73,33 +74,33 @@ selected() { [[ ",$ONLY," == *",$1,"* ]]; }
 # Returns: The command's exit status in apply mode, zero otherwise.
 # Side effects: May execute the supplied command.
 run() {
-  if [[ "$MODE" == "apply" ]]; then
+  if [[ "$MODE" == "$TW_MODE_APPLY" ]]; then
     "$@"
   else
-    printf '  would run: %s\n' "$*"
+    printf "${SH_WOULD_RUN_S_N}" "$*"
   fi
 }
 
 echo "mode=$MODE target=$TARGET"
 
-echo "== dependencies =="
+echo "${SH_DEPENDENCIES}"
 for c in git node python3 rg; do
-  if has "$c"; then printf '  ok   %-10s %s\n' "$c" "$(command -v "$c")"; else printf '  MISS %-10s\n' "$c"; fi
+  if has "$c"; then printf "${SH_OK_10S_S_N}" "$c" "$(command -v "$c")"; else printf "${SH_MISS_10S_N}" "$c"; fi
 done
-printf '  info opencode   %s\n' "$(opencode --version 2>/dev/null || echo 'not installed')"
-printf '  info ralph      %s\n' "$(ralph --version 2>/dev/null || echo 'not installed')"
-printf '  info ast-grep   %s\n' "$(ast-grep --version 2>/dev/null | head -1 || echo 'not installed')"
-printf '  info serena     %s\n' "$(serena --version 2>/dev/null || echo 'not installed')"
-printf '  info codegraph  %s\n' "$(codegraph --version 2>/dev/null || echo 'not installed')"
+printf "${SH_INFO_OPENCODE_S_N}" "$(opencode --version 2>/dev/null || echo 'not installed')"
+printf "${SH_INFO_RALPH_S_N}" "$(ralph --version 2>/dev/null || echo 'not installed')"
+printf "${SH_INFO_AST_GREP_S_N}" "$(ast-grep --version 2>/dev/null | head -1 || echo 'not installed')"
+printf "${SH_INFO_SERENA_S_N}" "$(serena --version 2>/dev/null || echo 'not installed')"
+printf "${SH_INFO_CODEGRAPH_S_N}" "$(codegraph --version 2>/dev/null || echo 'not installed')"
 
-if [[ "$MODE" == "check" ]]; then
-  echo "check complete. Use --dry-run or --apply."
+if [[ "$MODE" == "$TW_MODE_CHECK" ]]; then
+  echo "$TW_MESSAGE_CHECK_COMPLETE"
   exit 0
 fi
 
 STAMP="$(date +%Y%m%d-%H%M%S)"
 BACKUP="$TARGET/.opencode-backup-$STAMP"
-if [[ "$MODE" == "apply" ]]; then
+if [[ "$MODE" == "$TW_MODE_APPLY" ]]; then
   mkdir -p "$BACKUP"
 fi
 
@@ -113,7 +114,7 @@ clean_dir() {
   if [[ ! -d "$dir" ]]; then
     return 0
   fi
-  if [[ "$MODE" == "apply" ]]; then
+  if [[ "$MODE" == "$TW_MODE_APPLY" ]]; then
     mkdir -p "$BACKUP"
     cp -R "$dir" "$BACKUP/$(basename "$dir")"
     rm -rf "$dir"
@@ -130,7 +131,7 @@ clean_dir() {
 # Side effects: May overwrite the destination and write a backup copy.
 copy_file() {
   local src="$1" dst="$2"
-  if [[ -f "$dst" && "$MODE" == "apply" ]]; then
+  if [[ -f "$dst" && "$MODE" == "$TW_MODE_APPLY" ]]; then
     mkdir -p "$(dirname "$BACKUP/${dst#"$TARGET"/}")"
     cp "$dst" "$BACKUP/${dst#"$TARGET"/}"
   fi
@@ -144,7 +145,7 @@ copy_file() {
 # Side effects: May overwrite the destination and write a backup copy.
 copy_dir() {
   local src="$1" dst="$2"
-  if [[ -d "$dst" && "$MODE" == "apply" ]]; then
+  if [[ -d "$dst" && "$MODE" == "$TW_MODE_APPLY" ]]; then
     mkdir -p "$BACKUP/${dst#"$TARGET"/}"
     cp -R "$dst/." "$BACKUP/${dst#"$TARGET"/}/"
   fi
@@ -153,7 +154,7 @@ copy_dir() {
 }
 
 if [[ "$CLEAN" == "1" ]]; then
-  echo "== clean managed directories =="
+  echo "${SH_CLEAN_MANAGED_DIRECTORIES}"
   if selected agents; then
     clean_dir "$TARGET/.opencode/agents"
   fi
@@ -164,7 +165,7 @@ if [[ "$CLEAN" == "1" ]]; then
     clean_dir "$TARGET/.opencode/skills"
   fi
   if selected plugin; then
-  echo "== opencode plugin =="
+  echo "$TW_LABEL_OPENCODE_PLUGIN"
   run mkdir -p "$TARGET/.opencode/plugins"
   copy_file "$ROOT/configs/opencode/plugins/toolwright-memory.js" "$TARGET/.opencode/plugins/toolwright-memory.js"
 fi
@@ -175,13 +176,13 @@ if selected ralph; then
 fi
 
 if selected opencode; then
-  echo "== opencode config =="
+  echo "${SH_OPENCODE_CONFIG}"
   run mkdir -p "$TARGET/.opencode/agents" "$TARGET/.opencode/commands" "$TARGET/.opencode/skills"
   copy_file "$ROOT/configs/opencode/opencode.jsonc" "$TARGET/.opencode/opencode.jsonc"
 fi
 
 if selected agents; then
-  echo "== agents =="
+  echo "${SH_AGENTS}"
   run mkdir -p "$TARGET/.opencode/agents"
   for f in "$ROOT"/agents/*/AGENT.md; do
     role="$(basename "$(dirname "$f")")"
@@ -190,7 +191,7 @@ if selected agents; then
 fi
 
 if selected commands; then
-  echo "== commands =="
+  echo "${SH_COMMANDS}"
   run mkdir -p "$TARGET/.opencode/commands"
   for f in "$ROOT"/commands/*.md; do
     copy_file "$f" "$TARGET/.opencode/commands/$(basename "$f")"
@@ -198,7 +199,7 @@ if selected commands; then
 fi
 
 if selected skills; then
-  echo "== skills =="
+  echo "${SH_SKILLS}"
   run mkdir -p "$TARGET/.opencode/skills"
   for d in "$ROOT"/skills/*/; do
     name="$(basename "$d")"
@@ -207,13 +208,13 @@ if selected skills; then
 fi
 
 if selected plugin; then
-  echo "== opencode plugin =="
+  echo "$TW_LABEL_OPENCODE_PLUGIN"
   run mkdir -p "$TARGET/.opencode/plugins"
   copy_file "$ROOT/configs/opencode/plugins/toolwright-memory.js" "$TARGET/.opencode/plugins/toolwright-memory.js"
 fi
 
 if selected ralph; then
-  echo "== ralph configs =="
+  echo "${SH_RALPH_CONFIGS}"
   run mkdir -p "$TARGET/.ralph"
   copy_file "$ROOT/configs/ralph/ralph.yml" "$TARGET/.ralph/ralph.yml"
   run mkdir -p "$TARGET/.ralph/hats"
@@ -223,40 +224,40 @@ if selected ralph; then
 fi
 
 if selected ast-grep; then
-  echo "== ast-grep =="
+  echo "${SH_AST_GREP}"
   if has ast-grep; then
-    echo "  already installed"
+    echo "$TW_MESSAGE_ALREADY_INSTALLED"
   elif has brew; then
     run brew install ast-grep
   else
-    echo "  install manually: npm install --global @ast-grep/cli"
+    echo "${SH_INSTALL_MANUALLY_NPM_INSTALL_GLOBAL_AST_GREP_CLI}"
   fi
 fi
 
 if selected serena; then
-  echo "== serena =="
+  echo "${SH_SERENA}"
   if has serena; then
-    echo "  already installed"
+    echo "$TW_MESSAGE_ALREADY_INSTALLED"
   elif has uv; then
     run uv tool install -p 3.13 serena-agent
   else
-    echo "  install uv first: https://docs.astral.sh/uv/getting-started/installation/"
+    echo "${SH_INSTALL_UV_FIRST_HTTPS_DOCS_ASTRAL_SH_UV_GETTING_S}"
   fi
 fi
 
 if selected codegraph; then
-  echo "== codegraph =="
+  echo "${SH_CODEGRAPH_LABEL}"
   if has codegraph; then
-    echo "  already installed"
+    echo "$TW_MESSAGE_ALREADY_INSTALLED"
   else
-    echo "  install manually:"
-    echo "    curl -fsSL https://raw.githubusercontent.com/colbymchenry/codegraph/main/install.sh | sh"
-    echo "  note: installer downloads and executes a remote script; review it first."
+    echo "${SH_INSTALL_MANUALLY}"
+    echo "${SH_CURL_FSSL_HTTPS_RAW_GITHUBUSERCONTENT_COM_COLBYMCH}"
+    echo "${SH_NOTE_INSTALLER_DOWNLOADS_AND_EXECUTES_A_REMOTE_SCR}"
   fi
 fi
 
-if [[ "$MODE" == "apply" ]]; then
+if [[ "$MODE" == "$TW_MODE_APPLY" ]]; then
   echo "backup: $BACKUP"
-  echo "verify: opencode debug config && opencode debug agents && opencode mcp list"
+  echo "${SH_VERIFY_OPENCODE_DEBUG_CONFIG_OPENCODE_DEBUG_AGENTS}"
   echo "rollback: copy files back from $BACKUP"
 fi

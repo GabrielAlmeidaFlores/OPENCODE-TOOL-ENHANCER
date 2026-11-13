@@ -7,6 +7,8 @@
 # Outputs: Prints each restored archive and the destination.
 # Side effects: Overwrites files under ~/.config or the current project directory.
 # References: scripts/maintenance/backup-config.sh, docs/troubleshooting/README.md
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+source "$ROOT/scripts/lib/strings.sh"
 set -euo pipefail
 
 SRC="${1:-}"
@@ -28,11 +30,11 @@ restore() {
   tar -xzf "$archive" -C "$dest"
 }
 
-if [[ "$SCOPE" == "global" ]]; then
+if [[ "$SCOPE" == "${SH_GLOBAL}" ]]; then
   restore "$SRC/global-config.tar.gz" "$HOME/.config"
 else
   restore "$SRC/project-opencode.tar.gz" "$PWD"
   restore "$SRC/project-ralph.tar.gz" "$PWD"
 fi
 
-echo "restore complete. Re-run opencode debug config to verify."
+echo "${SH_RESTORE_COMPLETE_RE_RUN_OPENCODE_DEBUG_CONFIG_TO_V}"

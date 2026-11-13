@@ -7,10 +7,12 @@
 # Outputs: Prints the backup directory and each archived path.
 # Side effects: Creates archives under the destination directory.
 # References: docs/installation/opencode.md, docs/troubleshooting/README.md
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+source "$ROOT/scripts/lib/strings.sh"
 set -euo pipefail
 
 PROJECT_ONLY=0
-DEST=""
+DEST="${SH_TEXT}"
 for argument in "$@"; do
   case "$argument" in
     --project-only) PROJECT_ONLY=1 ;;
@@ -38,9 +40,9 @@ backup_dir() {
 }
 
 if [[ "$PROJECT_ONLY" == "0" ]]; then
-  backup_dir "$HOME/.config/opencode" "global-config"
+  backup_dir "$HOME/.config/opencode" "${SH_GLOBAL_CONFIG}"
 fi
-backup_dir "$PWD/.opencode" "project-opencode"
-backup_dir "$PWD/.ralph" "project-ralph"
+backup_dir "$PWD/.opencode" "${SH_PROJECT_OPENCODE}"
+backup_dir "$PWD/.ralph" "${SH_PROJECT_RALPH}"
 
 echo "backup directory: $DEST"

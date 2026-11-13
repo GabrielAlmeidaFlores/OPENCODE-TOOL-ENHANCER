@@ -7,21 +7,23 @@
 # Outputs: Writes a JSON file and prints a truncated preview.
 # Side effects: Creates the output file.
 # References: docs/benchmarks/methodology.md, https://opencode.ai/docs/cli
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+source "$ROOT/scripts/lib/strings.sh"
 set -euo pipefail
 
 OUT="${1:-opencode-stats-$(date +%Y%m%d-%H%M%S).json}"
 if ! command -v opencode >/dev/null 2>&1; then
-  echo "opencode not found"
+  echo "${SH_OPENCODE_NOT_FOUND}"
   exit 2
 fi
 
 opencode stats --json --cost --project . > "$OUT"
 echo "wrote $OUT"
-python3 - "$OUT" <<'PY'
+python3 - "$OUT" <<"${SH_PY}"
 import json
 import sys
 
-with open(sys.argv[1], encoding="utf-8") as handle:
+with open(sys.argv[1], encoding="${SH_UTF_8}") as handle:
     data = json.load(handle)
 print(json.dumps(data, indent=2)[:2000])
 PY

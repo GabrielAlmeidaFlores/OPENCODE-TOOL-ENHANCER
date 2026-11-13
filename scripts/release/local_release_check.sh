@@ -10,6 +10,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+source "$ROOT/scripts/lib/strings.sh"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
@@ -25,4 +26,4 @@ else
   shasum -a 256 -c SHA256SUMS
 fi
 
-echo "local release check passed"
+echo "${SH_LOCAL_RELEASE_CHECK_PASSED}"

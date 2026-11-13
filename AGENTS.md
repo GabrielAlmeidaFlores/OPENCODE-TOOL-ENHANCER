@@ -218,6 +218,34 @@ Allowed without further documentation:
 2. Review must reject inline comments, commented-out code, and field-level comments in configuration.
 3. When a comment explains a decision, move the explanation to the relevant `docs/` page instead of leaving it beside the code.
 
+# 2E. String Constants and Modularity
+
+**Every string literal in first-party source code must be defined once as a named constant and reused.** No duplicated strings, no magic keys, no inline status values, and no copy-pasted messages.
+
+## Rules
+
+1. Put shared strings in the nearest `constants.py`, `messages.py`, or module-level constant block. Prefer `StrEnum` for closed vocabularies such as statuses, platforms, components, and field names.
+2. A constant name must describe meaning, not its value. `STATUS_FAIL`, `FIELD_SHA256`, and `MESSAGE_NO_LOCK` are valid; `STRING_1` and `TEXT_A` are not.
+3. Reuse the constant everywhere. Do not redefine the same literal in another module.
+4. Build messages with templates and `format`/`%` rather than concatenating duplicated fragments.
+5. Apply the rule to tests and scripts too. Test fixtures may contain literal input data, but expectations, flags, paths, and names must use shared constants.
+6. Docstrings, type annotations, and generated files are documentation, not runtime strings, and are exempt.
+7. A module has one responsibility. Split command handlers, installer phases, adapters, and validators into packages when a module mixes unrelated concerns.
+8. New code that violates this rule is rejected in review. Existing violations are migrated module by module under the enforcement ledger described below.
+
+## Enforcement
+
+`tests/unit/test_string_literals.py` scans first-party Python with `ast` and fails when a new runtime string literal appears. The migration ledger records existing violations; every refactor must shrink it, and the test fails on stale entries so the ledger cannot drift.
+
+## Exceptions
+
+- Module, class, and function docstrings.
+- Values under `tests/fixtures/` that are test inputs.
+- Multi-line fixture data embedded in test modules is treated as fixture input.
+- `tests/unit/test_string_literals.py` and `tests/unit/test_shell_literals.py` are enforcement scanners.
+- Generated files and third-party code.
+- Empty strings used as sentinels only when named as `EMPTY_STRING`.
+
 # 2D. Testing and Continuous Integration
 
 Every change to tooling, configuration, or repository invariants must be covered by a test that fails without the change.
