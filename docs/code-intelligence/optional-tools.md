@@ -37,7 +37,7 @@ These are documented, not installed by default. Each adds a real cost; enable on
 ## Aider repository map
 
 - https://github.com/Aider-AI/aider
-- The repo map is part of Aider, not a standalone OpenCode integration.
+- The repo map is part of Aider, not a standalone adapter integration.
 - Not adopted. `rg`, ast-grep, Serena, and CodeGraph cover the same ground with clearer integration.
 
 ## Decision rule

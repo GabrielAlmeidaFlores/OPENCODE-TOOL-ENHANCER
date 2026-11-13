@@ -45,7 +45,7 @@ For every recommended tool, document:
 - Installation requirements.
 - Supported operating systems.
 - Supported programming languages.
-- OpenCode integration method.
+- Platform integration method (OpenCode, Claude, ChatGPT/Codex, GitHub Copilot).
 - MCP compatibility, if applicable.
 - Configuration requirements.
 - Resource consumption.

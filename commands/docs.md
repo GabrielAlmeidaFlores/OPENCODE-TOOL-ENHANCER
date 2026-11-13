@@ -250,7 +250,7 @@ components:
 **System Architecture (Mermaid)**
 
 ```mermaid
-%%{init: {"theme":"base","themeVariables":{"fontFamily":"Inter, system-ui, sans-serif","lineColor":"#22D3EE","edgeLabelBackground":"#E2E8F0"}}}%%
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"Inter, system-ui, sans-serif","lineColor":"#06B6D4","edgeLabelBackground":"#E2E8F0"}}}%%
 graph TB
     subgraph Frontend["Frontend"]
         UI[React UI]
@@ -284,19 +284,19 @@ graph TB
     UserService --> Redis
     OrderService --> PostgresMain
 
-    classDef adapter fill:#071A22,stroke:#22D3EE,stroke-width:2px,color:#A5F3FC
-    classDef coord fill:#1E0B36,stroke:#A855F7,stroke-width:2.5px,color:#F3E8FF
-    classDef agent fill:#0B1226,stroke:#6366F1,stroke-width:2px,color:#E0E7FF
-    classDef resource fill:#071A12,stroke:#4ADE80,stroke-width:2px,color:#DCFCE7
+    classDef adapter fill:#CFFAFE,fill-opacity:0.9,stroke:#06B6D4,stroke-width:3px,color:#164E63
+    classDef coord fill:#EDE9FE,fill-opacity:0.9,stroke:#8B5CF6,stroke-width:3px,color:#4C1D95
+    classDef agent fill:#E0E7FF,fill-opacity:0.9,stroke:#6366F1,stroke-width:2.5px,color:#312E81
+    classDef resource fill:#DCFCE7,fill-opacity:0.9,stroke:#22C55E,stroke-width:2.5px,color:#14532D
     class UI,Mobile adapter
     class Gateway,Auth coord
     class UserService,OrderService,PaymentService agent
     class PostgresMain,Redis,S3 resource
-    style Frontend fill:#070B14,stroke:#22D3EE,stroke-width:1.5px,color:#94A3B8
-    style GatewayPanel fill:#070B14,stroke:#A855F7,stroke-width:1.5px,color:#94A3B8
-    style Microservices fill:#070B14,stroke:#6366F1,stroke-width:1.5px,color:#94A3B8
-    style DataLayer fill:#070B14,stroke:#4ADE80,stroke-width:1.5px,color:#94A3B8
-    linkStyle default stroke:#22D3EE,stroke-width:1.5px
+    style Frontend fill:#F8FAFC,fill-opacity:0.85,stroke:#06B6D4,stroke-width:1.5px,color:#0F172A
+    style GatewayPanel fill:#F8FAFC,fill-opacity:0.85,stroke:#8B5CF6,stroke-width:1.5px,color:#0F172A
+    style Microservices fill:#F8FAFC,fill-opacity:0.85,stroke:#6366F1,stroke-width:1.5px,color:#0F172A
+    style DataLayer fill:#F8FAFC,fill-opacity:0.85,stroke:#22C55E,stroke-width:1.5px,color:#0F172A
+    linkStyle default stroke:#06B6D4,stroke-width:1.5px
 ```
 
 **Component Documentation**

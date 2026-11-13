@@ -30,7 +30,7 @@ What question or workflow does it solve that the current stack cannot?
 
 ## Integration
 
-- OpenCode integration method (CLI, MCP, plugin):
+- Platform integration method (CLI, MCP, plugin, instructions):
 - Configuration example:
 
 ## Alternatives
