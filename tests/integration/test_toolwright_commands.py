@@ -5,6 +5,7 @@ The tests execute the real CLI as a subprocess against temporary targets. They
 require no network access and never write inside the repository.
 """
 from __future__ import annotations
+from tests.constants import TEXT_OPENCODE
 from tests.integration.test_toolwright_commands_strings import (
     FLAG_APPLY,
     FLAG_BUDGET,
@@ -28,7 +29,6 @@ from tests.integration.test_toolwright_commands_strings import (
     TEXT_CODEX_AGENTS_COORDINATOR,
     TEXT_COPILOT_AGENTS_COORDINATOR,
     TEXT_COPILOT_INSTRUCTIONS,
-    TEXT_OPENCODE_DIR,
     FLAG_RECORD,
     FLAG_RESULTS,
     FLAG_RISK,
@@ -528,7 +528,7 @@ class PlatformAdapterInstallTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertTrue((self.target / TEXT_CLAUDE_AGENTS_COORDINATOR_MD).is_file())
         self.assertTrue((self.target / TEXT_CLAUDE_MD).is_file())
-        self.assertFalse((self.target / TEXT_OPENCODE_DIR).exists())
+        self.assertFalse((self.target / TEXT_OPENCODE).exists())
 
     def test_copilot_adapter_installs_without_opencode(self) -> None:
         result = self._install(KEY_COPILOT)
@@ -536,14 +536,14 @@ class PlatformAdapterInstallTests(unittest.TestCase):
         self.assertTrue((self.target / TEXT_COPILOT_INSTRUCTIONS).is_file())
         self.assertTrue((self.target / TEXT_COPILOT_AGENTS_COORDINATOR).is_file())
         self.assertTrue((self.target / TEXT_AGENTS_MD).is_file())
-        self.assertFalse((self.target / TEXT_OPENCODE_DIR).exists())
+        self.assertFalse((self.target / TEXT_OPENCODE).exists())
 
     def test_codex_adapter_installs_without_opencode(self) -> None:
         result = self._install(KEY_CODEX)
         self.assertEqual(result.returncode, 0, stdout := result.stdout + result.stderr)
         self.assertTrue((self.target / TEXT_CODEX_AGENTS_COORDINATOR).is_file())
         self.assertTrue((self.target / TEXT_AGENTS_MD).is_file())
-        self.assertFalse((self.target / TEXT_OPENCODE_DIR).exists())
+        self.assertFalse((self.target / TEXT_OPENCODE).exists())
 
 
 class CommandSurfaceTests(unittest.TestCase):

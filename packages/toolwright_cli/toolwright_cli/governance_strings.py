@@ -4,6 +4,12 @@ String constants for governance.py.
 Side effects: none.
 """
 from __future__ import annotations
+from .constants import KEY_ARCHITECT
+from .constants import KEY_PLANNER
+from .constants import KEY_RESEARCHER
+from .constants import TEXT_CODE_REVIEWER
+from .constants import TEXT_PERFORMANCE_ANALYST
+from .constants import TEXT_SECURITY_REVIEWER
 from .constants import TEXT_TEXT_2 as TEXT_TEXT
 from .constants import TEXT_TEXT_2_2 as TEXT_TEXT_2
 from .constants import FLAG_TEXT
@@ -43,14 +49,11 @@ from .constants import (
 KEY_ACTION = 'action'
 
 
-
-
 KEY_ALLOW = 'allow'
 
 
 KEY_ALLOWED_ACTIONS = 'allowed_actions'
 
-KEY_ARCHITECT = 'architect'
 
 KEY_BOUNCES = 'bounces'
 
@@ -95,9 +98,6 @@ KEY_MAX_TOOL_CALLS = 'max_tool_calls'
 KEY_MAX_WRITES = 'max_writes'
 
 
-
-KEY_PLANNER = 'planner'
-
 KEY_PRIMARY = 'primary'
 
 
@@ -106,23 +106,14 @@ KEY_RECORD = 'record'
 KEY_REPEATS = 'repeats'
 
 
-KEY_RESEARCHER = 'researcher'
-
 KEY_RESOURCE = 'resource'
-
-
 
 
 KEY_SUBAGENT = 'subagent'
 
 
-
-
-
 KEY_WRITES = 'writes'
 
-
-TEXT_CODE_REVIEWER = 'code-reviewer'
 
 TEXT_COORDINATOR_MUST_BE_PRIMARY = 'coordinator must be primary'
 
@@ -137,7 +128,6 @@ TEXT_MODE = 'mode:'
 
 TEXT_NO_AGENTS_FOUND_UNDER = 'no agents found under {}'
 
-TEXT_PERFORMANCE_ANALYST = 'performance-analyst'
 
 TEXT_PERMISSIONS = 'permissions:'
 
@@ -151,7 +141,6 @@ TEXT_RECORD_REPEATS_MUST_BE_A_NON_NEGATIVE_NUMBER = 'record.repeats must be a no
 
 TEXT_REPEATED_ACTIONS_EXCEED_MAX_REPEATS = 'repeated actions {} exceed max_repeats {}'
 
-TEXT_SECURITY_REVIEWER = 'security-reviewer'
 
 TEXT_SPECIALIST_MUST_BE_SUBAGENT = 'specialist must be subagent'
 
@@ -160,7 +149,6 @@ TEXT_S_EFFECT_S_S = '\\s*effect:\\s*\\"?(.*?)\\"?\\s*$'
 TEXT_S_RESOURCE_S_S = '\\s*resource:\\s*\\"?(.*?)\\"?\\s*$'
 
 TEXT_S_S_ACTION_S = '\\s*-\\s*action:\\s*\\"?([^\\"]+)\\"?'
-
 
 
 TEXT_TEXT_3 = '\t'

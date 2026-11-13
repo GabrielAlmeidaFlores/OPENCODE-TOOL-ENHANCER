@@ -4,6 +4,7 @@ String constants for tests/integration/test_toolwright_commands.py.
 Side effects: none.
 """
 from __future__ import annotations
+from tests.constants import KEY_CLAUDE, KEY_CODEX, KEY_COPILOT, TEXT_OPENCODE
 from tests.constants import (
     FLAG_APPLY,
     FLAG_CHECK,
@@ -155,13 +156,9 @@ TEXT_TOOLWRIGHT_CLI = 'toolwright-cli-'
 TEXT_TOOLWRIGHT_STATE_JSON = '.toolwright/state.json'
 
 FLAG_PLATFORM = '--platform'
-KEY_CLAUDE = 'claude'
-KEY_COPILOT = 'copilot'
-KEY_CODEX = 'codex'
 TEXT_CLAUDE_AGENTS_COORDINATOR_MD = '.claude/agents/coordinator.md'
 TEXT_CLAUDE_MD = 'CLAUDE.md'
 TEXT_COPILOT_INSTRUCTIONS = '.github/copilot-instructions.md'
 TEXT_COPILOT_AGENTS_COORDINATOR = '.github/instructions/coordinator.instructions.md'
 TEXT_AGENTS_MD = 'AGENTS.md'
 TEXT_CODEX_AGENTS_COORDINATOR = '.codex/agents/coordinator.toml'
-TEXT_OPENCODE_DIR = '.opencode'

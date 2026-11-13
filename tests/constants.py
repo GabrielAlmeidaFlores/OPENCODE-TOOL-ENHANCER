@@ -157,3 +157,7 @@ TEXT_OPENCODE_BINARY_IS_NOT_INSTALLED = 'opencode binary is not installed'
 TEXT_INDENT = '   '
 TEXT_QUOTE = '"'
 TEXT_TASK_ERROR = '{}: {}'
+
+TEXT_OPENCODE = '.opencode'
+KEY_CODEX = 'codex'
+KEY_COPILOT = 'copilot'

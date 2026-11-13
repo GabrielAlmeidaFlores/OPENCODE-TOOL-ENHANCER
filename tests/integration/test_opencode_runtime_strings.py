@@ -27,5 +27,5 @@ FLAG_STANDALONE = '--standalone'
 KEY_DEBUG = 'debug'
 TEXT_CONFIGS_OPENCODE_MINIMAL_JSONC = 'configs/opencode/minimal.jsonc'
 TEXT_CONFIGURATION_LOADER_RETURNED_NO_SOURCES = 'configuration loader returned no sources'
-TEXT_OPENCODE = '.opencode'
+from tests.constants import TEXT_OPENCODE
 TEXT_TOOLWRIGHT_DISCOVERY = 'toolwright-discovery-'

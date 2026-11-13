@@ -8,6 +8,7 @@ installer, preserving the OpenCode behavior that existed before adapters were
 introduced.
 """
 from __future__ import annotations
+from ..constants import MARKDOWN_SUFFIX
 from ..constants import DEFAULT_ADAPTER as ADAPTER_NAME
 from ..constants import DEFAULT_ADAPTER as COMPONENT_OPENCODE
 from ..constants import GENERATOR_COPY
@@ -55,7 +56,6 @@ DEST_RALPH_CONFIG = ".ralph/ralph.yml"
 DEST_RALPH_HATS = ".ralph/hats"
 
 AGENT_FILENAME = "AGENT.md"
-MARKDOWN_SUFFIX = ".md"
 SKILL_DIRNAME = "SKILL.md"
 MESSAGE_MISSING_SOURCE = "missing source file: "
 

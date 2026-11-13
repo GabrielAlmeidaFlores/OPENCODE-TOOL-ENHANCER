@@ -10,6 +10,9 @@ delegate to the repository's shell installer. Nothing is staged or committed.
 Module constants: ``STATE_SCHEMA_VERSION`` versions the state file.
 """
 from __future__ import annotations
+from .constants import GENERATED_FILES_MESSAGE as MESSAGE_GENERATED_FILES
+from .constants import GENERATED_PLAN_MESSAGE as MESSAGE_GENERATED_PLAN
+from .constants import KEY_FILES as BACKUP_FILES_DIR
 from .constants import KEY_ASCII as ASCII
 from .constants import TEXT_SCRIPTS_INSTALLATION_INSTALL_SH as INSTALL_SCRIPT
 from .constants import TEXT_STATE_JSON as STATE_FILE
@@ -246,7 +249,7 @@ def backup_planned(planned: list[PlannedFile], target: Path, stamp: str) -> Path
     existing = [item for item in planned if item.destination.is_file()]
     if not existing:
         return None
-    destination = backup_root(target) / stamp / "files"
+    destination = backup_root(target) / stamp / BACKUP_FILES_DIR
     for item in existing:
         relative = item.destination.relative_to(target)
         copy = destination / relative
@@ -303,8 +306,8 @@ def install(
     if not apply:
         result[KEY_OUTPUT] = (
             run_shell_installer(root, target, components, apply=False, clean=clean)
-            if adapter == "opencode"
-            else "generated adapter plan"
+            if adapter == DEFAULT_ADAPTER
+            else MESSAGE_GENERATED_PLAN
         )
         return result
 
@@ -320,14 +323,14 @@ def install(
 
     target.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now(timezone.utc).strftime(TIMESTAMP_FORMAT)
-    backup = archive_project_config(root, target, stamp) if adapter == "opencode" else backup_planned(planned, target, stamp)
+    backup = archive_project_config(root, target, stamp) if adapter == DEFAULT_ADAPTER else backup_planned(planned, target, stamp)
     result[KEY_BACKUP] = str(backup) if backup else None
 
-    if adapter == "opencode":
+    if adapter == DEFAULT_ADAPTER:
         result[KEY_OUTPUT] = run_shell_installer(root, target, components, apply=True, clean=clean)
     else:
         apply_planned(planned)
-        result[KEY_OUTPUT] = "generated adapter files"
+        result[KEY_OUTPUT] = MESSAGE_GENERATED_FILES
 
     missing = [item.destination for item in planned if not item.destination.is_file()]
     if missing:
