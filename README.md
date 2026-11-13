@@ -87,7 +87,7 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 | Profiles and catalog | Three manifests and 34 catalog entries verified locally and in run 43277080347 |
 | Verification and governance | `ote verify` and `ote govern contracts` verified locally; CI runs both |
 | Memory and specs | Verified locally and in run 43277080347 |
-| Stats, eval, pilots | Discovery 15/15; code-change: Hono 5/5 (reviewed), CleanArchitecture 5/5 (build/unit), turborepo 1/5 (quota) |
+| Stats, eval, pilots | Discovery 15/15; code-change: Hono 5/5 reviewed, CleanArchitecture 5/5 executed with one review fix, turborepo 4/5 (task 5 rejected) |
 | Task board and plugin | Board and worktree tests; plugin install, syntax, and live injection verified |
 
 ## Architecture

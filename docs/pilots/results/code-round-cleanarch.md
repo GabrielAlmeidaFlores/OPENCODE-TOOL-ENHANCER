@@ -1,12 +1,14 @@
 # CleanArchitecture Code-Change Pilot
 
-> **Status:** Experimental · **Last verified:** 2026-11-12 · **Evidence:** build and unit tests passed; no SQL Server functional run
+> **Status:** Experimental · **Last verified:** 2026-11-12 · **Evidence:** build, 14 unit tests, and 12–17 functional tests passed per task on .NET 11 with a documented reference workaround; one of five changes needs a security fix after review
 
-Five code-change tasks on `ardalis/CleanArchitecture` at `302e8ac4d6`. Each ran in a disposable clone with a locally installed .NET 11 preview SDK and the `backend-developer` agent.
+Five code-change tasks on `ardalis/CleanArchitecture` at `302e8ac4d6`. Each ran in a disposable clone with a locally installed .NET 11 SDK and the `backend-developer` agent.
 
 ## Environment adaptation
 
-The repository pins .NET SDK `11.0.100`; only .NET 10 was installed. A local .NET 11 RC SDK was installed under `/tmp/dotnet11`, and the clone's `global.json` was updated in the disposable setup step. Unit-test execution required `DOTNET_ROLL_FORWARD_TO_PRERELEASE=1`.
+The repository pins .NET SDK `11.0.100`; only .NET 10 was installed. .NET 11 RC3 was installed under `/tmp/dotnet11` for the pilot runs and .NET 11 GA (`11.0.100`) under `/tmp/dotnet11ga` for the functional-test runs. The disposable clone's `global.json` was updated to the installed SDK, and unit-test execution required `DOTNET_ROLL_FORWARD_TO_PRERELEASE=1`.
+
+The functional-test project did not compile under the .NET 11 SDK: transitive project and package references were absent from `project.assets.json` (`Microsoft.EntityFrameworkCore` and then `Clean.Architecture.Core` could not be resolved). A minimal reproduction with three plain projects showed .NET 10 flowing the same references but .NET 11 not flowing them. For the pilot, the disposable functional-test project received explicit references to the packages and `Clean.Architecture.Core` it already used transitively. This is a test-environment workaround; it does not change product code or behavior.
 
 ## Results
 
@@ -20,6 +22,34 @@ The repository pins .NET SDK `11.0.100`; only .NET 10 was installed. A local .NE
 
 All five published runs had `opencode_exit = 0` and `verification_exit = 0`.
 
+## Functional tests
+
+The SQL Server and SQLite functional suite was executed separately on each task clone with the .NET 11 GA SDK and a running Docker daemon:
+
+| Task | Functional tests | Result |
+|---|---|---|
+| Bug | 12 | Passed |
+| Feature | 10 | Passed |
+| Refactor | 10 | Passed |
+| Security | 10 | Passed |
+| Performance | 17 | Passed |
+
+The suite includes `Testcontainers.MsSql` SQL Server tests, SQLite fallback tests, and endpoint tests. The untouched base clone passes the same 10-test baseline with the reference workaround, so the task results are not caused by the workaround.
+
+## Independent review
+
+A separate reviewer agent read each diff and built the solution. Verdicts:
+
+| Task | Verdict | Main finding |
+|---|---|---|
+| Bug (`sp_rename`) | Production-ready | Root cause fixed in `Up` and `Down`; the added regression test is textual and is not part of the unit-test gate |
+| Feature (`ContributorStatus`) | Production-ready | Mapping is consistent; a legacy status value outside 1–3 would now fail the list endpoint instead of being ignored |
+| Refactor (`ContributorRoutes`) | Production-ready | Behavior-preserving; the doc comment overstates centralization because list/create still hard-code the route |
+| Security (HTTPS redirect order) | **Needs-fix** | The order is corrected, but enabling the redirect without forwarded-header handling causes proxy redirect loops and drops `Authorization` on 307 responses; no redirect test |
+| Performance (pagination) | Production-ready | Overflow guard is correct; `per_page` above the maximum now clamps to 200 instead of returning 400, a deliberate contract change that needs approval |
+
+The sub-agent could not complete every unit-test run because of a test-host hang, so the build and static review carried more weight for tasks 3–5. The functional suite above was executed separately and passed.
+
 ## Rework
 
 - The feature task first ended on an unavailable Web Search request after tests passed; it was rerun without Web Search.
@@ -27,9 +57,9 @@ All five published runs had `opencode_exit = 0` and `verification_exit = 0`.
 
 ## Limitations
 
-- Unit tests only; SQL Server Testcontainers/functional tests were not executed.
-- The .NET 11 preview SDK and `global.json` patch are pilot-environment adaptations, not upstream-compatible changes.
-- Diffs were not independently reviewed.
+- The .NET 11 SDK and `global.json` patch are pilot-environment adaptations. The functional-test project also required explicit references that upstream does not declare; without them the baseline project does not compile under .NET 11.
+- The functional suite counts differ because task 1 added a migration test and task 5 added pagination cases.
+- Task 4 is not production-ready without forwarded-header configuration and a redirect test. Task 5's clamp contract change needs product approval.
 - No change was proposed upstream or committed to the project checkout.
 
 ## References
