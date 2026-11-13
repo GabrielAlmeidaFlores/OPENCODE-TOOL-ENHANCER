@@ -1,4 +1,4 @@
-Repository: https://github.com/GabrielAlmeidaFlores/toolwright
+Repository: https://github.com/GabrielAlmeidaFlores/ToolWright
 
 # Install Code Intelligence
 

@@ -1,6 +1,6 @@
 # ToolWright
 
-> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally; CI green on run 43277080347
+> **Status:** Stable · **Last verified:** 2026-11-13 · **Evidence:** verified locally; CI green on run 43402329992
 
 A provider-neutral multi-agent development toolkit, native on OpenCode and documented for GitHub Copilot, Claude Code, and OpenAI GPT/Codex. It is built around four pillars:
 
@@ -14,7 +14,7 @@ A provider-neutral multi-agent development toolkit, native on OpenCode and docum
 ## Start here
 
 ```bash
-git clone https://github.com/GabrielAlmeidaFlores/toolwright.git
+git clone https://github.com/GabrielAlmeidaFlores/ToolWright.git
 cd ToolWright
 uv tool install ./packages/toolwright_cli
 toolwright doctor
@@ -51,7 +51,7 @@ Claims link to local evidence or a CI run. Vendor claims are labelled; no benchm
 4. Treat deterministic tools as the source of truth for correctness.
 5. Keep the default profile minimal; enable optional tools explicitly.
 
-Full rules: [AGENTS.md](https://github.com/GabrielAlmeidaFlores/toolwright/blob/main/AGENTS.md).
+Full rules: [AGENTS.md](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md).
 
 ## Project
 

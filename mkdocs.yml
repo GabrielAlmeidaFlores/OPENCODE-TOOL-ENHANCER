@@ -7,8 +7,8 @@
 site_name: ToolWright
 site_description: Provider-neutral multi-agent development toolkit for OpenCode, GitHub Copilot, Claude, and GPT.
 site_author: ToolWright contributors
-repo_url: https://github.com/GabrielAlmeidaFlores/toolwright
-repo_name: GabrielAlmeidaFlores/toolwright
+repo_url: https://github.com/GabrielAlmeidaFlores/ToolWright
+repo_name: GabrielAlmeidaFlores/ToolWright
 
 theme:
   name: material
@@ -87,7 +87,7 @@ nav:
   - Orchestration:
       - Ralph: orchestration/ralph.md
       - Agents: agents/roles.md
-      - Compatibility: agents/compatibility.md
+      - OpenCode artifacts: agents/compatibility.md
   - Cost:
       - Optimization: cost-optimization/README.md
       - Observability: cost-optimization/observability.md

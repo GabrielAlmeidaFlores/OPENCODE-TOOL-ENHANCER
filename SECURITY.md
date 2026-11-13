@@ -13,7 +13,7 @@ OpenCode V1 is unsupported. See `docs/compatibility/policy.md`.
 
 Use GitHub private vulnerability reporting:
 
-<https://github.com/GabrielAlmeidaFlores/toolwright/security/advisories/new>
+<https://github.com/GabrielAlmeidaFlores/ToolWright/security/advisories/new>
 
 Do not open a public issue for a suspected vulnerability. Include affected files, reproduction steps, and impact. Never include live credentials.
 

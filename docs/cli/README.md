@@ -305,7 +305,7 @@ project.
   "profile": "minimal",
   "components": ["opencode", "agents", "commands", "skills", "ralph"],
   "source": {
-    "repository": "https://github.com/GabrielAlmeidaFlores/toolwright",
+    "repository": "https://github.com/GabrielAlmeidaFlores/ToolWright",
     "commit": "1753ad5",
     "version": "0.1.0",
     "digest": "…",

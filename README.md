@@ -21,7 +21,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/GabrielAlmeidaFlores/toolwright">GitHub</a> ·
+  <a href="https://github.com/GabrielAlmeidaFlores/ToolWright">GitHub</a> ·
   <a href="#quick-start">Quick start</a> ·
   <a href="#daily-workflows">Daily workflows</a> ·
   <a href="#configuration">Configuration</a> ·
@@ -33,7 +33,7 @@
 
 ## Compatibility at a glance
 
-ToolWright is **native on OpenCode** and ships portable agent, command, skill, and instruction artifacts for the other major coding assistants.
+ToolWright is **native on OpenCode** and provides portable agent, command, skill, and instruction content, with mapping guides for the other major coding assistants. Only OpenCode is runtime-verified in CI; the other integrations are documented mappings.
 
 | Platform | Integration | What is portable | What is not portable |
 |---|---|---|---|
@@ -42,7 +42,7 @@ ToolWright is **native on OpenCode** and ships portable agent, command, skill, a
 | Claude Code | `CLAUDE.md`, `.claude/agents/`, skills, commands | Agent roles, project rules, commands, skills | OpenCode permissions, Ralph backend assumptions |
 | OpenAI GPT / Codex | `AGENTS.md`, `.codex/agents/*.toml`, `~/.codex/AGENTS.md` | Agent roles, project rules, subagent definitions | OpenCode permissions, Ralph backend assumptions |
 
-Start with the [compatibility guide](docs/compatibility/README.md). The OpenCode profile remains the reference implementation; the other guides map the same roles and rules onto each platform's native files.
+Start with the [compatibility guide](docs/compatibility/README.md). The OpenCode integration remains the reference implementation; the other guides map the same roles and rules onto each platform's native files.
 
 ## Why this exists
 
@@ -97,10 +97,10 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 | MCP startup overhead | Narrow `debug agents` measurement recorded |
 | Benchmarks | Deferred by decision; no published results |
 | Real-repository pilots | Repositories selected and pinned; execution pending |
-| CI | Green on Ubuntu and macOS for run [43277080347](https://github.com/GabrielAlmeidaFlores/toolwright/actions/runs/43277080347); six jobs including `cli` |
+| CI | Green on Ubuntu and macOS for run [43402329992](https://github.com/GabrielAlmeidaFlores/ToolWright/actions/runs/43402329992); nine jobs including `cli`, `docs`, `examples`, and profile discovery |
 | Repository tests | 279 unit and integration tests; run with `make test` |
 | `toolwright` CLI | Install, uninstall, update check, rollback, doctor verified locally and in the `cli` job |
-| Profiles and catalog | Three manifests and 34 catalog entries verified locally and in run 43277080347 |
+| Profiles and catalog | Three manifests and 34 catalog entries verified locally and in run 43402329992 |
 | Verification and governance | `toolwright verify` and `toolwright govern contracts` verified locally; CI runs both |
 | Memory and specs | Verified locally and in run 43277080347 |
 | Stats, eval, pilots | Discovery 15/15; code-change: Hono 5/5 reviewed, CleanArchitecture 5/5 reviewed, turborepo 4/5 (task 5 rejected) |
@@ -136,7 +136,7 @@ See [OpenCode installation](docs/installation/opencode.md) for platform details.
 ### 2. Inspect the installer
 
 ```bash
-git clone https://github.com/GabrielAlmeidaFlores/toolwright.git ToolWright
+git clone https://github.com/GabrielAlmeidaFlores/ToolWright.git
 cd ToolWright
 
 ./scripts/installation/install.sh --check

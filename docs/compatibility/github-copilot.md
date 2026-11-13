@@ -39,7 +39,7 @@ GitHub Copilot reads repository instructions from `.github/copilot-instructions.
 
 ```markdown
 ---
-applyTo: "**/*.{ts,tsx,cs}"
+applyTo: "**/*.ts,**/*.tsx,**/*.cs"
 ---
 Review for correctness, behavior changes, missing tests, and security issues.
 Return findings in severity order with file and line references. Do not edit files.

@@ -7,8 +7,8 @@ OpenCode is the reference runtime. ToolWright installs an OpenCode configuration
 ## Install
 
 ```bash
-git clone https://github.com/GabrielAlmeidaFlores/toolwright.git
-cd toolwright
+git clone https://github.com/GabrielAlmeidaFlores/ToolWright.git
+cd ToolWright
 uv tool install ./packages/toolwright_cli
 
 toolwright doctor

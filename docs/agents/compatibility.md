@@ -1,4 +1,4 @@
-# Artifact Compatibility
+# OpenCode Artifact Compatibility
 
 > **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
 

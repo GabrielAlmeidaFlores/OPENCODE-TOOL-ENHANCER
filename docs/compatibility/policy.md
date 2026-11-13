@@ -1,6 +1,6 @@
 # Compatibility Policy
 
-> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** matrix and CI checks verified locally
+> **Status:** Stable · **Last verified:** 2026-11-13 · **Evidence:** matrix and CI checks verified locally
 
 ## Supported targets
 

@@ -24,8 +24,8 @@ classifiers = [
 catalog = ["pyyaml>=6.0"]
 
 [project.urls]
-Homepage = "https://github.com/GabrielAlmeidaFlores/toolwright"
-Documentation = "https://github.com/GabrielAlmeidaFlores/toolwright/tree/main/docs"
+Homepage = "https://github.com/GabrielAlmeidaFlores/ToolWright"
+Documentation = "https://github.com/GabrielAlmeidaFlores/ToolWright/tree/main/docs"
 
 [project.scripts]
 toolwright = "toolwright_cli.cli:main"

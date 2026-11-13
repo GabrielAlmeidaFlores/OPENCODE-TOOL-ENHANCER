@@ -17,7 +17,7 @@ OpenCode V1 is not supported. See [compatibility policy](../compatibility/policy
 
 Use GitHub private vulnerability reporting on the repository:
 
-<https://github.com/GabrielAlmeidaFlores/toolwright/security/advisories/new>
+<https://github.com/GabrielAlmeidaFlores/ToolWright/security/advisories/new>
 
 Do not open a public issue for a suspected vulnerability. Include reproduction steps, affected files, and impact. Do not include live credentials.
 
@@ -72,6 +72,6 @@ Out of scope: the security of third-party agents, MCP servers, model providers, 
 
 ## References
 
-- [Support](https://github.com/GabrielAlmeidaFlores/toolwright/blob/main/SUPPORT.md)
+- [Support](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/SUPPORT.md)
 - [Release process](../release/README.md)
 - [Validation checklist](../validation-checklist.md)

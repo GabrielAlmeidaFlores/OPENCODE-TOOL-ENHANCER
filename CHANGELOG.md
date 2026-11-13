@@ -2,6 +2,8 @@
 
 All notable changes to this repository are documented here.
 
+> Entries before `0.2.0` were originally written with the historical `ote` names. Command and path names are normalized in prose; historical release asset filenames are preserved exactly.
+
 ## [Unreleased]
 
 ## [0.2.0] - 2026-11-13
@@ -10,7 +12,7 @@ Project renamed to ToolWright. This is a breaking CLI and path rename.
 
 ### Changed
 
-- Repository and brand: `OPENCODE-TOOL-ENHANCER` is now ToolWright (`GabrielAlmeidaFlores/toolwright`).
+- Repository and brand: `OPENCODE-TOOL-ENHANCER` is now ToolWright (`GabrielAlmeidaFlores/ToolWright`).
 - CLI command: `ote` is now `toolwright`.
 - Python distribution and module: `ote-cli`/`ote_cli` are now `toolwright-cli`/`toolwright_cli`.
 - State and lock paths: `.ote/` is now `.toolwright/`; `ote.lock.json` is now `toolwright.lock.json`.

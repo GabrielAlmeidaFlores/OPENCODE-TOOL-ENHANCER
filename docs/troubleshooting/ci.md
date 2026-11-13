@@ -135,7 +135,7 @@ HOME="$(mktemp -d)" OPENCODE_CONFIG="/abs/path/.opencode/opencode.jsonc" \
 
 ## Confirmed green
 
-Run [`43277080347`](https://github.com/GabrielAlmeidaFlores/toolwright/actions/runs/43277080347)
+Run [`43277080347`](https://github.com/GabrielAlmeidaFlores/ToolWright/actions/runs/43277080347)
 completed on 2026-11-12 with every job successful:
 
 | Job | Result |

@@ -91,7 +91,7 @@ def summarize_file_changes(planned: list[PlannedFile], target: Path) -> dict[str
 
 def source_metadata(root: Path) -> dict[str, str]:
     return {
-        "repository": git_remote(root) or "https://github.com/GabrielAlmeidaFlores/toolwright",
+        "repository": git_remote(root) or "https://github.com/GabrielAlmeidaFlores/ToolWright",
         "commit": git_commit(root) or "unknown",
         "version": __version__,
         "dirty": "true" if git_dirty(root) else "false",

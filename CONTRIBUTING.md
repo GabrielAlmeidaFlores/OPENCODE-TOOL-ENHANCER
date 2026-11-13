@@ -12,7 +12,7 @@
 
 ## Repository
 
-https://github.com/GabrielAlmeidaFlores/toolwright
+https://github.com/GabrielAlmeidaFlores/ToolWright
 
 ## Local checks
 
