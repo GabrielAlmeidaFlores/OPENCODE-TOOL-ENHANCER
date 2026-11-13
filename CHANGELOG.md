@@ -6,6 +6,24 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-13
+
+Native platform adapters. OpenCode remains the reference adapter.
+
+### Added
+
+- `--platform {opencode,claude,copilot,codex}` on `toolwright install` and `toolwright profile use`.
+- Claude Code adapter generating `.claude/agents/*.md`, `.claude/commands/*.md`, `.claude/skills/`, and `CLAUDE.md`.
+- GitHub Copilot adapter generating `.github/instructions/*.instructions.md`, `.github/prompts/*.prompt.md`, `.github/skills/`, `.github/copilot-instructions.md`, and `AGENTS.md`.
+- OpenAI Codex adapter generating `.codex/agents/*.toml` and `AGENTS.md`.
+- Direct generated-file installation, backup of overwritten destinations, and uninstall support for non-OpenCode adapters.
+- Adapter tests covering generated paths, agent metadata, and installation without an `.opencode` directory.
+
+### Changed
+
+- Lock schema v2 records the adapter, generator, and digest for every managed file.
+- Non-OpenCode adapters bypass the shell installer; OpenCode behavior is unchanged.
+
 ## [0.2.0] - 2026-11-13
 
 Project renamed to ToolWright. This is a breaking CLI and path rename.
