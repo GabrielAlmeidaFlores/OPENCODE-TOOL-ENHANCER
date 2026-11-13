@@ -371,6 +371,7 @@ def uninstall(
         raise ToolWrightError(f"{MESSAGE_NO_LOCK}{lock_path(target)}{MESSAGE_NOTHING_TO_UNINSTALL}")
 
     removable: list[str] = []
+    seen: set[str] = set()
     skipped: list[dict[str, str]] = []
     for entry in lock.get(KEY_FILES, []):
         relative = entry.get(KEY_PATH, EMPTY_STRING)
@@ -382,7 +383,9 @@ def uninstall(
         if not force and sha256_file(path) != entry.get(KEY_SHA256):
             skipped.append({KEY_PATH: relative, KEY_STATUS: STATUS_MODIFIED})
             continue
-        removable.append(relative)
+        if relative not in seen:
+            seen.add(relative)
+            removable.append(relative)
 
     result: dict[str, Any] = {
         KEY_TARGET: str(target),
@@ -419,6 +422,20 @@ def uninstall(
         lock_path(target).unlink(missing_ok=True)
         result[KEY_PURGED] = True
     else:
+        remaining = [
+            entry
+            for entry in lock.get(KEY_FILES, [])
+            if entry.get(KEY_PATH) not in seen
+            and (target / entry.get(KEY_PATH, EMPTY_STRING)).is_file()
+        ]
+        remaining_adapters = {entry.get(KEY_ADAPTER) for entry in remaining}
+        lock[KEY_FILES] = remaining
+        lock[KEY_ADAPTERS] = [
+            entry
+            for entry in lock.get(KEY_ADAPTERS, [])
+            if entry.get(KEY_NAME) in remaining_adapters
+        ]
+        write_json(lock_path(target), lock)
         write_operation_state(
             target,
             {

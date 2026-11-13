@@ -545,6 +545,32 @@ class PlatformAdapterInstallTests(unittest.TestCase):
         self.assertTrue((self.target / TEXT_AGENTS_MD).is_file())
         self.assertFalse((self.target / TEXT_OPENCODE).exists())
 
+    def test_uninstall_removes_shared_files_across_adapters(self) -> None:
+        self.assertEqual(self._install(KEY_COPILOT).returncode, 0)
+        self.assertEqual(self._install(KEY_CODEX).returncode, 0)
+        result = run_ote(
+            KEY_UNINSTALL, FLAG_TARGET, str(self.target), FLAG_APPLY, FLAG_YES
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertFalse((self.target / TEXT_AGENTS_MD).exists())
+        lock = json.loads(
+            (self.target / TEXT_TOOLWRIGHT_LOCK_JSON).read_text(encoding=TEXT_UTF_8)
+        )
+        self.assertEqual(lock[KEY_FILES], [])
+        self.assertEqual(lock[KEY_ADAPTERS], [])
+
+    def test_uninstall_prunes_entries_for_missing_files(self) -> None:
+        self.assertEqual(self._install(KEY_COPILOT).returncode, 0)
+        (self.target / TEXT_AGENTS_MD).unlink()
+        result = run_ote(
+            KEY_UNINSTALL, FLAG_TARGET, str(self.target), FLAG_APPLY, FLAG_YES
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        lock = json.loads(
+            (self.target / TEXT_TOOLWRIGHT_LOCK_JSON).read_text(encoding=TEXT_UTF_8)
+        )
+        self.assertNotIn(TEXT_AGENTS_MD, [entry[KEY_PATH] for entry in lock[KEY_FILES]])
+
 
 class CommandSurfaceTests(unittest.TestCase):
 
