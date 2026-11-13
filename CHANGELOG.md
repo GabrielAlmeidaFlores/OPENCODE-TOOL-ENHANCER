@@ -6,6 +6,16 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-11-13
+
+### Added
+
+- Real-repository adapter validation record for `honojs/hono`, covering Claude, Copilot, and Codex installs without model calls.
+
+### Fixed
+
+- Adapter uninstall deduplicates shared generated paths such as `AGENTS.md`, prunes lock entries for removed or missing files, and drops adapters that no longer own files.
+
 ## [0.3.0] - 2026-11-13
 
 Native platform adapters. OpenCode remains the reference adapter.

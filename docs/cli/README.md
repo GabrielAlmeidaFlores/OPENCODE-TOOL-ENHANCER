@@ -313,7 +313,7 @@ project.
   "source": {
     "repository": "https://github.com/GabrielAlmeidaFlores/ToolWright",
     "commit": "1753ad5",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "digest": "…",
     "dirty": "false"
   },

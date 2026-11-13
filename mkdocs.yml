@@ -49,6 +49,7 @@ nav:
       - Code intelligence: installation/code-intelligence.md
       - Ralph: installation/ralph.md
       - toolwright CLI: installation/toolwright-cli.md
+      - Adapter validation: installation/adapter-validation.md
   - CLI:
       - Command reference: cli/README.md
       - Profiles: profiles/README.md
