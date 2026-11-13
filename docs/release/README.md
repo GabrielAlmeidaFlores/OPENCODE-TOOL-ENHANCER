@@ -1,6 +1,6 @@
 # Release Process
 
-> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** workflow and version check verified locally
+> **Status:** Stable · **Last verified:** 2026-11-13 · **Evidence:** workflow and version check verified locally
 
 ## Version sources
 
@@ -41,7 +41,12 @@ The workflow never stages or commits. It only publishes artifacts for the tag.
 
 | Version | Date | Assets | Verification |
 |---|---|---|---|
-| `v0.1.0` | 2026-11-12 | `toolwright_cli-0.1.0-py3-none-any.whl`, `SHA256SUMS` | Checksum verified; wheel installed in a clean venv and reports `0.1.0` |
+| `v0.1.0` | 2026-11-12 | `ote_cli-0.1.0-py3-none-any.whl`, `SHA256SUMS` | Checksum verified; wheel installed in a clean venv and reports `0.1.0` |
+| `v0.1.1` | 2026-11-12 | `ote_cli-0.1.1-py3-none-any.whl`, `SHA256SUMS` | Checksum verified |
+| `v0.1.2` | 2026-11-12 | `ote_cli-0.1.2-py3-none-any.whl`, `SHA256SUMS` | Checksum verified |
+| `v0.2.0` | Unreleased | `toolwright_cli-0.2.0-py3-none-any.whl`, `SHA256SUMS` | Pending tag |
+
+Releases up to `v0.1.2` used the historical `ote-cli` package and `ote` command. `v0.2.0` is the first ToolWright-named release.
 
 ## Verify a release
 

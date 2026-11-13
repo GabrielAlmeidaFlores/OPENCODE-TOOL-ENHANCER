@@ -4,6 +4,24 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-13
+
+Project renamed to ToolWright. This is a breaking CLI and path rename.
+
+### Changed
+
+- Repository and brand: `OPENCODE-TOOL-ENHANCER` is now ToolWright (`GabrielAlmeidaFlores/toolwright`).
+- CLI command: `ote` is now `toolwright`.
+- Python distribution and module: `ote-cli`/`ote_cli` are now `toolwright-cli`/`toolwright_cli`.
+- State and lock paths: `.ote/` is now `.toolwright/`; `ote.lock.json` is now `toolwright.lock.json`.
+- Environment variables: `OTE_*` are now `TOOLWRIGHT_*`.
+- OpenCode memory plugin: `ote-memory.js` is now `toolwright-memory.js`.
+
+### Added
+
+- Platform compatibility guides for GitHub Copilot, Claude Code, and OpenAI GPT/Codex, with an explicit support-level policy and copyable mapping examples.
+- README compatibility summary and MkDocs navigation for the new guides.
+
 ## [0.1.2] - 2026-11-12
 
 Pilot dependency setup, agent selection, Hono code-change round, and step-budget tuning.
