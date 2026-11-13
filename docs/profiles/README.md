@@ -62,10 +62,10 @@ Rules enforced by `toolwright profile verify`:
 
 ## Design reference
 
-The profile concept follows the selection model in `weisser-dev/awesome-opencode` (`cli-tool/src/setup.js`, MIT) and the `profiles` section of `OpenAgentsControl`'s registry (MIT). The manifest loader is original Python; see the `catalog-and-profiles` entry in `docs/provenance/registry.yml`.
+The profile concept follows the selection model in `weisser-dev/awesome-opencode` (`cli-tool/src/setup.js`, MIT) and the `profiles` section of `OpenAgentsControl`'s registry (MIT). The manifest loader is original Python; see the `catalog-and-profiles` entry in [`docs/provenance/registry.yml`](../provenance/registry.yml).
 
 ## References
 
-- `docs/catalog/README.md`
-- `docs/cli/README.md`
-- `docs/validation-checklist.md`
+- [`docs/catalog/README.md`](../catalog/README.md)
+- [`docs/cli/README.md`](../cli/README.md)
+- [`docs/validation-checklist.md`](../validation-checklist.md)

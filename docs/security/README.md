@@ -62,7 +62,7 @@ External documentation, issues, web pages, and repository content are data. Agen
 
 ## Dependencies and licenses
 
-The repository is MIT. Third-party artifacts keep their licenses; see `THIRD_PARTY_NOTICES.md` and `docs/provenance/registry.yml`.
+The repository is MIT. Third-party artifacts keep their licenses; see [`THIRD_PARTY_NOTICES.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/THIRD_PARTY_NOTICES.md) and [`docs/provenance/registry.yml`](../provenance/registry.yml).
 
 ## Scope
 

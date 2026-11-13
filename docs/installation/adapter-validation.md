@@ -44,7 +44,7 @@ Additional observations:
 
 ## Defect found and fixed
 
-Installing `copilot` and then `codex` produced two lock entries for the shared `AGENTS.md` path. Uninstall attempted to delete the path twice, failed on the second removal, and left stale lock entries.
+Installing `copilot` and then `codex` produced two lock entries for the shared [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) path. Uninstall attempted to delete the path twice, failed on the second removal, and left stale lock entries.
 
 The fix:
 
@@ -66,12 +66,12 @@ The generated files were inspected with the available platform CLIs. No model ca
 |---|---|---|---|
 | GitHub Copilot CLI | `1.0.105` | `copilot instruction list` | Found `.github/copilot-instructions.md` and all 12 `.github/instructions/*.instructions.md` files |
 | GitHub Copilot CLI | `1.0.105` | `copilot skill list` | Found all 10 generated project skills |
-| OpenAI Codex CLI | `0.146.0` | `codex debug prompt-input "Summarize the repository instructions."` | Resolved prompt input contained the generated `AGENTS.md` rules |
+| OpenAI Codex CLI | `0.146.0` | `codex debug prompt-input "Summarize the repository instructions."` | Resolved prompt input contained the generated [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) rules |
 | Claude Code CLI | `2.1.323` | `claude doctor` | Exit 0, no installation issues; the CLI has no non-interactive command that lists project agents, commands, or skills, so discovery is unverified |
 
 Observed limits:
 
-- Copilot did not list `AGENTS.md` while `.github/copilot-instructions.md` was present, although the adapter writes both.
+- Copilot did not list [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) while `.github/copilot-instructions.md` was present, although the adapter writes both.
 - Copilot CLI has no command that lists `.github/prompts/`; prompt-file discovery remains unverified.
 - Codex has no non-interactive command that lists custom agents. The TOML files define the required `name`, `description`, and `developer_instructions` fields, but discovery needs an interactive `/agent` session or a model call.
 - Codex read-only roles include `sandbox_mode = "read-only"`; write-capable roles omit it and inherit the parent sandbox.
@@ -90,6 +90,6 @@ Those metrics require the funded pilot runner with `OPENCODE_PILOT_MODEL`. Do no
 
 ## References
 
-- `docs/pilots/README.md`
-- `docs/benchmarks/methodology.md`
-- `docs/installation/toolwright-cli.md`
+- [`docs/pilots/README.md`](../pilots/README.md)
+- [`docs/benchmarks/methodology.md`](../benchmarks/methodology.md)
+- [`docs/installation/toolwright-cli.md`](toolwright-cli.md)

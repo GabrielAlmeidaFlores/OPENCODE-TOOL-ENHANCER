@@ -2,7 +2,7 @@
 
 > **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally and in CI run 43277080347
 
-`toolwright verify` runs the repository's deterministic checks from `.toolwright/config.toml` and treats exit codes as authoritative. It is the gate used by Ralph, CI, and local workflows.
+`toolwright verify` runs the repository's deterministic checks from [`.toolwright/config.toml`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/.toolwright/config.toml) and treats exit codes as authoritative. It is the gate used by Ralph, CI, and local workflows.
 
 ## Configuration
 
@@ -27,7 +27,7 @@ inputs = ["tests", "packages"]
 | `verify.checks.<name>.timeout` | Per-check timeout, overriding the default |
 | `verify.checks.<name>.inputs` | Optional paths used as a cache key |
 
-TOML is used because Python 3.11 provides `tomllib` in the standard library; no runtime dependency is added. See `docs/decisions/ADR-008-toml-verification-config.md`.
+TOML is used because Python 3.11 provides `tomllib` in the standard library; no runtime dependency is added. See [`docs/decisions/ADR-008-toml-verification-config.md`](../decisions/ADR-008-toml-verification-config.md).
 
 ## Commands
 
@@ -108,6 +108,6 @@ The `cli` job runs `toolwright verify --only validate --only lint`, and the Ralp
 
 ## References
 
-- `docs/governance/README.md`
-- `docs/decisions/ADR-008-toml-verification-config.md`
-- `docs/architecture/testing.md`
+- [`docs/governance/README.md`](../governance/README.md)
+- [`docs/decisions/ADR-008-toml-verification-config.md`](../decisions/ADR-008-toml-verification-config.md)
+- [`docs/architecture/testing.md`](../architecture/testing.md)

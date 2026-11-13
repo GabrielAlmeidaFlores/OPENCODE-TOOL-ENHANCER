@@ -9,7 +9,7 @@
 Provenance data currently lives in three places:
 
 1. Frontmatter and header comments inside each artifact.
-2. `docs/provenance/registry.yml`.
+2. [`docs/provenance/registry.yml`](../provenance/registry.yml).
 3. Narrative statements in `docs/`.
 
 Phase 3 introduces a consumer-facing catalog (`catalog/*.yaml` plus a generated
@@ -23,7 +23,7 @@ JSON Schema and generates its README from that data. `OpenAgentsControl` keeps a
 
 ## Decision
 
-Keep `docs/provenance/registry.yml` as the **only hand-edited source** and generate
+Keep [`docs/provenance/registry.yml`](../provenance/registry.yml) as the **only hand-edited source** and generate
 `catalog/*.yaml`, `catalog/registry.yml`, and the documentation tables from it.
 
 Validation runs in this order:
@@ -45,7 +45,7 @@ Validation runs in this order:
 - `catalog/` is generated output. A pull request that edits it directly fails CI.
 - New artifact fields must be added to the generator and the schema together.
 - The registry schema becomes a public contract, so it needs `schema_version`.
-- Until Phase 3 lands, `docs/provenance/registry.yml` stays hand-maintained and the
+- Until Phase 3 lands, [`docs/provenance/registry.yml`](../provenance/registry.yml) stays hand-maintained and the
   existing validator continues to enforce it.
 
 ## Fields required per artifact
@@ -65,7 +65,7 @@ Validation runs in this order:
 
 ## Verification
 
-- `scripts/catalog/build_catalog.py` generates `catalog/registry.json` and `catalog/index.md` from the registry.
+- [`scripts/catalog/build_catalog.py`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/scripts/catalog/build_catalog.py) generates [`catalog/registry.json`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/catalog/registry.json) and [`catalog/index.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/catalog/index.md) from the registry.
 - `toolwright catalog verify` checks required fields, allowed types, duplicate identifiers, declared counts, and local paths.
 - `toolwright catalog verify --check-drift` fails when the committed files differ from the registry.
 - The `cli` CI job runs the drift check, so a hand-edited generated file fails.
@@ -73,6 +73,6 @@ Validation runs in this order:
 
 ## References
 
-- `docs/provenance/registry.yml`
-- `docs/provenance/README.md`
-- `docs/decisions/ADR-005-cli-stack.md`
+- [`docs/provenance/registry.yml`](../provenance/registry.yml)
+- [`docs/provenance/README.md`](../provenance/README.md)
+- [`docs/decisions/ADR-005-cli-stack.md`](ADR-005-cli-stack.md)

@@ -6,7 +6,7 @@
 
 | Symptom | Cause | Fix |
 | --- | --- | --- |
-| `default_agent` ignored, Build starts | Coordinator agent not discovered | Copy `agents/coordinator/AGENT.md` to `.opencode/agents/coordinator.md`; run `opencode debug agents` |
+| `default_agent` ignored, Build starts | Coordinator agent not discovered | Copy [`agents/coordinator/AGENT.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/agents/coordinator/AGENT.md) to `.opencode/agents/coordinator.md`; run `opencode debug agents` |
 | Agent can edit when it should not | A later permission rule allows it | Rules are ordered, last match wins. Inspect with `opencode debug agent <name>` |
 | `.env` readable | A later `read` allow rule overrides the deny | Move the deny to the end of the array |
 | Config rejected | Unsupported or malformed V2 field | Validate against `https://opencode.ai/config.json` |
@@ -61,13 +61,13 @@
 | `toolwright doctor` fails on `opencode` | Missing or V1 installation | Install `@opencode/cli` 2.2.x |
 | `toolwright doctor` warns about `serena` or `codegraph` | Optional tools are not installed | Install them only if the profile needs them |
 | `toolwright` cannot find the repository | Running outside a checkout | Run from the checkout or set `TOOLWRIGHT_REPO` |
-| `toolwright verify` exits 2 | Config is missing, malformed, or names an unknown check | Inspect `.toolwright/config.toml`; see `docs/verification/README.md` |
+| `toolwright verify` exits 2 | Config is missing, malformed, or names an unknown check | Inspect [`.toolwright/config.toml`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/.toolwright/config.toml); see [`docs/verification/README.md`](../verification/README.md) |
 | `toolwright verify` runs a stale result | A passing cached result exists for unchanged inputs | Run with `--no-cache`, or change the declared inputs |
 | `toolwright govern contracts` fails | An agent's mode or edit permission violates its role | Fix `agents/<role>/AGENT.md`; rerun the validator |
 | `toolwright govern check` blocks a run | A budget, loop, or deadlock limit was exceeded | Inspect the violation kind and increase the limit only with justification |
 | `toolwright stats` shows no runs | The results directory has no `meta.json` runs | Run the harness or point `--results` at the right directory |
 | `toolwright stats --budget` exits 1 | Recorded cost exceeds the ceiling | Review the runs; the guard is post-run only |
-| `toolwright eval` fails | A profile, catalog, contract, or validator invariant broke | Fix the reported case; see `docs/evals/README.md` |
+| `toolwright eval` fails | A profile, catalog, contract, or validator invariant broke | Fix the reported case; see [`docs/evals/README.md`](../evals/README.md) |
 | A pilot clone check out fails | The pinned commit is unavailable or the network is blocked | Verify the commit and access; rerun with `--dry-run` first |
 | A pilot verification fails | The task was not completed correctly | Keep the artifacts; record rework separately |
 
@@ -81,13 +81,13 @@
 | A memory entry never appears | It expired or exceeded the preamble budget | Check `expires`; raise `memory.token_budget` |
 | `toolwright spec plan` fails | A criterion lacks a task or a task names an unknown criterion | Fix `tasks.md` or `requirements.md` |
 | `toolwright spec verify` fails | A criterion lacks evidence | Add `- AC-n: command/result` to `evidence.md` |
-| `toolwright profile verify` fails | A manifest has a bad name, component, or syntax | Fix `profiles/<name>.yml`; see `docs/profiles/README.md` |
-| `toolwright catalog verify` fails | A catalog entry is missing a field or local path | Fix `docs/provenance/registry.yml`, then rebuild the catalog |
+| `toolwright profile verify` fails | A manifest has a bad name, component, or syntax | Fix `profiles/<name>.yml`; see [`docs/profiles/README.md`](../profiles/README.md) |
+| `toolwright catalog verify` fails | A catalog entry is missing a field or local path | Fix [`docs/provenance/registry.yml`](../provenance/registry.yml), then rebuild the catalog |
 | `toolwright catalog verify --check-drift` fails | Catalog files were edited by hand | Run `python3 scripts/catalog/build_catalog.py` |
 | `catalog build` fails on import | PyYAML is missing | `python3 -m pip install pyyaml` |
-| `validate.sh` fails on a new file | Required file list changed | Add the file and cover it with a test; see `docs/architecture/testing.md` |
-| `make test` fails only in CI | Python version, missing PyYAML, CRLF checkout, or uncommitted files | See `docs/troubleshooting/ci.md` |
-| CI job queued for hours | Runner availability or concurrency | Inspect with `gh run list`; see `docs/troubleshooting/ci.md` |
+| `validate.sh` fails on a new file | Required file list changed | Add the file and cover it with a test; see [`docs/architecture/testing.md`](../architecture/testing.md) |
+| `make test` fails only in CI | Python version, missing PyYAML, CRLF checkout, or uncommitted files | See [`docs/troubleshooting/ci.md`](ci.md) |
+| CI job queued for hours | Runner availability or concurrency | Inspect with `gh run list`; see [`docs/troubleshooting/ci.md`](ci.md) |
 | Harness dry-run exits 2 | OpenCode missing on `PATH` | Fixed in Phase 1: dry-run needs only Python; real runs still need OpenCode |
 | Docs page fails validation | Missing status block or non-ISO date | Add `Status`, `Last verified`, and `Evidence` near the title |
 | ShellCheck fails after a script edit | Unquoted expansion or dead branch | Run `make lint` before returning the change |

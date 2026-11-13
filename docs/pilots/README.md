@@ -71,11 +71,11 @@ used. It never stages or commits in the main repository and never runs Ralph.
 
 Runner capability is not evidence. The Hono smoke run proves the runner executes against a real
 repository, but it is not a pilot result. A pilot is complete only after the five tasks, artifacts,
-and independent verification exist. See `docs/pilots/results/round-1.md` and `docs/pilots/results/hono-smoke.md`.
+and independent verification exist. See [`docs/pilots/results/round-1.md`](results/round-1.md) and [`docs/pilots/results/hono-smoke.md`](results/hono-smoke.md).
 
 ## Constraints
 
-- Do not run Ralph in the pilot checkout without `scripts/maintenance/run-ralph-isolated.sh`.
+- Do not run Ralph in the pilot checkout without [`scripts/maintenance/run-ralph-isolated.sh`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/scripts/maintenance/run-ralph-isolated.sh).
 - Do not run benchmarks that modify the repository without a disposable copy.
 - Do not publish cost claims from a single run.
 - Keep model identifiers in environment variables, not in committed configuration.

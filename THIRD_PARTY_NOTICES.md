@@ -100,7 +100,7 @@ SOFTWARE.
 - Repository: https://github.com/mikeyobrien/ralph-orchestrator
 - Commit: `64040fd0cda4d83386e4d1d1aa65571dadfe00b3`
 - Author: Ralph Orchestrator Contributors (`https://github.com/mikeyobrien`)
-- Used in: `configs/ralph/hats/code-assist.yml`, `review.yml`, `research.yml`, `debug.yml`
+- Used in: [`configs/ralph/hats/code-assist.yml`](configs/ralph/hats/code-assist.yml), `review.yml`, `research.yml`, `debug.yml`
 
 ```text
 MIT License

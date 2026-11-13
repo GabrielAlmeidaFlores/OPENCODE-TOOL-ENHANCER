@@ -12,10 +12,10 @@
 description: SQL database migrations with zero-downtime strategies for PostgreSQL, MySQL, SQL Server
 agent: database-specialist
 ---
-> **Runtime compatibility (local).** Delegate through the runtime's subagent mechanism when available; otherwise execute the steps inline. Use the runtime's clarification mechanism for checkpoints. Do not assume a specific vendor's plan mode. The specialist names in this command are mapped to the agents in `docs/agents/roles.md`.
+> **Runtime compatibility (local).** Delegate through the runtime's subagent mechanism when available; otherwise execute the steps inline. Use the runtime's clarification mechanism for checkpoints. Do not assume a specific vendor's plan mode. The specialist names in this command are mapped to the agents in [`docs/agents/roles.md`](../docs/agents/roles.md).
 
 
-> Runtime adaptation: map the specialist names in this command to the agents in `docs/agents/roles.md`.
+> Runtime adaptation: map the specialist names in this command to the agents in [`docs/agents/roles.md`](../docs/agents/roles.md).
 
 # SQL Database Migration Strategy and Implementation
 

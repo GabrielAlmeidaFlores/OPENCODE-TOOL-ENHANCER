@@ -9,4 +9,4 @@ This directory holds the executable side:
 - `../baseline/` — stock configuration arm
 - `../results/` — contributed results
 
-The first result set is published at `../../docs/benchmarks/results-deepseek-flash.md`. A valid result requires correctness and rework data, not only token counts.
+The first result set is published in the [DeepSeek Flash results](../../docs/benchmarks/results-deepseek-flash.md). A valid result requires correctness and rework data, not only token counts.

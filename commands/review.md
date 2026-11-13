@@ -12,10 +12,10 @@
 description: Orchestrate comprehensive multi-dimensional code review using specialized review agents across architecture, security, performance, testing, and best practices
 agent: coordinator
 ---
-> **Runtime compatibility (local).** Delegate through the runtime's subagent mechanism when available; otherwise execute the steps inline. Use the runtime's clarification mechanism for checkpoints. Do not assume a specific vendor's plan mode. The specialist names in this command are mapped to the agents in `docs/agents/roles.md`.
+> **Runtime compatibility (local).** Delegate through the runtime's subagent mechanism when available; otherwise execute the steps inline. Use the runtime's clarification mechanism for checkpoints. Do not assume a specific vendor's plan mode. The specialist names in this command are mapped to the agents in [`docs/agents/roles.md`](../docs/agents/roles.md).
 
 
-> Runtime adaptation: map the specialist names in this command to the agents in `docs/agents/roles.md`.
+> Runtime adaptation: map the specialist names in this command to the agents in [`docs/agents/roles.md`](../docs/agents/roles.md).
 
 # Comprehensive Code Review Orchestrator
 

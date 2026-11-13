@@ -43,8 +43,8 @@ phase reference instead of pretending to work.
 
 ## Documentation
 
-See `docs/cli/README.md` in the repository for the full command reference.
+See [`docs/cli/README.md`](../../docs/cli/README.md) in the repository for the full command reference.
 
 ## License
 
-MIT. See the repository `LICENSE` and `THIRD_PARTY_NOTICES.md`.
+MIT. See the repository [`LICENSE`](../../LICENSE) and [`THIRD_PARTY_NOTICES.md`](../../THIRD_PARTY_NOTICES.md).

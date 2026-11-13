@@ -6,7 +6,7 @@
 
 Files inspected:
 
-- `SECURITY.md`
+- [`SECURITY.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/SECURITY.md)
 - `crates/turborepo-auth/src/device_flow.rs`
 - `crates/turborepo-auth/src/auth/login.rs`
 - `crates/turborepo-auth/src/lib.rs`

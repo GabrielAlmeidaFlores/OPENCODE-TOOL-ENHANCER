@@ -19,7 +19,7 @@ smoke checks were performed manually.
 |---|---|---|---|---|
 | Unit | `tests/unit/` | Yes | No | No |
 | Integration | `tests/integration/` | Yes | No | No |
-| Runtime discovery | `tests/integration/test_opencode_runtime.py` | Yes, when OpenCode is installed | No | No |
+| Runtime discovery | [`tests/integration/test_opencode_runtime.py`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/tests/integration/test_opencode_runtime.py) | Yes, when OpenCode is installed | No | No |
 | CLI lifecycle | `tests/integration/test_ote_commands.py` | Yes, in the `cli` job | No | No |
 | Benchmark execution | `benchmarks/harness/` | Dry-run only | No | Yes, for real runs |
 
@@ -46,7 +46,7 @@ Ruby fallback.
 
 ## How the validator is tested
 
-`tests/support.py` imports `scripts/validation/validate_config.py` as a module, points its
+[`tests/support.py`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/tests/support.py) imports [`scripts/validation/validate_config.py`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/scripts/validation/validate_config.py) as a module, points its
 `ROOT` at a temporary directory, resets its counters, and runs one check at a time.
 
 ```python
@@ -84,7 +84,7 @@ never be installed.
 
 ## What the integration tests assert
 
-- `scripts/validation/validate.sh` exits zero on the repository.
+- [`scripts/validation/validate.sh`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/scripts/validation/validate.sh) exits zero on the repository.
 - The comment policy scans `scripts/`, `packages/`, `skills/`, and `tests/`, plus TypeScript and C# sources; Python docstrings are optional; when present they must use block form with the quotes on their own lines. Only `tests/fixtures/` is exempt because those files must contain prohibited patterns.
 - `validate_config.py` exits zero and prints a `checked:` count.
 - Every benchmark task dry-runs without an OpenCode binary and without a model.
@@ -111,7 +111,7 @@ the binary still get a green suite.
 1. Decide the layer. Rules about repository content belong in `tests/unit/`; behaviour of
    an executable entry point belongs in `tests/integration/`.
 2. Add a fixture only when the broken input is not expressible with a builder from
-   `tests/support.py`.
+   [`tests/support.py`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/tests/support.py).
 3. Name the test after the rule, not the implementation. `test_coordinator_requires_primary_mode`
    is useful; `test_check_agents_2` is not.
 4. Keep the test independent of the working tree. Use `support.isolated_root`.
@@ -135,7 +135,7 @@ and require `OPENCODE_BENCH_MODEL`.
 
 ## References
 
-- `AGENTS.md` Section 12
-- `docs/validation-checklist.md`
-- `docs/troubleshooting/ci.md`
-- `docs/research/baseline.md`
+- [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) Section 12
+- [`docs/validation-checklist.md`](../validation-checklist.md)
+- [`docs/troubleshooting/ci.md`](../troubleshooting/ci.md)
+- [`docs/research/baseline.md`](../research/baseline.md)

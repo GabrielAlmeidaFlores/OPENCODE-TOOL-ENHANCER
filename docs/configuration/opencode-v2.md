@@ -2,7 +2,7 @@
 
 > **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
 
-This page explains the configuration in `configs/opencode/opencode.jsonc`.
+This page explains the configuration in [`configs/opencode/opencode.jsonc`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/configs/opencode/opencode.jsonc).
 
 ## Location and precedence
 
@@ -66,7 +66,7 @@ The repository's global rules allow normal work, ask before `rm -rf`, force-push
 
 Agent-specific permissions are appended after the global list, so each agent repeats the git denies at the end of its own list. Otherwise an agent-level `shell "*": allow` would override the global deny. The validator checks the resolved last-match effect for `git add`, `git stage`, `git commit`, the `git -C`/`git -c` forms, and `git stash`/`git reset`/`git checkout`/`git clean`.
 
-The deny rules cover direct and `git -C`/`git -c` forms. They are not a security sandbox: wrappers such as `bash -c 'git commit ...'` can bypass textual command matching. The instruction in `AGENTS.md` Section 2B remains the primary control.
+The deny rules cover direct and `git -C`/`git -c` forms. They are not a security sandbox: wrappers such as `bash -c 'git commit ...'` can bypass textual command matching. The instruction in [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) Section 2B remains the primary control.
 
 > V2 default allows `external_directory`. We set it to `ask` to preserve V1 caution.
 
@@ -97,7 +97,7 @@ Do not enable `warming` unless you understand the cost: it sends periodic reques
 
 No model is hardcoded. OpenCode uses the user's selected model by default.
 
-For per-agent routing, merge `configs/opencode/model-routing.example.jsonc` after setting every referenced environment variable. Unset `{env:...}` becomes an empty string, which is invalid.
+For per-agent routing, merge [`configs/opencode/model-routing.example.jsonc`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/configs/opencode/model-routing.example.jsonc) after setting every referenced environment variable. Unset `{env:...}` becomes an empty string, which is invalid.
 
 Recommended shape:
 
@@ -110,7 +110,7 @@ Recommended shape:
 
 ## Minimal profile
 
-`configs/opencode/minimal.jsonc` disables MCP entirely. Use it for small repositories, constrained budgets, or when MCP startup dominates task time.
+[`configs/opencode/minimal.jsonc`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/configs/opencode/minimal.jsonc) disables MCP entirely. Use it for small repositories, constrained budgets, or when MCP startup dominates task time.
 
 ## Validate
 

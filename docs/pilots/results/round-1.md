@@ -76,5 +76,5 @@ Correctness here means the report exists, passes the structural check, and refer
 
 ## References
 
-- `docs/pilots/README.md`
-- `docs/pilots/results/hono-smoke.md`
+- [`docs/pilots/README.md`](../README.md)
+- [`docs/pilots/results/hono-smoke.md`](hono-smoke.md)

@@ -61,15 +61,15 @@ and CI keep working unchanged.
 
 ## Verification
 
-- `packages/toolwright_cli/pyproject.toml` builds a wheel and installs the `toolwright` console script.
+- [`packages/toolwright_cli/pyproject.toml`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/packages/toolwright_cli/pyproject.toml) builds a wheel and installs the `toolwright` console script.
 - `toolwright doctor` runs the existing validator as a subprocess and reports its `checked:` count.
 - `pyproject.toml` declares no runtime dependencies; the tests assert this.
-- `toolwright install` wraps `scripts/installation/install.sh` instead of reimplementing it.
+- `toolwright install` wraps [`scripts/installation/install.sh`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/scripts/installation/install.sh) instead of reimplementing it.
 - 30 unit tests and 13 integration tests cover the command surface.
-- The `cli` CI job is defined to install the wheel, run `toolwright doctor`, and exercise the install lifecycle; its first green run is recorded in `docs/troubleshooting/ci.md` after the next push.
+- The `cli` CI job is defined to install the wheel, run `toolwright doctor`, and exercise the install lifecycle; its first green run is recorded in [`docs/troubleshooting/ci.md`](../troubleshooting/ci.md) after the next push.
 
 ## References
 
-- `docs/research/baseline.md`
-- `scripts/validation/validate_config.py`
+- [`docs/research/baseline.md`](../research/baseline.md)
+- [`scripts/validation/validate_config.py`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/scripts/validation/validate_config.py)
 - https://docs.astral.sh/uv/

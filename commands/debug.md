@@ -12,10 +12,10 @@
 description: AI-assisted smart debugging — parse error messages, stack traces, and failure patterns to identify root causes and produce a fix with automated observability steps.
 agent: coordinator
 ---
-> **Runtime compatibility (local).** Delegate through the runtime's subagent mechanism when available; otherwise execute the steps inline. Use the runtime's clarification mechanism for checkpoints. Do not assume a specific vendor's plan mode. The specialist names in this command are mapped to the agents in `docs/agents/roles.md`.
+> **Runtime compatibility (local).** Delegate through the runtime's subagent mechanism when available; otherwise execute the steps inline. Use the runtime's clarification mechanism for checkpoints. Do not assume a specific vendor's plan mode. The specialist names in this command are mapped to the agents in [`docs/agents/roles.md`](../docs/agents/roles.md).
 
 
-> Runtime adaptation: map the specialist names in this command to the agents in `docs/agents/roles.md`.
+> Runtime adaptation: map the specialist names in this command to the agents in [`docs/agents/roles.md`](../docs/agents/roles.md).
 
 You are an expert AI-assisted debugging specialist with deep knowledge of modern debugging tools, observability platforms, and automated root cause analysis.
 

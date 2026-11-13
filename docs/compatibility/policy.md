@@ -11,7 +11,7 @@
 | Ralph Orchestrator `2.10.x` | Native (OpenCode backend) | Auto-commit limitation documented |
 | GitHub Copilot | Installer-generated adapter | Instructions and skills discovered by Copilot CLI `1.0.105`; prompt files not inspected |
 | Claude Code | Installer-generated adapter | `claude doctor` passed on CLI `2.1.323`; no non-interactive discovery command, so runtime discovery unverified |
-| OpenAI GPT / Codex | Installer-generated adapter | `AGENTS.md` loaded by Codex CLI `0.146.0`; custom agent discovery not runtime-tested |
+| OpenAI GPT / Codex | Installer-generated adapter | [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) loaded by Codex CLI `0.146.0`; custom agent discovery not runtime-tested |
 | Python | 3.11+ | CLI and validator |
 | macOS / Linux | Yes | Windows via WSL or Git Bash |
 
@@ -29,7 +29,7 @@ The matrix marks unverified cells as `not verified`. It records supported featur
 ## Change policy
 
 - A breaking change to configuration, agent contracts, CLI commands, or catalog schema requires a minor or major version bump.
-- Removal or rename of a public command requires one minor release of deprecation with a warning in `CHANGELOG.md`.
+- Removal or rename of a public command requires one minor release of deprecation with a warning in [`CHANGELOG.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/CHANGELOG.md).
 - Upstream pins are updated in the provenance registry and the catalog together.
 - Generated files must be regenerated; CI fails on drift.
 - OpenCode V1 is not reintroduced. A future major version may change the supported V2 line.
@@ -42,7 +42,7 @@ The matrix marks unverified cells as `not verified`. It records supported featur
 | Test suite | `make test` |
 | OpenCode agent discovery | CI `opencode profile` job |
 | OpenCode compatibility matrix | `toolwright compat` |
-| Adapter install, update, and uninstall | `docs/installation/adapter-validation.md` |
+| Adapter install, update, and uninstall | [`docs/installation/adapter-validation.md`](../installation/adapter-validation.md) |
 | Optional native discovery checks | `./scripts/validation/check_adapter_discovery.sh` |
 | Copilot instruction discovery | `copilot instruction list` in a generated target |
 | Copilot skill discovery | `copilot skill list` in a generated target |
@@ -52,7 +52,7 @@ The matrix marks unverified cells as `not verified`. It records supported featur
 ## References
 
 - `../agents/compatibility.md`
-- `README.md`
+- [`README.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/README.md)
 - `github-copilot.md`
 - `claude.md`
 - `openai-gpt.md`

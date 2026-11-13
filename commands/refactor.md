@@ -12,10 +12,10 @@
 description: Refactor provided code for cleanliness, maintainability, and alignment with SOLID principles and modern best practices — no over-engineering.
 agent: backend-developer
 ---
-> **Runtime compatibility (local).** Delegate through the runtime's subagent mechanism when available; otherwise execute the steps inline. Use the runtime's clarification mechanism for checkpoints. Do not assume a specific vendor's plan mode. The specialist names in this command are mapped to the agents in `docs/agents/roles.md`.
+> **Runtime compatibility (local).** Delegate through the runtime's subagent mechanism when available; otherwise execute the steps inline. Use the runtime's clarification mechanism for checkpoints. Do not assume a specific vendor's plan mode. The specialist names in this command are mapped to the agents in [`docs/agents/roles.md`](../docs/agents/roles.md).
 
 
-> Runtime adaptation: map the specialist names in this command to the agents in `docs/agents/roles.md`.
+> Runtime adaptation: map the specialist names in this command to the agents in [`docs/agents/roles.md`](../docs/agents/roles.md).
 
 # Refactor and Clean Code
 

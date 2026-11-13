@@ -7,7 +7,7 @@
 - Ralph Orchestrator: `2.10.x`
 - Python: 3.11 or newer
 
-OpenCode V1 is unsupported. See `docs/compatibility/policy.md`.
+OpenCode V1 is unsupported. See [`docs/compatibility/policy.md`](docs/compatibility/policy.md).
 
 ## Reporting
 
@@ -32,4 +32,4 @@ Out of scope: OpenCode itself, model providers, and third-party MCP servers. Rep
 - Optional MCP servers are disabled by default.
 - Pilots run in disposable clones.
 
-Full threat model and MCP trust levels: `docs/security/README.md`.
+Full threat model and MCP trust levels: [`docs/security/README.md`](docs/security/README.md).

@@ -72,10 +72,10 @@ The coordinator delegates each step to the owning agent; the CLI supplies the de
 
 ## Design reference
 
-The workflow follows `juanmanueldaza/nerv`'s SDD phase model (Apache-2.0), reduced to four artifacts to avoid a separate daemon or memory service. The implementation is original Python; see `docs/provenance/registry.yml` entry `memory-and-specs`.
+The workflow follows `juanmanueldaza/nerv`'s SDD phase model (Apache-2.0), reduced to four artifacts to avoid a separate daemon or memory service. The implementation is original Python; see [`docs/provenance/registry.yml`](../provenance/registry.yml) entry `memory-and-specs`.
 
 ## References
 
-- `docs/memory/README.md`
-- `specs/README.md`
-- `docs/agents/roles.md`
+- [`docs/memory/README.md`](../memory/README.md)
+- [`specs/README.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/specs/README.md)
+- [`docs/agents/roles.md`](../agents/roles.md)

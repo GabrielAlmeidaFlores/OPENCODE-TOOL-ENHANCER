@@ -10,7 +10,7 @@ All notable changes to this repository are documented here.
 
 ### Added
 
-- `scripts/validation/check_adapter_discovery.sh`, an optional no-model-call check for Copilot instruction and skill discovery plus Codex `AGENTS.md` loading.
+- [`scripts/validation/check_adapter_discovery.sh`](scripts/validation/check_adapter_discovery.sh), an optional no-model-call check for Copilot instruction and skill discovery plus Codex [`AGENTS.md`](AGENTS.md) loading.
 - Integration coverage for the adapter discovery entry point.
 
 ### Changed
@@ -26,7 +26,7 @@ All notable changes to this repository are documented here.
 
 ### Fixed
 
-- Adapter uninstall deduplicates shared generated paths such as `AGENTS.md`, prunes lock entries for removed or missing files, and drops adapters that no longer own files.
+- Adapter uninstall deduplicates shared generated paths such as [`AGENTS.md`](AGENTS.md), prunes lock entries for removed or missing files, and drops adapters that no longer own files.
 
 ## [0.3.0] - 2026-11-13
 
@@ -36,8 +36,8 @@ Native platform adapters. OpenCode remains the reference adapter.
 
 - `--platform {opencode,claude,copilot,codex}` on `toolwright install` and `toolwright profile use`.
 - Claude Code adapter generating `.claude/agents/*.md`, `.claude/commands/*.md`, `.claude/skills/`, and `CLAUDE.md`.
-- GitHub Copilot adapter generating `.github/instructions/*.instructions.md`, `.github/prompts/*.prompt.md`, `.github/skills/`, `.github/copilot-instructions.md`, and `AGENTS.md`.
-- OpenAI Codex adapter generating `.codex/agents/*.toml` and `AGENTS.md`.
+- GitHub Copilot adapter generating `.github/instructions/*.instructions.md`, `.github/prompts/*.prompt.md`, `.github/skills/`, `.github/copilot-instructions.md`, and [`AGENTS.md`](AGENTS.md).
+- OpenAI Codex adapter generating `.codex/agents/*.toml` and [`AGENTS.md`](AGENTS.md).
 - Direct generated-file installation, backup of overwritten destinations, and uninstall support for non-OpenCode adapters.
 - Adapter tests covering generated paths, agent metadata, and installation without an `.opencode` directory.
 
@@ -74,11 +74,11 @@ Pilot round 1 discovery results, funded reruns, plugin live verification, releas
 
 ### Added
 
-- Hono code-change pilot round: five tasks, targeted tests, two independent reviews; see `docs/pilots/results/code-round-hono.md`.
+- Hono code-change pilot round: five tasks, targeted tests, two independent reviews; see [`docs/pilots/results/code-round-hono.md`](docs/pilots/results/code-round-hono.md).
 - CleanArchitecture code-change round: 5/5 with .NET 11 build, unit, and SQL Server functional verification, plus independent review and a secure HTTPS-redirect rerun; turborepo 4/5 verified, with the performance task rejected in review.
 - Pilot dependency setup via `--setup` and explicit agent selection via `--agent`.
 
-- Pilot round 1 discovery suite across Hono, CleanArchitecture, and turborepo: 6/15 structural tasks passed; failures and provider quota are recorded in `docs/pilots/results/round-1.md`.
+- Pilot round 1 discovery suite across Hono, CleanArchitecture, and turborepo: 6/15 structural tasks passed; failures and provider quota are recorded in [`docs/pilots/results/round-1.md`](docs/pilots/results/round-1.md).
 - Six generated pilot reports under `docs/pilots/results/` with file:line references.
 
 - Optional Markdown task board (`toolwright task`) with a WIP limit, approval gate, and one Git worktree per task.
@@ -88,18 +88,18 @@ Pilot round 1 discovery results, funded reruns, plugin live verification, releas
 - Memory plugin live-session verification: injected with the sentinel, inactive without it; status moved to Stable.
 
 - MkDocs Material site with navigation for every guide and a strict build in CI.
-- `SECURITY.md`, `SUPPORT.md`, `ROADMAP.md`, `CODE_OF_CONDUCT.md`, and a security threat model with MCP trust levels.
+- [`SECURITY.md`](SECURITY.md), [`SUPPORT.md`](SUPPORT.md), [`ROADMAP.md`](ROADMAP.md), [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md), and a security threat model with MCP trust levels.
 - Compatibility policy and release process documentation.
-- Tag-driven release workflow that verifies `VERSION`, builds the wheel, writes `SHA256SUMS`, and publishes the GitHub release.
+- Tag-driven release workflow that verifies [`VERSION`](VERSION), builds the wheel, writes `SHA256SUMS`, and publishes the GitHub release.
 - Weekly upstream-drift workflow and `check_upstream_drift.py`.
 - `check_version.py`, `local_release_check.sh`, `make docs`, `make version-check`, `make drift-check`, and `make release-check`.
 - Actionlint workflow validation and a mocked end-to-end pilot-runner test.
-- A real Hono smoke run that exposed and fixed the runner's inherited-`PWD` bug; see `docs/pilots/results/hono-smoke.md`.
+- A real Hono smoke run that exposed and fixed the runner's inherited-`PWD` bug; see [`docs/pilots/results/hono-smoke.md`](docs/pilots/results/hono-smoke.md).
 
 - `toolwright stats` with Markdown, JSON, and CSV reports; per-agent/model/tool aggregation; tool-error counts; baseline comparison; and a post-run budget guard.
-- `toolwright eval` with deterministic case definitions in `tests/evals/cases.json`; no model calls.
+- `toolwright eval` with deterministic case definitions in [`tests/evals/cases.json`](tests/evals/cases.json); no model calls.
 - `toolwright pilot list|run` with a disposable clone, pinned commit, profile installation, one prompt, verification, and local artifacts.
-- `configs/pilots/pilots.toml` for the three selected repositories.
+- [`configs/pilots/pilots.toml`](configs/pilots/pilots.toml) for the three selected repositories.
 - CI smoke checks for stats, eval, pilot listing, and pilot dry-run.
 - Phase 6 tests for stats parsing/rendering/comparison, eval cases, and pilot planning/validation.
 
@@ -107,13 +107,13 @@ Pilot round 1 discovery results, funded reruns, plugin live verification, releas
 - `.toolwright/memory/` layout with tracked project/shared scopes and a gitignored user scope.
 - `toolwright spec new|list|plan|verify` with requirements, design, tasks, and evidence artifacts and criterion/task/evidence validation.
 - `specs/` workflow documentation and templates.
-- ADR-007 accepted with verification; `.toolwright/config.toml` gains memory settings.
+- ADR-007 accepted with verification; [`.toolwright/config.toml`](.toolwright/config.toml) gains memory settings.
 - CI smoke checks for memory and spec commands.
 - Phase 5 tests for memory scopes, secrets, expiry, preamble, spec creation, planning, and evidence.
 
-- `toolwright verify` with `.toolwright/config.toml`, per-check timeouts, input-hash caching for passing checks, JSON output, and failure classification.
+- `toolwright verify` with [`.toolwright/config.toml`](.toolwright/config.toml), per-check timeouts, input-hash caching for passing checks, JSON output, and failure classification.
 - `toolwright govern contracts|gate|check` with contracts derived from agent permissions, budget and loop/deadlock evaluation, and risk-based gate selection.
-- `.toolwright/config.toml` with repository checks and governance limits; `.toolwright/cache/` is gitignored.
+- [`.toolwright/config.toml`](.toolwright/config.toml) with repository checks and governance limits; `.toolwright/cache/` is gitignored.
 - Ralph `code-assist` finalizer now requires `toolwright verify` when the config exists.
 - CI runs `toolwright verify --only validate --only lint` and `toolwright govern contracts`.
 - ADR-008 records the TOML decision and supersedes the YAML filename in the plan.
@@ -133,15 +133,15 @@ Pilot round 1 discovery results, funded reruns, plugin live verification, releas
 - `toolwright install` plans by default, backs up before overwrite, delegates to the shell installer, and is idempotent.
 - `toolwright uninstall` only removes lock-listed files inside the target and preserves modified files unless `--force` is given.
 - `toolwright rollback` lists and restores CLI backups through the existing restore script.
-- `Makefile` targets `toolwright` and `build-cli`.
+- [`Makefile`](Makefile) targets `toolwright` and `build-cli`.
 - CI job `cli` builds the wheel, installs it, runs `toolwright doctor`, and exercises the install lifecycle.
-- `VERSION` file for release and update checks.
+- [`VERSION`](VERSION) file for release and update checks.
 - Phase 0 baseline record with frozen environment, versions, and validation output.
 - ADR-005 for the Python CLI stack, ADR-006 for a single catalog source of truth, and ADR-007 for Markdown memory without a vector store.
 - Status metadata on every documentation page: status, last verified date, and evidence class.
 - Unit and integration test suite under `tests/` using the standard library runner.
 - Test fixtures that exercise provenance, permissions, JSONC, YAML, skills, commands, and benchmark tasks.
-- `Makefile` targets `test`, `lint`, and `ci`.
+- [`Makefile`](Makefile) targets `test`, `lint`, and `ci`.
 - Testing guide and CI diagnosis guide.
 - Validator check for workflow YAML and documentation status metadata.
 - Phase 1 research report with verified compatibility findings.
@@ -177,7 +177,7 @@ Pilot round 1 discovery results, funded reruns, plugin live verification, releas
 
 - Adopted naming over comments: removed redundant one-line docstrings, made function/class docstrings optional, and kept module docstrings plus contract detail. The validator now enforces block form only when a docstring exists.
 
-- Normalized every repository file to AGENTS.md Section 2C: vendored skill assets now use docstrings and documented functions instead of inline comments, the provenance registry and `.gitignore` use standardized header blocks, and the validator scans `skills/` and `tests/` in addition to `scripts/` and `packages/`, rejects non-documentation TypeScript and C# comments, and requires block-form Python docstrings with the triple quotes on their own lines.
+- Normalized every repository file to AGENTS.md Section 2C: vendored skill assets now use docstrings and documented functions instead of inline comments, the provenance registry and [`.gitignore`](.gitignore) use standardized header blocks, and the validator scans `skills/` and `tests/` in addition to `scripts/` and `packages/`, rejects non-documentation TypeScript and C# comments, and requires block-form Python docstrings with the triple quotes on their own lines.
 - `tests/fixtures/` is the only documented exception, because those files must contain prohibited patterns to exercise the validator.
 
 ### Fixed
@@ -212,7 +212,7 @@ Pilot round 1 discovery results, funded reruns, plugin live verification, releas
 
 ### Observability and release readiness (2026-11-11)
 
-- Added `scripts/benchmarking/report_costs.py` to aggregate cost and token data from session artifacts.
+- Added [`scripts/benchmarking/report_costs.py`](scripts/benchmarking/report_costs.py) to aggregate cost and token data from session artifacts.
 - Added cost observability and MCP overhead documentation.
 - Added the release checklist.
 - Added an evidence-status table to the README and downgraded the hero claim to “production-oriented”.
@@ -221,7 +221,7 @@ Pilot round 1 discovery results, funded reruns, plugin live verification, releas
 
 ### Stabilization and validation (2026-11-11)
 
-- Added `scripts/maintenance/run-ralph-isolated.sh` so Ralph runs in a separate clone and exports an unstaged patch.
+- Added [`scripts/maintenance/run-ralph-isolated.sh`](scripts/maintenance/run-ralph-isolated.sh) so Ralph runs in a separate clone and exports an unstaged patch.
 - Added a macOS/Linux CI matrix for static validation, examples, OpenCode agent discovery, and harness dry-runs.
 - Added the artifact compatibility matrix.
 - Added the real-repository pilot index with pinned repositories and acceptance criteria.
@@ -244,7 +244,7 @@ Pilot round 1 discovery results, funded reruns, plugin live verification, releas
 
 - Every skill now records `metadata.author`, `metadata.author_url`, and `metadata.author_email` when published.
 - Every agent, command, and Ralph hat records `# author:`, `# author_url:`, and `# author_email:` in its provenance header.
-- `docs/provenance/registry.yml` records the author for every artifact and source.
+- [`docs/provenance/registry.yml`](docs/provenance/registry.yml) records the author for every artifact and source.
 - The validator fails when author attribution is missing.
 - No skill or agent is presented as original work; all are adapted from public repositories.
 
@@ -255,7 +255,7 @@ Pilot round 1 discovery results, funded reruns, plugin live verification, releas
 - Replaced all 10 locally authored skills with skills from `obra/superpowers` and `wshobson/agents`.
 - Replaced all 8 locally authored commands with commands from `wshobson/agents`.
 - Replaced all 4 hat collections with Ralph's official `code-assist`, `review`, `research`, and `debug` presets, adding only per-hat OpenCode routing.
-- Added `docs/provenance/registry.yml`, `docs/provenance/README.md`, and `THIRD_PARTY_NOTICES.md`.
+- Added [`docs/provenance/registry.yml`](docs/provenance/registry.yml), [`docs/provenance/README.md`](docs/provenance/README.md), and [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 - Added validator enforcement for provenance headers, skill metadata, and registry paths.
 - Added `--clean` to the installer so removed artifacts do not linger in an existing installation.
 

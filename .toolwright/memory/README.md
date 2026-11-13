@@ -8,7 +8,7 @@ This directory holds plain Markdown memory managed by `toolwright memory`. There
 |---|---|---|
 | `project/` | Yes | Repository decisions, constraints, conventions, failures, open questions |
 | `shared/` | Yes | Knowledge published with the repository |
-| `user/` | No | Local preferences; ignored by `.gitignore` |
+| `user/` | No | Local preferences; ignored by [`.gitignore`](../../.gitignore) |
 
 Precedence for the generated preamble is `project > user > shared`.
 
@@ -47,7 +47,7 @@ toolwright memory preamble --budget 1500
 
 ## Configuration
 
-`.toolwright/config.toml`:
+[`.toolwright/config.toml`](../config.toml):
 
 ```toml
 [memory]
@@ -57,10 +57,10 @@ ttl_days = 30
 
 ## Using memory with OpenCode
 
-Reference this directory from the project `AGENTS.md`, or load the preamble on demand:
+Reference this directory from the project [`AGENTS.md`](../../AGENTS.md), or load the preamble on demand:
 
 ```bash
 toolwright memory preamble
 ```
 
-Session-start injection through a plugin is deferred to a later phase. See `docs/memory/README.md`.
+Session-start injection through a plugin is deferred to a later phase. See [`docs/memory/README.md`](../../docs/memory/README.md).

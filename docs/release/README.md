@@ -6,19 +6,19 @@
 
 | File | Purpose |
 |---|---|
-| `VERSION` | Human-readable release version |
-| `packages/toolwright_cli/pyproject.toml` | Wheel version; must match `VERSION` |
+| [`VERSION`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/VERSION) | Human-readable release version |
+| [`packages/toolwright_cli/pyproject.toml`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/packages/toolwright_cli/pyproject.toml) | Wheel version; must match [`VERSION`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/VERSION) |
 | Git tag | `v<VERSION>` |
 
-A test fails when `VERSION` and the package version differ. Bump both together.
+A test fails when [`VERSION`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/VERSION) and the package version differ. Bump both together.
 
 ## Before tagging
 
-1. Complete `docs/RELEASE_CHECKLIST.md`.
+1. Complete [`docs/RELEASE_CHECKLIST.md`](../RELEASE_CHECKLIST.md).
 2. Run `make ci` and `make lint`.
 3. Run `./scripts/release/local_release_check.sh` to reproduce the wheel and checksum build.
 4. Confirm the CI run for the release commit is green.
-5. Update `CHANGELOG.md` and run `toolwright catalog verify --check-drift`.
+5. Update [`CHANGELOG.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/CHANGELOG.md) and run `toolwright catalog verify --check-drift`.
 
 ## Create a release
 
@@ -28,9 +28,9 @@ git tag -a "v$(cat VERSION)" -m "Release $(cat VERSION)"
 git push origin "v$(cat VERSION)"
 ```
 
-`./scripts/release/local_release_check.sh` reproduces the wheel build and checksum locally. Pushing the tag triggers `.github/workflows/release.yml`:
+`./scripts/release/local_release_check.sh` reproduces the wheel build and checksum locally. Pushing the tag triggers [`.github/workflows/release.yml`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/.github/workflows/release.yml):
 
-1. Verifies the tag matches `VERSION`.
+1. Verifies the tag matches [`VERSION`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/VERSION).
 2. Builds the `toolwright-cli` wheel.
 3. Writes `SHA256SUMS`.
 4. Creates a GitHub release with the wheel and checksum file.
@@ -70,7 +70,7 @@ python3 -m venv /tmp/toolwright-verify
 
 ## Upstream drift
 
-`.github/workflows/upstream-drift.yml` runs weekly and reports the pinned source commits against their remotes. The scheduled workflow stays green and publishes a table in the job summary; network errors are reported as `unknown` rather than failing the run. Pass `--fail-on-drift` when gating a release.
+[`.github/workflows/upstream-drift.yml`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/.github/workflows/upstream-drift.yml) runs weekly and reports the pinned source commits against their remotes. The scheduled workflow stays green and publishes a table in the job summary; network errors are reported as `unknown` rather than failing the run. Pass `--fail-on-drift` when gating a release.
 
 ```bash
 python3 scripts/maintenance/check_upstream_drift.py
@@ -78,6 +78,6 @@ python3 scripts/maintenance/check_upstream_drift.py
 
 ## References
 
-- `docs/RELEASE_CHECKLIST.md`
-- `docs/provenance/registry.yml`
-- `CHANGELOG.md`
+- [`docs/RELEASE_CHECKLIST.md`](../RELEASE_CHECKLIST.md)
+- [`docs/provenance/registry.yml`](../provenance/registry.yml)
+- [`CHANGELOG.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/CHANGELOG.md)

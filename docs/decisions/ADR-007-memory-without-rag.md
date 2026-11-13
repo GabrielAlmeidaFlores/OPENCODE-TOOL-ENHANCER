@@ -69,6 +69,6 @@ embeddings, no vector database, and no background service.
 
 ## References
 
-- `docs/decisions/ADR-005-cli-stack.md`
-- `docs/cost-optimization/observability.md`
+- [`docs/decisions/ADR-005-cli-stack.md`](ADR-005-cli-stack.md)
+- [`docs/cost-optimization/observability.md`](../cost-optimization/observability.md)
 - https://github.com/mikeyobrien/ralph-orchestrator

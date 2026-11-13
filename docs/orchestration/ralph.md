@@ -87,7 +87,7 @@ build.start
 - `research`: `research.start -> research.finding -> research.followup / RESEARCH_COMPLETE`
 - `debug`: `debug.start -> hypothesis.test -> hypothesis.confirmed / fix.propose -> fix.applied -> fix.verified / DEBUG_COMPLETE`
 
-Each collection sets its own `starting_event` and `required_events`; `configs/ralph/ralph.yml` provides the shared loop, backend, memory, and task settings.
+Each collection sets its own `starting_event` and `required_events`; [`configs/ralph/ralph.yml`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/configs/ralph/ralph.yml) provides the shared loop, backend, memory, and task settings.
 
 ## Headless permissions
 
@@ -111,7 +111,7 @@ This is narrow: it does not allow arbitrary external paths. Destructive commands
 
 The `code-assist` collection sets `event_loop.required_events: ["review.passed"]`. Completion is gated on an approved review. The `critic` can reject with `review.rejected`; the `finalizer` checks acceptance criteria before emitting `LOOP_COMPLETE`.
 
-For deterministic gates, record the exact commands in `AGENTS.md`. Do not gate on prose.
+For deterministic gates, record the exact commands in [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md). Do not gate on prose.
 
 ## Verified workflows
 

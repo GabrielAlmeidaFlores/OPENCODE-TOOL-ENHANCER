@@ -16,7 +16,7 @@ The Claude adapter always writes `CLAUDE.md` and writes agents, commands, and sk
 
 | Path | Purpose | Source |
 |---|---|---|
-| `CLAUDE.md` | Project memory and working agreements | `AGENTS.md` |
+| `CLAUDE.md` | Project memory and working agreements | [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) |
 | `.claude/agents/<role>.md` | Project-scoped subagent with `name`, `description`, and `tools` frontmatter | `agents/<role>/AGENT.md` |
 | `.claude/commands/<name>.md` | Project command | `commands/<name>.md` |
 | `.claude/skills/<name>/` | Project skill files | `skills/<name>/` |
@@ -58,7 +58,7 @@ Report findings in severity order with file and line references.
 Verify claims against the code and do not invent problems.
 ```
 
-Use the body of `agents/code-reviewer/AGENT.md` as the system prompt after removing OpenCode frontmatter.
+Use the body of [`agents/code-reviewer/AGENT.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/agents/code-reviewer/AGENT.md) as the system prompt after removing OpenCode frontmatter.
 
 ## Role mapping
 
@@ -81,7 +81,7 @@ Claude's `tools` field is an allowlist. It does not reproduce OpenCode's ordered
 
 ## Project memory
 
-Keep the Git-safety and verification rules from `AGENTS.md` in `CLAUDE.md`:
+Keep the Git-safety and verification rules from [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) in `CLAUDE.md`:
 
 ```markdown
 # CLAUDE.md

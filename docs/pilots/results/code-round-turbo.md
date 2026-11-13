@@ -49,5 +49,5 @@ A reviewer agent read every diff, ran the Jest suites, and checked the changed b
 
 ## References
 
-- `docs/pilots/results/round-1.md`
+- [`docs/pilots/results/round-1.md`](round-1.md)
 - `docs/pilots/results/turbo/`

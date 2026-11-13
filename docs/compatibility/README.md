@@ -1,6 +1,6 @@
 # Platform Compatibility
 
-> **Status:** Experimental · **Last verified:** 2026-11-13 · **Evidence:** installer-generated adapters validated on a real repository; OpenCode verified in CI; Copilot instruction and skill discovery plus Codex `AGENTS.md` loading checked with their CLIs; Claude Code doctor passed but runtime discovery unverified
+> **Status:** Experimental · **Last verified:** 2026-11-13 · **Evidence:** installer-generated adapters validated on a real repository; OpenCode verified in CI; Copilot instruction and skill discovery plus Codex [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) loading checked with their CLIs; Claude Code doctor passed but runtime discovery unverified
 
 ToolWright includes a fully verified OpenCode adapter. OpenCode is optional: the same agents, commands, skills, and project rules install as native files for GitHub Copilot, Claude Code, and OpenAI GPT/Codex.
 
@@ -9,9 +9,9 @@ ToolWright includes a fully verified OpenCode adapter. OpenCode is optional: the
 | Platform | Level | What ToolWright provides | Verified here |
 |---|---|---|---|
 | OpenCode 2.2.x | Native adapter (reference) | Configuration, agents, commands, skills, MCP servers, Ralph integration, installer | Yes, CI and local runs |
-| GitHub Copilot | Installer-generated adapter | `.github/copilot-instructions.md`, `.github/instructions/`, `.github/skills/`, `.github/prompts/`, `AGENTS.md` | Copilot CLI `1.0.105` discovers repository instructions, all 12 role instructions, and 10 project skills; prompt-file behavior not inspected |
+| GitHub Copilot | Installer-generated adapter | `.github/copilot-instructions.md`, `.github/instructions/`, `.github/skills/`, `.github/prompts/`, [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) | Copilot CLI `1.0.105` discovers repository instructions, all 12 role instructions, and 10 project skills; prompt-file behavior not inspected |
 | Claude Code | Installer-generated adapter | `CLAUDE.md`, `.claude/agents/`, `.claude/commands/`, `.claude/skills/` | Claude Code CLI `2.1.323` passed `claude doctor`; the CLI has no non-interactive agent, command, or skill discovery command, so runtime discovery is unverified |
-| OpenAI GPT / Codex | Installer-generated adapter | `AGENTS.md`, `.codex/agents/*.toml` | Codex CLI `0.146.0` loads `AGENTS.md`; custom agent files contain the required `name`, `description`, and `developer_instructions` fields; agent discovery was not runtime-tested |
+| OpenAI GPT / Codex | Installer-generated adapter | [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md), `.codex/agents/*.toml` | Codex CLI `0.146.0` loads [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md); custom agent files contain the required `name`, `description`, and `developer_instructions` fields; agent discovery was not runtime-tested |
 
 ## Install an adapter
 
@@ -26,7 +26,7 @@ Use `toolwright profile use <profile> --platform <name>` for the same behavior t
 
 ## What is portable
 
-- **Project rules** from `AGENTS.md`, including Git safety, provenance, and documentation-comment rules.
+- **Project rules** from [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md), including Git safety, provenance, and documentation-comment rules.
 - **Agent responsibilities** from `agents/<role>/AGENT.md`: coordinator, planner, researchers, developers, reviewers, test and security roles.
 - **Commands** from `commands/*.md`.
 - **Skills** from `skills/<name>/SKILL.md` where the target supports skills.
@@ -47,9 +47,9 @@ Do not claim a platform is verified just because its instruction file exists. Ru
 ## Guides
 
 - [OpenCode](opencode.md) — reference adapter installation and verification.
-- [GitHub Copilot](github-copilot.md) — generated instructions, skills, prompts, and `AGENTS.md`.
+- [GitHub Copilot](github-copilot.md) — generated instructions, skills, prompts, and [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md).
 - [Claude Code](claude.md) — generated `CLAUDE.md`, agents, commands, and skills.
-- [OpenAI GPT / Codex](openai-gpt.md) — generated `AGENTS.md` and custom agent TOML files.
+- [OpenAI GPT / Codex](openai-gpt.md) — generated [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) and custom agent TOML files.
 - [Adapter validation](../installation/adapter-validation.md) — deterministic install, update, and uninstall evidence.
 - [Compatibility policy](policy.md) — supported targets and change rules.
 

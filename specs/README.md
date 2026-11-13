@@ -41,4 +41,4 @@ Checked boxes (`- [x]`) are accepted. Angle-bracket placeholders from the templa
 | `test-engineer` | Evidence commands and results |
 | `code-reviewer` | Checks that evidence matches the criterion |
 
-See `docs/specs/README.md` for the full workflow.
+See [`docs/specs/README.md`](../docs/specs/README.md) for the full workflow.

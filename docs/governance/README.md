@@ -9,7 +9,7 @@ Governance makes long agent runs auditable without adding a daemon or a second r
 | Area | Mechanism |
 |---|---|
 | Agent contracts | Derived from `agents/*/AGENT.md` mode and permissions |
-| Budgets | `[governance]` limits in `.toolwright/config.toml` |
+| Budgets | `[governance]` limits in [`.toolwright/config.toml`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/.toolwright/config.toml) |
 | Loop detection | Repeated actions above `max_repeats` |
 | Deadlock detection | Handoff bounces above `max_bounces` |
 | Risk gates | Required gates per risk level |
@@ -103,10 +103,10 @@ to the orchestrator. The current integration point is `toolwright govern check` 
 
 ## Design reference
 
-The governance concepts follow `DVNghiem/FlowDeck`'s documented contract validator, budgets, and loop/deadlock detection (MIT). The verification cache follows `juanmanueldaza/nerv`'s exec-cache idea (Apache-2.0). The implementation is original Python; see the `verification-and-governance` entry in `docs/provenance/registry.yml`.
+The governance concepts follow `DVNghiem/FlowDeck`'s documented contract validator, budgets, and loop/deadlock detection (MIT). The verification cache follows `juanmanueldaza/nerv`'s exec-cache idea (Apache-2.0). The implementation is original Python; see the `verification-and-governance` entry in [`docs/provenance/registry.yml`](../provenance/registry.yml).
 
 ## References
 
-- `docs/verification/README.md`
-- `docs/orchestration/ralph.md`
-- `AGENTS.md` Sections 2B and 14
+- [`docs/verification/README.md`](../verification/README.md)
+- [`docs/orchestration/ralph.md`](../orchestration/ralph.md)
+- [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) Sections 2B and 14

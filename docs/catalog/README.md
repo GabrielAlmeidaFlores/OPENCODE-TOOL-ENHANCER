@@ -8,10 +8,10 @@ The catalog turns the provenance registry into a validated, searchable artifact 
 
 | Path | Purpose |
 |---|---|
-| `catalog/registry.json` | Machine-readable catalog read by `toolwright` |
-| `catalog/index.md` | Human-readable table |
-| `catalog/schema/entry.schema.json` | Document and entry schema |
-| `scripts/catalog/build_catalog.py` | Generator (build-time only) |
+| [`catalog/registry.json`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/catalog/registry.json) | Machine-readable catalog read by `toolwright` |
+| [`catalog/index.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/catalog/index.md) | Human-readable table |
+| [`catalog/schema/entry.schema.json`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/catalog/schema/entry.schema.json) | Document and entry schema |
+| [`scripts/catalog/build_catalog.py`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/scripts/catalog/build_catalog.py) | Generator (build-time only) |
 
 ## Commands
 
@@ -61,19 +61,19 @@ Each artifact requires:
 
 ## Adding an artifact
 
-1. Add or update the entry in `docs/provenance/registry.yml`.
+1. Add or update the entry in [`docs/provenance/registry.yml`](../provenance/registry.yml).
 2. Run `python3 scripts/catalog/build_catalog.py`.
 3. Run `toolwright catalog verify --check-drift`.
 4. Commit the registry change and both generated files together.
 
-A pull request that edits `catalog/registry.json` or `catalog/index.md` without the registry change fails the drift check.
+A pull request that edits [`catalog/registry.json`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/catalog/registry.json) or [`catalog/index.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/catalog/index.md) without the registry change fails the drift check.
 
 ## Design reference
 
-The schema-first approach follows `awesome-opencode` (`data/schema.json`, CC0-1.0) and the `registry.json` structure in `OpenAgentsControl` (MIT). The implementation is original Python; see the `catalog-and-profiles` entry in `docs/provenance/registry.yml`.
+The schema-first approach follows `awesome-opencode` (`data/schema.json`, CC0-1.0) and the `registry.json` structure in `OpenAgentsControl` (MIT). The implementation is original Python; see the `catalog-and-profiles` entry in [`docs/provenance/registry.yml`](../provenance/registry.yml).
 
 ## References
 
-- `docs/provenance/registry.yml`
-- `docs/profiles/README.md`
-- `docs/cli/README.md`
+- [`docs/provenance/registry.yml`](../provenance/registry.yml)
+- [`docs/profiles/README.md`](../profiles/README.md)
+- [`docs/cli/README.md`](../cli/README.md)

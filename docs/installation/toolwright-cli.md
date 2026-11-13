@@ -64,8 +64,8 @@ toolwright install --platform codex    --profile minimal --target /path/to/proje
 |---|---|
 | `opencode` | `.opencode/`, `.ralph/`, and the selected tool components via the shell installer |
 | `claude` | `CLAUDE.md`, `.claude/agents/`, `.claude/commands/`, `.claude/skills/` |
-| `copilot` | `.github/copilot-instructions.md`, `.github/instructions/`, `.github/prompts/`, `.github/skills/`, `AGENTS.md` |
-| `codex` | `AGENTS.md`, `.codex/agents/*.toml` |
+| `copilot` | `.github/copilot-instructions.md`, `.github/instructions/`, `.github/prompts/`, `.github/skills/`, [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) |
+| `codex` | [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md), `.codex/agents/*.toml` |
 
 All adapters write `toolwright.lock.json` and support `install --apply`, `update --check`, and
 `uninstall --apply --yes`. See `adapter-validation.md` for real-repository evidence and each
@@ -124,14 +124,14 @@ python3 -m pip wheel ./packages/toolwright_cli --no-deps --wheel-dir dist
 The wheel contains the CLI only. It does not contain agents, skills, commands, or configs;
 those come from the repository checkout.
 
-The package version is declared twice: `VERSION` for the repository and `[project].version`
-in `packages/toolwright_cli/pyproject.toml`. A test fails when they differ, so bump both together.
+The package version is declared twice: [`VERSION`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/VERSION) for the repository and `[project].version`
+in [`packages/toolwright_cli/pyproject.toml`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/packages/toolwright_cli/pyproject.toml). A test fails when they differ, so bump both together.
 
 ## References
 
-- `docs/cli/README.md`
-- `docs/installation/adapter-validation.md`
-- `docs/compatibility/README.md`
-- `docs/decisions/ADR-005-cli-stack.md`
+- [`docs/cli/README.md`](../cli/README.md)
+- [`docs/installation/adapter-validation.md`](adapter-validation.md)
+- [`docs/compatibility/README.md`](../compatibility/README.md)
+- [`docs/decisions/ADR-005-cli-stack.md`](../decisions/ADR-005-cli-stack.md)
 - https://docs.astral.sh/uv/
 - https://pipx.pypa.io/

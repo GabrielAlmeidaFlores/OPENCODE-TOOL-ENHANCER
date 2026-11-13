@@ -31,7 +31,7 @@ toolwright task worktree T-002 --remove --yes
 ## Rules
 
 - Statuses: `backlog`, `ready`, `in-progress`, `review`, `done`.
-- The WIP limit defaults to 3 and is configurable in `.toolwright/config.toml` under `[board]`.
+- The WIP limit defaults to 3 and is configurable in [`.toolwright/config.toml`](../config.toml) under `[board]`.
 - Moving to `done` requires `--approved`; the board never merges.
 - Worktrees live under `.toolwright/worktrees/` and use branch `task/<id>`.
 - The board never stages, commits, or pushes.

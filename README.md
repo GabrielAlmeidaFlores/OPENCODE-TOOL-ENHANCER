@@ -153,9 +153,9 @@ The table below shows what is verified, what is installer-generated, and where t
 | Platform | Support level | What ToolWright installs | Best entry point |
 |---|---|---|---|
 | **OpenCode 2.2.x** | Native adapter, CI-verified | Agents, commands, skills, MCP, Ralph | [OpenCode adapter](docs/compatibility/opencode.md) |
-| **GitHub Copilot** | Installer-generated adapter | Repository instructions, path instructions, skills, prompts, `AGENTS.md` | [Copilot guide](docs/compatibility/github-copilot.md) |
+| **GitHub Copilot** | Installer-generated adapter | Repository instructions, path instructions, skills, prompts, [`AGENTS.md`](AGENTS.md) | [Copilot guide](docs/compatibility/github-copilot.md) |
 | **Claude Code** | Installer-generated adapter | `CLAUDE.md`, `.claude/agents/`, commands, skills | [Claude guide](docs/compatibility/claude.md) |
-| **ChatGPT / Codex** | Installer-generated adapter | `AGENTS.md`, `.codex/agents/*.toml`, ChatGPT instructions | [GPT/Codex guide](docs/compatibility/openai-gpt.md) |
+| **ChatGPT / Codex** | Installer-generated adapter | [`AGENTS.md`](AGENTS.md), `.codex/agents/*.toml`, ChatGPT instructions | [GPT/Codex guide](docs/compatibility/openai-gpt.md) |
 
 The reusable content is the same everywhere. Only the adapter files and permission model change.
 
@@ -251,7 +251,7 @@ command and remove with `toolwright uninstall --target /path/to/project --apply 
 - [Adapter validation record](docs/installation/adapter-validation.md)
 
 > [!IMPORTANT]
-> Installation is verified for every adapter. Runtime discovery is verified for Copilot CLI and Codex `AGENTS.md`; Claude Code runtime discovery is unverified. Do not claim support beyond the checks recorded in the validation document.
+> Installation is verified for every adapter. Runtime discovery is verified for Copilot CLI and Codex [`AGENTS.md`](AGENTS.md); Claude Code runtime discovery is unverified. Do not claim support beyond the checks recorded in the validation document.
 
 ### 3. Add code intelligence
 
@@ -712,7 +712,7 @@ This repository distinguishes **verified**, **documented**, and **not yet measur
 | Area | Status |
 |---|---|
 | Static validation | Verified, including links and provenance |
-| Agent discovery | Verified with the OpenCode 2.2.7 reference adapter; Copilot CLI discovers generated instructions and skills; Codex loads `AGENTS.md`; Claude Code discovery unverified |
+| Agent discovery | Verified with the OpenCode 2.2.7 reference adapter; Copilot CLI discovers generated instructions and skills; Codex loads [`AGENTS.md`](AGENTS.md); Claude Code discovery unverified |
 | TypeScript and C# examples | Verified |
 | Harness execution | 30 isolated DeepSeek Flash runs; published result set |
 | Command runtime | All eight commands verified on the TypeScript fixture through the reference adapter |
@@ -786,7 +786,7 @@ The table below covers the most common symptoms. The full guide has the detailed
 | Ralph created a commit | Expected in 2.10.1; use a separate disposable clone |
 | Context overflows | Lower `tool_output`, keep compaction enabled |
 | Benchmark command fails | Check the task's `working_directory` and verification command |
-| Non-OpenCode adapter seems missing | Reinstall with `--platform claude`, `copilot`, or `codex`, then confirm the generated paths in `docs/installation/toolwright-cli.md` |
+| Non-OpenCode adapter seems missing | Reinstall with `--platform claude`, `copilot`, or `codex`, then confirm the generated paths in [`docs/installation/toolwright-cli.md`](docs/installation/toolwright-cli.md) |
 
 Full guide: [docs/troubleshooting/README.md](docs/troubleshooting/README.md).
 

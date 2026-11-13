@@ -60,7 +60,7 @@ toolwright profile use minimal --platform claude --target ../my-project --apply
 ```
 
 Profiles are loaded from `profiles/*.yml`. `profile use` delegates to `toolwright install` and keeps the same
-plan/apply, backup, lock, and `--platform` behavior. See `docs/profiles/README.md`.
+plan/apply, backup, lock, and `--platform` behavior. See [`docs/profiles/README.md`](../profiles/README.md).
 
 ## `toolwright catalog`
 
@@ -73,10 +73,10 @@ toolwright catalog verify --check-drift
 toolwright catalog build
 ```
 
-The catalog is generated from `docs/provenance/registry.yml`. It records the author, source, pinned
+The catalog is generated from [`docs/provenance/registry.yml`](../provenance/registry.yml). It records the author, source, pinned
 commit, license, local path, and modification note for every agent, skill, command, and hat.
 `--check-drift` fails when the committed catalog differs from the registry. See
-`docs/catalog/README.md`.
+[`docs/catalog/README.md`](../catalog/README.md).
 
 `build` and `--check-drift` need PyYAML in the interpreter that runs the generator. Install it for a
 `uv` tool with `uv tool install --with pyyaml ./packages/toolwright_cli`, or for pipx with
@@ -90,8 +90,8 @@ toolwright compat --json
 ```
 
 Prints the OpenCode V1/V2 matrix. Cells that were not verified are marked `not verified` rather than
-guessed. This is a compatibility matrix, not a benchmark. See `docs/agents/compatibility.md` and
-`docs/decisions/ADR-001-opencode-v2-baseline.md`.
+guessed. This is a compatibility matrix, not a benchmark. See [`docs/agents/compatibility.md`](../agents/compatibility.md) and
+[`docs/decisions/ADR-001-opencode-v2-baseline.md`](../decisions/ADR-001-opencode-v2-baseline.md).
 
 ## `toolwright verify`
 
@@ -102,7 +102,7 @@ toolwright verify --json
 toolwright verify --no-cache
 ```
 
-Runs the checks in `.toolwright/config.toml`, treats exit codes as authoritative, and caches passing results for checks with declared inputs. See `docs/verification/README.md`.
+Runs the checks in [`.toolwright/config.toml`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/.toolwright/config.toml), treats exit codes as authoritative, and caches passing results for checks with declared inputs. See [`docs/verification/README.md`](../verification/README.md).
 
 ## `toolwright govern`
 
@@ -112,7 +112,7 @@ toolwright govern gate --risk high
 toolwright govern check --record run.json
 ```
 
-Contracts are derived from agent permissions; budgets and limits come from the `[governance]` table. See `docs/governance/README.md`.
+Contracts are derived from agent permissions; budgets and limits come from the `[governance]` table. See [`docs/governance/README.md`](../governance/README.md).
 
 ## `toolwright task`
 
@@ -125,7 +125,7 @@ toolwright task status
 toolwright task worktree T-001 --remove --yes
 ```
 
-Markdown board with a WIP limit and one optional Git worktree per task. No merges and no automatic commits. See `.toolwright/board/README.md`.
+Markdown board with a WIP limit and one optional Git worktree per task. No merges and no automatic commits. See [`.toolwright/board/README.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/.toolwright/board/README.md).
 
 ## `toolwright memory`
 
@@ -137,7 +137,7 @@ toolwright memory export --format json
 toolwright memory preamble --budget 1500
 ```
 
-Markdown-only memory with lexical search, TTL, deduplication, and credential rejection. See `docs/memory/README.md`.
+Markdown-only memory with lexical search, TTL, deduplication, and credential rejection. See [`docs/memory/README.md`](../memory/README.md).
 
 ## `toolwright spec`
 
@@ -148,7 +148,7 @@ toolwright spec plan user-authentication
 toolwright spec verify user-authentication
 ```
 
-Creates requirements, design, tasks, and evidence artifacts; `plan` and `verify` enforce criterion-to-task-to-evidence mapping. See `docs/specs/README.md`.
+Creates requirements, design, tasks, and evidence artifacts; `plan` and `verify` enforce criterion-to-task-to-evidence mapping. See [`docs/specs/README.md`](../specs/README.md).
 
 ## `toolwright stats`
 
@@ -161,7 +161,7 @@ toolwright stats --budget 5.00
 ```
 
 Aggregates `meta.json` and `session.jsonl` artifacts by run, agent, model, and tool. `--budget`
-exits 1 when the recorded total exceeds the ceiling. See `docs/cost-optimization/observability.md`.
+exits 1 when the recorded total exceeds the ceiling. See [`docs/cost-optimization/observability.md`](../cost-optimization/observability.md).
 
 ## `toolwright eval`
 
@@ -172,7 +172,7 @@ toolwright eval --json
 ```
 
 Runs deterministic checks for profiles, catalog, governance, and the validator. No model calls.
-See `docs/evals/README.md`.
+See [`docs/evals/README.md`](../evals/README.md).
 
 ## `toolwright pilot`
 
@@ -183,7 +183,7 @@ OPENCODE_PILOT_MODEL=provider/model toolwright pilot run hono --prompt "..." --v
 ```
 
 Clones a pinned repository into a disposable workspace, installs the profile, runs one prompt, and
-records verification, cost, and tokens. See `docs/pilots/README.md`.
+records verification, cost, and tokens. See [`docs/pilots/README.md`](../pilots/README.md).
 
 ## `toolwright doctor`
 
@@ -203,7 +203,7 @@ Checks:
 | `git` | Git is not installed |
 | `opencode` | Missing, unparseable, or V1 |
 | `node`, `rg`, `ast-grep`, `serena`, `codegraph`, `ralph` | Missing (warning, not failure) |
-| `validator` | `scripts/validation/validate_config.py` fails |
+| `validator` | [`scripts/validation/validate_config.py`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/scripts/validation/validate_config.py) fails |
 | `lock` | Installed files differ from `toolwright.lock.json` |
 | `state` | `.toolwright/state.json` is not a directory when present |
 | `mcp` | `opencode --standalone mcp list` fails for the target |
@@ -238,8 +238,8 @@ Component selection is shared, but each adapter supports a subset:
 |---|---|---|
 | `opencode` | `opencode`, `agents`, `commands`, `skills`, `ralph`, tool components | — |
 | `claude` | `agents`, `commands`, `skills` | `CLAUDE.md` |
-| `copilot` | `agents`, `commands`, `skills` | `.github/copilot-instructions.md`, `AGENTS.md` |
-| `codex` | `agents` | `AGENTS.md` |
+| `copilot` | `agents`, `commands`, `skills` | `.github/copilot-instructions.md`, [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) |
+| `codex` | `agents` | [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) |
 
 Apply performs these steps in order:
 
@@ -257,7 +257,7 @@ Apply performs these steps in order:
 6. Write `toolwright.lock.json` and `.toolwright/state.json`.
 
 The lock records the adapter, generator, and digest for every file. Uninstall removes files from
-any adapter recorded in the lock. See `docs/installation/adapter-validation.md` for real-repository
+any adapter recorded in the lock. See [`docs/installation/adapter-validation.md`](../installation/adapter-validation.md) for real-repository
 evidence.
 
 Re-running `--apply` without source or target changes reports `already up to date`,
@@ -307,7 +307,7 @@ toolwright rollback --target ../my-project --apply --backup ../my-project/.toolw
 ```
 
 Backups are created by `scripts/maintenance/backup-config.sh --project-only` and restored
-by `scripts/maintenance/restore-config.sh`. The restore overwrites `.opencode` and `.ralph`, so
+by [`scripts/maintenance/restore-config.sh`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/scripts/maintenance/restore-config.sh). The restore overwrites `.opencode` and `.ralph`, so
 `--yes` is mandatory.
 
 The shell installer also writes its own `.opencode-backup-<timestamp>` directory. That is
@@ -376,11 +376,11 @@ The `install` and `profile use` commands accept `--platform`; `uninstall`, `upda
 (`cli-tool/src/setup.js`, MIT) and `DVNghiem/FlowDeck` (`install.sh`, MIT). The lock and
 diff model follows the lockfile idea in `juanmanueldaza/nerv` (Apache-2.0). The
 implementation is original Python with no copied code; see
-`docs/provenance/registry.yml` entry `toolwright-cli`.
+[`docs/provenance/registry.yml`](../provenance/registry.yml) entry `toolwright-cli`.
 
 ## References
 
-- `docs/installation/toolwright-cli.md`
-- `docs/architecture/testing.md`
-- `docs/troubleshooting/ci.md`
-- `docs/decisions/ADR-005-cli-stack.md`
+- [`docs/installation/toolwright-cli.md`](../installation/toolwright-cli.md)
+- [`docs/architecture/testing.md`](../architecture/testing.md)
+- [`docs/troubleshooting/ci.md`](../troubleshooting/ci.md)
+- [`docs/decisions/ADR-005-cli-stack.md`](../decisions/ADR-005-cli-stack.md)

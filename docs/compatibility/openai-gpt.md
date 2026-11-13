@@ -1,8 +1,8 @@
 # OpenAI GPT and Codex
 
-> **Status:** Experimental · **Last verified:** 2026-11-13 · **Evidence:** Codex CLI 0.146.0 loaded the generated `AGENTS.md` through `codex debug prompt-input`; custom agent TOML fields match the documented schema, discovery not runtime-tested
+> **Status:** Experimental · **Last verified:** 2026-11-13 · **Evidence:** Codex CLI 0.146.0 loaded the generated [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) through `codex debug prompt-input`; custom agent TOML fields match the documented schema, discovery not runtime-tested
 
-OpenAI Codex reads `AGENTS.md` files before working and supports project-scoped custom agents as TOML files. ChatGPT desktop and Codex can run subagent workflows; ChatGPT projects and custom instructions carry the same project rules in chat contexts.
+OpenAI Codex reads [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) files before working and supports project-scoped custom agents as TOML files. ChatGPT desktop and Codex can run subagent workflows; ChatGPT projects and custom instructions carry the same project rules in chat contexts.
 
 ## Install with ToolWright
 
@@ -22,7 +22,7 @@ The lock records each generated path, its generator, and its digest. Existing de
 
 | Path | Source |
 |---|---|
-| `AGENTS.md` | `AGENTS.md` |
+| [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) | [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) |
 | `.codex/agents/<role>.toml` | `agents/<role>/AGENT.md` |
 
 Each custom agent file defines `name`, `description`, and `developer_instructions`, the three required fields in the Codex custom agent schema. Names use underscores, for example `code_reviewer`.
@@ -39,7 +39,7 @@ Write-capable roles omit `sandbox_mode` and inherit the parent session's setting
 
 | Path | Purpose |
 |---|---|
-| `AGENTS.md` | Repository guidance read by Codex |
+| [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) | Repository guidance read by Codex |
 | `AGENTS.override.md` | Optional override at the same directory level |
 | `~/.codex/AGENTS.md` | Global guidance for every repository |
 | `.codex/agents/<name>.toml` | Project-scoped custom agent |
@@ -65,7 +65,7 @@ Place the file at `.codex/agents/code_reviewer.toml`. Codex identifies the agent
 
 | ToolWright agent | Codex representation |
 |---|---|
-| `coordinator` | Main session plus `AGENTS.md` delegation rules |
+| `coordinator` | Main session plus [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) delegation rules |
 | `planner` | Custom agent whose instructions request planning only |
 | `researcher` | Custom agent whose instructions request read-heavy exploration |
 | `code-reviewer` | Custom agent whose instructions request read-only review |
@@ -92,7 +92,7 @@ Inside a generated target, run:
 codex debug prompt-input "Summarize the repository instructions."
 ```
 
-Codex CLI `0.146.0` returns the resolved prompt input as JSON. Search the output for `AGENTS.md` content such as the Git-safety rules to confirm that the project instructions load.
+Codex CLI `0.146.0` returns the resolved prompt input as JSON. Search the output for [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) content such as the Git-safety rules to confirm that the project instructions load.
 
 Custom agent discovery has no equivalent non-interactive inspection command. Confirm the TOML files parse and contain the required fields:
 
@@ -120,7 +120,7 @@ ChatGPT does not read repository files automatically. Reuse the same rules by:
 - Codex custom agents are TOML, not the Markdown frontmatter used by OpenCode, Claude, and Copilot.
 - OpenCode permission rules do not map directly to Codex sandbox settings.
 - Ralph's OpenCode backend is not used by Codex.
-- `AGENTS.md` loading was verified with Codex CLI `0.146.0`. Custom agent discovery was checked against the documented schema but not runtime-tested, because inspection requires an interactive `/agent` session or a model call.
+- [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) loading was verified with Codex CLI `0.146.0`. Custom agent discovery was checked against the documented schema but not runtime-tested, because inspection requires an interactive `/agent` session or a model call.
 - The adapter writes project-scoped files only. It does not modify `~/.codex/agents/` or `~/.codex/config.toml`.
 
 ## References

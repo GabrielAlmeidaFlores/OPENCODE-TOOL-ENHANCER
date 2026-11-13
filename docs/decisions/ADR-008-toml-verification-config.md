@@ -14,7 +14,7 @@ Python 3.11 provides `tomllib` in the standard library. TOML supports tables, ne
 
 ## Decision
 
-Use `.toolwright/config.toml` with this shape:
+Use [`.toolwright/config.toml`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/.toolwright/config.toml) with this shape:
 
 ```toml
 [verify]
@@ -39,7 +39,7 @@ max_iterations = 40
 
 ## Consequences
 
-- The plan's YAML filename is superseded; documentation and scripts use `.toolwright/config.toml`.
+- The plan's YAML filename is superseded; documentation and scripts use [`.toolwright/config.toml`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/.toolwright/config.toml).
 - Profiles remain YAML because they are flat and read by the restricted loader.
 - The configuration is not editable with YAML tooling; `tomllib` and common editors support TOML.
 - `toolwright verify` works without any optional dependency, unlike catalog generation.
@@ -52,6 +52,6 @@ max_iterations = 40
 
 ## References
 
-- `docs/verification/README.md`
-- `docs/governance/README.md`
+- [`docs/verification/README.md`](../verification/README.md)
+- [`docs/governance/README.md`](../governance/README.md)
 - https://docs.python.org/3/library/tomllib.html

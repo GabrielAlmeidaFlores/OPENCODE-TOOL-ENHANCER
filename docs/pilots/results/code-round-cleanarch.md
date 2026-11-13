@@ -66,5 +66,5 @@ The sub-agent could not complete every unit-test run because of a test-host hang
 
 ## References
 
-- `docs/pilots/results/round-1.md`
+- [`docs/pilots/results/round-1.md`](round-1.md)
 - `docs/pilots/results/cleanarch/`

@@ -15,7 +15,7 @@ Token reduction alone is not a valid result.
 | Arm | Definition |
 | --- | --- |
 | Baseline | Stock OpenCode, default Build agent, no custom MCP servers |
-| Optimized | `configs/opencode/opencode.jsonc`, `coordinator`, full toolset |
+| Optimized | [`configs/opencode/opencode.jsonc`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/configs/opencode/opencode.jsonc), `coordinator`, full toolset |
 
 Both arms use the same repository commit, the same model ID and variant, and the same task definitions.
 
@@ -72,7 +72,7 @@ OPENCODE_BENCH_MODEL=provider/model ./benchmarks/harness/run.sh --arm baseline -
 OPENCODE_BENCH_MODEL=provider/model ./benchmarks/harness/run.sh --arm optimized --task benchmarks/tasks/ts-validation.json
 ```
 
-For an agent-assisted run, use the sourced `perf` command (`commands/perf.md`) or run the harness directly.
+For an agent-assisted run, use the sourced `perf` command ([`commands/perf.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/commands/perf.md)) or run the harness directly.
 
 
 The harness does not call a model by itself; it assumes `opencode run` is configured and authenticated. It records artifacts and refuses to overwrite an existing run ID.
@@ -87,7 +87,7 @@ Place results in `benchmarks/results/<run-id>/` with:
 - `verification.log`
 - `notes.md`
 
-The first result set is published at `docs/benchmarks/results-deepseek-flash.md`. It reports 30 isolated runs across 5 tasks, 2 arms, and 3 repeats with `deepseek/deepseek-flash`.
+The first result set is published at [`docs/benchmarks/results-deepseek-flash.md`](results-deepseek-flash.md). It reports 30 isolated runs across 5 tasks, 2 arms, and 3 repeats with `deepseek/deepseek-flash`.
 
 The optimized configuration did not reduce cost in that result set. Do not generalize that negative result to other models or task sizes without running the harness.
 

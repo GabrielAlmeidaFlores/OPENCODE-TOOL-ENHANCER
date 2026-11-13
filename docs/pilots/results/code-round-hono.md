@@ -50,5 +50,5 @@ Task 5 was rerun to cache internally while returning a fresh object per no-key c
 
 ## References
 
-- `docs/pilots/results/round-1.md`
-- `docs/pilots/README.md`
+- [`docs/pilots/results/round-1.md`](round-1.md)
+- [`docs/pilots/README.md`](../README.md)

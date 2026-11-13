@@ -30,4 +30,4 @@ Status reflects the repository, not intentions. All planned phases are complete.
 
 ## Evidence
 
-Each phase is complete only when its acceptance criteria and CI checks pass. See `docs/RELEASE_CHECKLIST.md`, `docs/validation-checklist.md`, and the CI runs linked from the README.
+Each phase is complete only when its acceptance criteria and CI checks pass. See [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md), [`docs/validation-checklist.md`](docs/validation-checklist.md), and the CI runs linked from the README.

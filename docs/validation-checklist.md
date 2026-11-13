@@ -23,13 +23,13 @@ Then complete the manual checks for your environment.
 
 - [ ] `./scripts/validation/validate.sh` prints `OK`.
 - [ ] `python3 -m unittest discover -s tests -t .` passes.
-- [ ] `VERSION` contains a semantic version.
+- [ ] [`VERSION`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/VERSION) contains a semantic version.
 - [ ] JSON/JSONC files parse and contain `$schema`.
 - [ ] Ralph YAML files parse.
 - [ ] All 12 agent files exist with valid `mode`.
 - [ ] All 10 skills exist with a matching `name` and provenance metadata.
 - [ ] Every agent, command, and hat has a provenance header.
-- [ ] `docs/provenance/registry.yml` points only to existing local paths.
+- [ ] [`docs/provenance/registry.yml`](provenance/registry.yml) points only to existing local paths.
 - [ ] Every `docs/` page outside `decisions/` has status, last-verified, and evidence fields.
 - [ ] Comments follow AGENTS.md Section 2C across `scripts/`, `packages/`, `skills/`, and `tests/`: file headers and contract docstrings only, with block-form Python docstrings when present, JSDoc for TypeScript, and XML documentation for C#.
 - [ ] No inline comments or commented-out code in scripts, configs, or examples.
@@ -39,7 +39,7 @@ Then complete the manual checks for your environment.
 ## CLI
 
 - [ ] `python3 -m pip wheel ./packages/toolwright_cli --no-deps` builds a wheel.
-- [ ] `toolwright --version` matches `VERSION`.
+- [ ] `toolwright --version` matches [`VERSION`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/VERSION).
 - [ ] `toolwright doctor --json` exits 0 with no failures.
 - [ ] `toolwright install --dry-run` lists files and writes nothing.
 - [ ] `toolwright install --apply` writes a lock and state, and a second apply reports `already up to date`.
@@ -47,8 +47,8 @@ Then complete the manual checks for your environment.
 - [ ] `toolwright uninstall` without `--yes` refuses; with `--apply --yes` removes only unmodified managed files.
 - [ ] `toolwright rollback` lists backups without changing files.
 - [ ] `toolwright install --platform claude --apply` writes `CLAUDE.md`, agents, commands, and skills without `.opencode/`.
-- [ ] `toolwright install --platform copilot --apply` writes repository instructions, path instructions, prompts, skills, and `AGENTS.md`.
-- [ ] `toolwright install --platform codex --apply` writes `AGENTS.md` and read-only agent TOMLs with `sandbox_mode = "read-only"`.
+- [ ] `toolwright install --platform copilot --apply` writes repository instructions, path instructions, prompts, skills, and [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md).
+- [ ] `toolwright install --platform codex --apply` writes [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md) and read-only agent TOMLs with `sandbox_mode = "read-only"`.
 - [ ] `./scripts/validation/check_adapter_discovery.sh` exits 0 and skips unavailable CLIs.
 
 ## Stats, evals, and pilots
@@ -89,7 +89,7 @@ Then complete the manual checks for your environment.
 - [ ] `toolwright profile verify` exits 0 for every manifest.
 - [ ] `toolwright profile use minimal --target /tmp/check --dry-run` lists files and writes nothing.
 - [ ] `toolwright catalog verify` reports zero failures.
-- [ ] `toolwright catalog verify --check-drift` matches `docs/provenance/registry.yml`.
+- [ ] `toolwright catalog verify --check-drift` matches [`docs/provenance/registry.yml`](provenance/registry.yml).
 - [ ] `python3 scripts/catalog/build_catalog.py --check` exits 0.
 - [ ] `toolwright compat --json` returns the V1/V2 matrix.
 - [ ] Adding a provenance entry and regenerating changes both catalog files together.
@@ -156,7 +156,7 @@ Then complete the manual checks for your environment.
 - [ ] `mkdocs build --strict` passes.
 - [ ] `python3 scripts/release/check_version.py` passes.
 - [ ] `python3 scripts/maintenance/check_upstream_drift.py --offline` lists every source.
-- [ ] `SECURITY.md`, `SUPPORT.md`, `ROADMAP.md`, and `CODE_OF_CONDUCT.md` exist.
+- [ ] [`SECURITY.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/SECURITY.md), [`SUPPORT.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/SUPPORT.md), [`ROADMAP.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/ROADMAP.md), and [`CODE_OF_CONDUCT.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/CODE_OF_CONDUCT.md) exist.
 - [ ] The release and upstream-drift workflows parse as valid YAML.
 
 ## Documentation

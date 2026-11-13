@@ -28,7 +28,7 @@ rg --files -g '*.cs' src/
 ## Strengths
 
 - Fast, deterministic, no model tokens.
-- Respects `.gitignore` by default.
+- Respects [`.gitignore`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/.gitignore) by default.
 - Excellent for confirming whether a symbol name exists before deeper analysis.
 
 ## Limits

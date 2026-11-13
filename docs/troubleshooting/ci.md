@@ -16,7 +16,7 @@ opencode not found
 
 ### Root cause
 
-`benchmarks/harness/run.sh` required `opencode` and `python3` before evaluating `--dry-run`.
+[`benchmarks/harness/run.sh`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/benchmarks/harness/run.sh) required `opencode` and `python3` before evaluating `--dry-run`.
 The `harness` job installs neither, so the job could never pass. The dry-run only needs
 Python to read the task definition; it does not execute OpenCode.
 
@@ -176,6 +176,6 @@ discovery with a pinned version, and benchmark dry-runs. Action majors are `chec
 
 ## References
 
-- `.github/workflows/validate.yml`
-- `docs/architecture/testing.md`
-- `docs/validation-checklist.md`
+- [`.github/workflows/validate.yml`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/.github/workflows/validate.yml)
+- [`docs/architecture/testing.md`](../architecture/testing.md)
+- [`docs/validation-checklist.md`](../validation-checklist.md)

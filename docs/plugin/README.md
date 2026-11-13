@@ -78,10 +78,10 @@ This used a temporary instrumented copy of the plugin for log assertions. The sh
 
 ## Design reference
 
-The session `context` hook pattern follows `aerovato/operator-memory`'s OpenCode V2 adapter (BSD-3-Clause); the opt-in plugin structure follows `DVNghiem/FlowDeck` (MIT). The implementation is original JavaScript; see the `task-board-and-plugin` entry in `docs/provenance/registry.yml`.
+The session `context` hook pattern follows `aerovato/operator-memory`'s OpenCode V2 adapter (BSD-3-Clause); the opt-in plugin structure follows `DVNghiem/FlowDeck` (MIT). The implementation is original JavaScript; see the `task-board-and-plugin` entry in [`docs/provenance/registry.yml`](../provenance/registry.yml).
 
 ## References
 
-- `docs/memory/README.md`
-- `docs/cli/README.md`
+- [`docs/memory/README.md`](../memory/README.md)
+- [`docs/cli/README.md`](../cli/README.md)
 - https://opencode.ai/docs/build/plugins/

@@ -9,11 +9,11 @@ Use this checklist before tagging a release. A checked item must have reproducib
 - [ ] Working tree clean.
 - [ ] `./scripts/validation/validate.sh --links` passes.
 - [ ] `make test` passes.
-- [ ] `VERSION` matches the release tag.
+- [ ] [`VERSION`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/VERSION) matches the release tag.
 - [ ] `git diff --check` passes.
 - [ ] No credentials or machine-specific paths are committed.
-- [ ] `THIRD_PARTY_NOTICES.md` matches the current sources.
-- [ ] `docs/provenance/registry.yml` points to existing paths and authors.
+- [ ] [`THIRD_PARTY_NOTICES.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/THIRD_PARTY_NOTICES.md) matches the current sources.
+- [ ] [`docs/provenance/registry.yml`](provenance/registry.yml) points to existing paths and authors.
 
 ## Configuration
 
@@ -33,7 +33,7 @@ Use this checklist before tagging a release. A checked item must have reproducib
 ## CLI
 
 - [ ] `python3 -m pip wheel ./packages/toolwright_cli --no-deps` builds a wheel.
-- [ ] `toolwright --version` matches `VERSION`.
+- [ ] `toolwright --version` matches [`VERSION`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/VERSION).
 - [ ] `toolwright doctor --json` exits 0.
 - [ ] `toolwright install --apply` into a temporary target writes a lock and state.
 - [ ] A second `toolwright install --apply` reports `already up to date`.
@@ -46,12 +46,12 @@ Use this checklist before tagging a release. A checked item must have reproducib
 - [ ] `toolwright profile verify` passes.
 - [ ] `toolwright catalog verify` passes.
 - [ ] `toolwright catalog verify --check-drift` passes.
-- [ ] `catalog/registry.json` and `catalog/index.md` match the provenance registry.
+- [ ] [`catalog/registry.json`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/catalog/registry.json) and [`catalog/index.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/catalog/index.md) match the provenance registry.
 - [ ] `toolwright compat` reflects the pinned OpenCode versions.
 
 ## Verification and governance
 
-- [ ] `toolwright verify` passes with the committed `.toolwright/config.toml`.
+- [ ] `toolwright verify` passes with the committed [`.toolwright/config.toml`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/.toolwright/config.toml).
 - [ ] Failing checks return a non-zero exit and a failure class.
 - [ ] `toolwright govern contracts` passes.
 - [ ] Governance limits and risk gates match the documented defaults.
@@ -67,7 +67,7 @@ Use this checklist before tagging a release. A checked item must have reproducib
 ## Memory and specs
 
 - [ ] Memory and spec commands are covered by tests.
-- [ ] `.toolwright/memory/catalog.md` matches the entries.
+- [ ] [`.toolwright/memory/catalog.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/.toolwright/memory/catalog.md) matches the entries.
 - [ ] No credential-shaped text is committed under `.toolwright/memory/`.
 - [ ] `specs/` contains no placeholder-only spec marked complete.
 
@@ -107,13 +107,13 @@ Use this checklist before tagging a release. A checked item must have reproducib
 - [ ] Plugin file syntax passes `node --check`.
 
 ## Release
-- [ ] `CHANGELOG.md` has an entry for the release.
+- [ ] [`CHANGELOG.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/CHANGELOG.md) has an entry for the release.
 - [ ] Version follows semantic versioning.
 - [ ] Tag and release notes exist.
 - [ ] Upgrade and rollback paths are documented.
 - [ ] `python3 scripts/release/check_version.py` passes.
 - [ ] `mkdocs build --strict` passes.
 - [ ] A `v<VERSION>` tag produces a release with the wheel and `SHA256SUMS`.
-- [ ] The release workflow verifies the tag against `VERSION`.
+- [ ] The release workflow verifies the tag against [`VERSION`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/VERSION).
 - [ ] The upstream drift workflow is enabled.
 - [ ] Upstream pins for OpenCode, Ralph, Serena, and CodeGraph are current or intentionally pinned.

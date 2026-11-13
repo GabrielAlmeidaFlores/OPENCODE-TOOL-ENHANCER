@@ -1,6 +1,6 @@
 # Benchmark Results
 
-The first published result set is `deepseek-flash-2026-11-13/`, summarized in `../../docs/benchmarks/results-deepseek-flash.md`.
+The first published result set is [`deepseek-flash-2026-11-13/`](deepseek-flash-2026-11-13/), summarized in the [DeepSeek Flash results](../../docs/benchmarks/results-deepseek-flash.md).
 
 A result is accepted only if it includes:
 

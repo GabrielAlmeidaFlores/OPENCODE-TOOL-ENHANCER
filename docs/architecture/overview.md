@@ -2,7 +2,7 @@
 
 > **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
 
-This page describes the OpenCode reference adapter. The provider-neutral core is under `agents/`, `commands/`, `skills/`, and `AGENTS.md`; the adapter mapping for Claude, GitHub Copilot, and ChatGPT/Codex is described in `docs/compatibility/`.
+This page describes the OpenCode reference adapter. The provider-neutral core is under `agents/`, `commands/`, `skills/`, and [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md); the adapter mapping for Claude, GitHub Copilot, and ChatGPT/Codex is described in `docs/compatibility/`.
 
 ## Layers
 
@@ -58,7 +58,7 @@ This page describes the OpenCode reference adapter. The provider-neutral core is
 | OpenCode sessions | OpenCode data directory | OpenCode |
 | CodeGraph index | `.codegraph/` | CodeGraph |
 | Serena memories | Serena project config | Serena |
-| Repository instructions | `AGENTS.md`, `.opencode/` | Human |
+| Repository instructions | [`AGENTS.md`](https://github.com/GabrielAlmeidaFlores/ToolWright/blob/main/AGENTS.md), `.opencode/` | Human |
 
 ## Cost boundaries
 
