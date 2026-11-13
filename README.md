@@ -94,6 +94,7 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 The diagram below follows one request from start to finish. It shows where your task enters, how the adapter hands it to the coordinator, which specialist groups do the work, and where the quality gates decide whether the result is ready.
 
 ```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"Inter, system-ui, sans-serif","lineColor":"#22D3EE","edgeLabelBackground":"#E2E8F0"}}}%%
 flowchart TB
     U([Your task or question]) --> A[Platform adapter<br/>OpenCode · Claude · Copilot · Codex]
     A --> C{{Coordinator<br/>plans · delegates · verifies}}
@@ -108,13 +109,13 @@ flowchart TB
     V --> Q
     Q -->|pass| DONE([Reviewed, unstaged change])
 
-    classDef human fill:#FEF3C7,stroke:#B45309,stroke-width:2px,color:#111827
-    classDef adapter fill:#E0F2FE,stroke:#0369A1,stroke-width:2px,color:#0C4A6E
-    classDef coord fill:#4F46E5,stroke:#312E81,stroke-width:2px,color:#FFFFFF
-    classDef agent fill:#E0E7FF,stroke:#4F46E5,stroke-width:1.5px,color:#111827
-    classDef resource fill:#D1FAE5,stroke:#047857,stroke-width:1.5px,color:#052E16
-    classDef gate fill:#FCE7F3,stroke:#BE185D,stroke-width:2px,color:#111827
-    classDef done fill:#DCFCE7,stroke:#15803D,stroke-width:2px,color:#052E16
+    classDef human fill:#2A1A05,stroke:#FBBF24,stroke-width:2.5px,color:#FDE68A
+    classDef adapter fill:#071A22,stroke:#22D3EE,stroke-width:2.5px,color:#A5F3FC
+    classDef coord fill:#1E0B36,stroke:#A855F7,stroke-width:3px,color:#F3E8FF
+    classDef agent fill:#0B1226,stroke:#6366F1,stroke-width:2px,color:#E0E7FF
+    classDef resource fill:#071A12,stroke:#4ADE80,stroke-width:2px,color:#DCFCE7
+    classDef gate fill:#2A0A1A,stroke:#F472B6,stroke-width:2.5px,color:#FCE7F3
+    classDef done fill:#052E16,stroke:#A3E635,stroke-width:2.5px,color:#ECFCCB
     class U human
     class A adapter
     class C coord
@@ -122,7 +123,19 @@ flowchart TB
     class K resource
     class Q gate
     class DONE done
+    linkStyle default stroke:#22D3EE,stroke-width:1.5px
 ```
+
+The same neon palette is used in every diagram:
+
+| Colour | Meaning |
+|---|---|
+| **Amber** | Your input, a start point, or a proposed change |
+| **Cyan** | Platform adapter, flow, or a normal step |
+| **Violet** | Coordinator or orchestration layer |
+| **Indigo** | Specialist agents and builders |
+| **Green** | Resources, verification, and a ready result |
+| **Magenta** | Decisions and quality gates |
 
 1. **Choose an adapter.** The same roles are installed or mapped onto your platform.
 2. **The coordinator takes the request.** It clarifies the outcome, picks the smallest capable specialist, and never edits files itself.
@@ -151,6 +164,7 @@ The reusable content is the same everywhere. Only the adapter files and permissi
 The chart below shows the reusable artifact mix in the repository. It is a composition overview, not a performance metric.
 
 ```mermaid
+%%{init: {"theme":"base","themeVariables":{"pie1":"#22D3EE","pie2":"#A855F7","pie3":"#F472B6","pie4":"#A3E635","pieTitleTextSize":"18px","pieTitleTextColor":"#94A3B8","pieSectionTextColor":"#070B14","pieStrokeColor":"#070B14","pieOuterStrokeColor":"#22D3EE","pieLegendTextColor":"#94A3B8"}}}%%
 pie showData
     title Artifact portfolio
     "Agents" : 12
@@ -277,6 +291,7 @@ With another adapter, open the repository in that platform and invoke the mapped
 The decision tree below helps you pick an entry point from the kind of work you have. Follow one branch; the detailed versions are in [Daily workflows](#daily-workflows).
 
 ```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"Inter, system-ui, sans-serif","lineColor":"#22D3EE","edgeLabelBackground":"#E2E8F0"}}}%%
 flowchart TD
     S([What do you need?]) --> Q1{Understand or plan?}
     Q1 -->|Understand the code| A1[Coordinator + code intelligence]
@@ -297,14 +312,15 @@ flowchart TD
     Q4 -->|Implementation| D1[Ralph code-assist]
     Q4 -->|Research only| D2[Ralph research]
 
-    classDef start fill:#FEF3C7,stroke:#B45309,stroke-width:2px,color:#111827
-    classDef question fill:#FCE7F3,stroke:#BE185D,stroke-width:2px,color:#111827
-    classDef action fill:#E0E7FF,stroke:#4F46E5,stroke-width:1.5px,color:#111827
-    classDef command fill:#D1FAE5,stroke:#047857,stroke-width:1.5px,color:#052E16
+    classDef start fill:#2A1A05,stroke:#FBBF24,stroke-width:2.5px,color:#FDE68A
+    classDef question fill:#2A0A1A,stroke:#F472B6,stroke-width:2.5px,color:#FCE7F3
+    classDef action fill:#1E0B36,stroke:#A855F7,stroke-width:2px,color:#F3E8FF
+    classDef command fill:#071A22,stroke:#2DD4BF,stroke-width:2px,color:#CCFBF1
     class S start
     class Q1,Q2,Q3,Q4 question
     class A1,A2,D1,D2 action
     class B1,B2,B3,B4,C1,C2,C3 command
+    linkStyle default stroke:#22D3EE,stroke-width:1.5px
 ```
 
 The detailed versions are in [Daily workflows](#daily-workflows).
@@ -314,6 +330,7 @@ The detailed versions are in [Daily workflows](#daily-workflows).
 The diagram below is the team structure for one task. The coordinator delegates to a specialist group, and every branch returns evidence to the coordinator rather than editing outside its role.
 
 ```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"Inter, system-ui, sans-serif","lineColor":"#22D3EE","edgeLabelBackground":"#E2E8F0"}}}%%
 flowchart LR
     C{{Coordinator<br/>plans · delegates · verifies}}
     C --> THINK[Think]
@@ -336,18 +353,19 @@ flowchart LR
 
     DOC --> DE[Documentation engineer]
 
-    classDef coord fill:#4F46E5,stroke:#312E81,stroke-width:2px,color:#FFFFFF
-    classDef cat fill:#0F172A,stroke:#0F172A,stroke-width:2px,color:#FFFFFF
-    classDef think fill:#FEF3C7,stroke:#B45309,stroke-width:1.5px,color:#111827
-    classDef build fill:#E0E7FF,stroke:#4F46E5,stroke-width:1.5px,color:#111827
-    classDef verify fill:#D1FAE5,stroke:#047857,stroke-width:1.5px,color:#052E16
-    classDef doc fill:#FCE7F3,stroke:#BE185D,stroke-width:1.5px,color:#111827
+    classDef coord fill:#1E0B36,stroke:#A855F7,stroke-width:3px,color:#F3E8FF
+    classDef cat fill:#0F172A,stroke:#22D3EE,stroke-width:2.5px,color:#E0F2FE
+    classDef think fill:#2A1A05,stroke:#FBBF24,stroke-width:2px,color:#FDE68A
+    classDef build fill:#0B1226,stroke:#6366F1,stroke-width:2px,color:#E0E7FF
+    classDef verify fill:#071A12,stroke:#4ADE80,stroke-width:2px,color:#DCFCE7
+    classDef doc fill:#2A0A1A,stroke:#F472B6,stroke-width:2px,color:#FCE7F3
     class C coord
     class THINK,BUILD,VERIFY,DOC cat
     class PL,RE,AR think
     class BE,FE,DB build
     class CR,TE,SR,PA verify
     class DE doc
+    linkStyle default stroke:#22D3EE,stroke-width:1.5px
 ```
 
 The table below is the quick reference for responsibilities and edit access.
@@ -374,6 +392,7 @@ Read the delegation rules in [Agent roles](docs/agents/roles.md).
 The sequence diagram below shows the normal lifecycle of a task, including the specialist handoff, the narrow checks, the independent review, and the evidence you receive at the end.
 
 ```mermaid
+%%{init: {"theme":"base","themeVariables":{"actorBkg":"#0B1226","actorBorder":"#22D3EE","actorTextColor":"#94A3B8","signalColor":"#22D3EE","signalTextColor":"#94A3B8","labelBoxBkgColor":"#1E0B36","labelBoxBorderColor":"#A855F7","labelTextColor":"#F3E8FF","loopTextColor":"#94A3B8","noteBkgColor":"#2A0A1A","noteBorderColor":"#F472B6","noteTextColor":"#FCE7F3","activationBkgColor":"#1E0B36","activationBorderColor":"#A855F7"}}}%%
 sequenceDiagram
     autonumber
     actor H as You
@@ -411,6 +430,7 @@ You always get:
 The flowchart below shows the checks a change passes through before a human sees it. A failed gate returns the work for another attempt instead of being reported as success.
 
 ```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"Inter, system-ui, sans-serif","lineColor":"#22D3EE","edgeLabelBackground":"#E2E8F0"}}}%%
 flowchart LR
     CHANGE([Change proposed]) --> L[Lint & typecheck]
     L --> T[Targeted tests]
@@ -423,14 +443,15 @@ flowchart LR
     EVIDENCE -->|Yes| HUMAN([Human reviews and commits])
     EVIDENCE -->|No| CHANGE
 
-    classDef change fill:#FEF3C7,stroke:#B45309,stroke-width:2px,color:#111827
-    classDef step fill:#E0E7FF,stroke:#4F46E5,stroke-width:1.5px,color:#111827
-    classDef decision fill:#FCE7F3,stroke:#BE185D,stroke-width:2px,color:#111827
-    classDef done fill:#DCFCE7,stroke:#15803D,stroke-width:2px,color:#052E16
+    classDef change fill:#2A1A05,stroke:#FBBF24,stroke-width:2.5px,color:#FDE68A
+    classDef step fill:#071A22,stroke:#22D3EE,stroke-width:2px,color:#A5F3FC
+    classDef decision fill:#2A0A1A,stroke:#F472B6,stroke-width:2.5px,color:#FCE7F3
+    classDef done fill:#052E16,stroke:#A3E635,stroke-width:2.5px,color:#ECFCCB
     class CHANGE change
     class L,T,F,RV,SEC step
     class RISK,EVIDENCE decision
     class HUMAN done
+    linkStyle default stroke:#22D3EE,stroke-width:1.5px
 ```
 
 The gates are intentionally boring: run the checks, read the diff, and let a human decide. Boring is what makes the result trustworthy.
