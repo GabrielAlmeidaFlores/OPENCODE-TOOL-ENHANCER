@@ -690,7 +690,7 @@ ToolWright is deliberately strict about automation.
 - **Destructive commands are denied.** `sudo`, `rm -rf`, force-push, and destructive Git operations are blocked or require approval.
 - **Installer defaults to inspection.** `--check` and `--dry-run` are safe; `--apply` is explicit and creates a backup.
 
-Read [AGENTS.md](AGENTS.md) Sections 2A, 2B, and 2C.
+Read [AGENTS.md](AGENTS.md) Sections 2A, 2B, and 2C for artifact and Git rules. Sections 17–23 define the change, changelog, release, benchmark, and documentation workflows.
 
 ### Provenance
 

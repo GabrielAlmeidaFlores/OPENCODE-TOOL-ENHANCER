@@ -49,6 +49,7 @@ The validator checks JSON/JSONC/YAML syntax, required files, schema keys, and do
 - Use only documented V2 fields. Validate against `https://opencode.ai/config.json`.
 - Do not hardcode model identifiers. Use the routing overlay or environment variables.
 - Run the validator before opening a pull request.
+- Follow `AGENTS.md` Sections 17–20 for change classification, changelog entries, and release steps.
 
 ## Comment style
 
