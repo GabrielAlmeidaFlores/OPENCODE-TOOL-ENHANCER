@@ -46,8 +46,9 @@ The workflow never stages or commits. It only publishes artifacts for the tag.
 | `v0.1.2` | 2026-11-12 | `ote_cli-0.1.2-py3-none-any.whl`, `SHA256SUMS` | Checksum verified |
 | `v0.2.0` | 2026-11-13 | `toolwright_cli-0.2.0-py3-none-any.whl`, `SHA256SUMS` | Checksum verified; released from commit `f978b46` |
 | `v0.3.0` | 2026-11-13 | `toolwright_cli-0.3.0-py3-none-any.whl`, `SHA256SUMS` | Checksum verified; wheel reports `0.3.0`; Codex adapter generated from the installed wheel; released from commit `5088ccf` |
+| `v0.3.1` | 2026-11-13 | `toolwright_cli-0.3.1-py3-none-any.whl`, `SHA256SUMS` | Checksum verified; wheel reports `0.3.1`; Copilot and Codex install followed by uninstall left no managed files or lock entries; released from commit `41b514e` |
 
-Releases up to `v0.1.2` used the historical `ote-cli` package and `ote` command. `v0.2.0` is the first ToolWright-named release. `v0.3.0` is the first release with Claude, Copilot, and Codex adapters.
+Releases up to `v0.1.2` used the historical `ote-cli` package and `ote` command. `v0.2.0` is the first ToolWright-named release. `v0.3.0` is the first release with Claude, Copilot, and Codex adapters. `v0.3.1` fixes adapter uninstall for shared generated paths.
 
 ## Verify a release
 
