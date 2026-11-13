@@ -22,7 +22,7 @@ import argparse
 
 from ..common import emit_payload, print_install_result, resolve_repository_root
 from ...constants import (
-    KEY_ARTIFACTS, KEY_COMPONENTS, KEY_DETAIL, KEY_ID, KEY_NAME, KEY_PATH,
+    KEY_ARTIFACTS, KEY_COMPONENTS, KEY_DETAIL, KEY_ID, KEY_NAME, KEY_OUTPUT, KEY_PATH,
     KEY_PROFILE, KEY_STATUS, KEY_TYPE, STATUS_FAIL, STATUS_OK, SEPARATOR_COMMA_SPACE,
 )
 from ...cli_constants import (
