@@ -1,0 +1,4 @@
+ M examples/csharp/Example.Tests/Example.Tests.csproj
+ M examples/csharp/Example.Tests/ValidationTests.cs
+ M examples/csharp/Example/Example.csproj
+ M examples/csharp/Example/Program.cs

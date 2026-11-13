@@ -1,0 +1,124 @@
+diff --git a/examples/typescript/src/app.test.ts b/examples/typescript/src/app.test.ts
+index 15cd72f..4e9085a 100644
+--- a/examples/typescript/src/app.test.ts
++++ b/examples/typescript/src/app.test.ts
+@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
+ import { validateCreateUser } from "./validation.js";
+ import { lineTotal, orderTotal } from "./pricing.js";
+ import { loadOrders, type OrderStore } from "./repository.js";
+-import { resolveUserFile, BASE_DIR } from "./files.js";
++import { resolveUserFile, BASE_DIR, ERROR_INVALID_FILE_NAME } from "./files.js";
+ 
+ test("validates a valid user", () => {
+   assert.deepEqual(validateCreateUser({ email: "a@b.co", name: "Ada", age: 30 }), {
+@@ -46,4 +46,32 @@ test("loads orders in order", async () => {
+ 
+ test("resolves a normal file name", () => {
+   assert.equal(resolveUserFile("avatar.png"), `${BASE_DIR}/avatar.png`);
++  assert.equal(resolveUserFile("report-2026.v2.tar.gz"), `${BASE_DIR}/report-2026.v2.tar.gz`);
++  assert.equal(resolveUserFile("100%.png"), `${BASE_DIR}/100%.png`);
++});
++
++test("rejects path traversal names", () => {
++  for (const name of [
++    "../etc/passwd",
++    "../../etc/passwd",
++    "..",
++    ".",
++    "/etc/passwd",
++    "sub/file.png",
++    "..\\..\\windows\\system32",
++  ]) {
++    assert.throws(() => resolveUserFile(name), new RegExp(ERROR_INVALID_FILE_NAME), name);
++  }
++});
++
++test("rejects encoded path traversal names", () => {
++  for (const name of [
++    "%2e%2e%2fetc%2fpasswd",
++    "%2E%2E%5C..%5Cwindows",
++    "..%2f..%2fetc%2fpasswd",
++    "%252e%252e%252fetc%252fpasswd",
++    "%2fetc%2fpasswd",
++  ]) {
++    assert.throws(() => resolveUserFile(name), new RegExp(ERROR_INVALID_FILE_NAME), name);
++  }
+ });
+diff --git a/examples/typescript/src/files.ts b/examples/typescript/src/files.ts
+index 642f872..927b5e9 100644
+--- a/examples/typescript/src/files.ts
++++ b/examples/typescript/src/files.ts
+@@ -1,15 +1,68 @@
+-import { join } from "node:path";
++import { isAbsolute, relative, resolve, sep } from "node:path";
+ 
+ /** Base directory used by {@link resolveUserFile}. */
+ export const BASE_DIR = "/srv/user-files";
+ 
++/** Message used when a file name is not a single, safe path segment. */
++export const ERROR_INVALID_FILE_NAME = "Invalid file name";
++
++const PATH_SEPARATOR_PATTERN = /[\\/]/;
++const PARENT_SEGMENT_PATTERN = /(^|[\\/])\.\.([\\/]|$)/;
++const NULL_BYTE = "\u0000";
++const MAX_DECODE_PASSES = 4;
++
+ /**
+- * Resolves a user-supplied file name under {@link BASE_DIR}.
++ * Decodes percent-encoded input until it stops changing.
+  *
+  * @param name - User-supplied file name.
+- * @returns The joined path.
+- * @remarks Intentionally vulnerable to path traversal to support the security benchmark task.
++ * @returns The fully decoded form, or the last successfully decoded form when an escape sequence is malformed.
++ * @remarks Repeated decoding detects nested encodings such as `%252e%252e`. Malformed escapes are left undecoded so that literal `%` characters in valid names are not rejected.
++ */
++function decodeForValidation(name: string): string {
++  let current = name;
++  for (let pass = 0; pass < MAX_DECODE_PASSES; pass += 1) {
++    let decoded: string;
++    try {
++      decoded = decodeURIComponent(current);
++    } catch {
++      return current;
++    }
++    if (decoded === current) {
++      return current;
++    }
++    current = decoded;
++  }
++  return current;
++}
++
++/**
++ * Resolves a user-supplied file name under {@link BASE_DIR}.
++ *
++ * @param name - User-supplied file name, which must be a single path segment.
++ * @returns The absolute path of the named file inside {@link BASE_DIR}.
++ * @throws Error with message {@link ERROR_INVALID_FILE_NAME} when the name is empty, absolute, contains a path separator or null byte, or resolves outside {@link BASE_DIR}.
+  */
+ export function resolveUserFile(name: string): string {
+-  return join(BASE_DIR, name);
++  const decodedName = decodeForValidation(name);
++
++  if (
++    decodedName.length === 0 ||
++    decodedName === "." ||
++    decodedName === ".." ||
++    decodedName.includes(NULL_BYTE) ||
++    isAbsolute(decodedName) ||
++    PATH_SEPARATOR_PATTERN.test(decodedName) ||
++    PARENT_SEGMENT_PATTERN.test(decodedName)
++  ) {
++    throw new Error(ERROR_INVALID_FILE_NAME);
++  }
++
++  const resolvedPath = resolve(BASE_DIR, name);
++  const pathFromBase = relative(BASE_DIR, resolvedPath);
++
++  if (pathFromBase === ".." || pathFromBase.startsWith(`..${sep}`) || isAbsolute(pathFromBase)) {
++    throw new Error(ERROR_INVALID_FILE_NAME);
++  }
++
++  return resolvedPath;
+ }

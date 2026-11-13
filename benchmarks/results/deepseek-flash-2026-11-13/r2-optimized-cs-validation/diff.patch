@@ -1,0 +1,291 @@
+diff --git a/examples/csharp/Example.Tests/CreateUserEndpointTests.cs b/examples/csharp/Example.Tests/CreateUserEndpointTests.cs
+new file mode 100644
+index 0000000..ebf4801
+--- /dev/null
++++ b/examples/csharp/Example.Tests/CreateUserEndpointTests.cs
+@@ -0,0 +1,130 @@
++using System.Text.Json;
++using Example;
++using Xunit;
++
++namespace Example.Tests;
++
++/// <summary>Tests for <see cref="CreateUserEndpoint"/> payload handling.</summary>
++public class CreateUserEndpointTests
++{
++    /// <summary>Verifies that a well-formed payload is accepted and deserialized case-insensitively.</summary>
++    [Fact]
++    public void AcceptsValidPayload()
++    {
++        var outcome = CreateUserEndpoint.Handle("""{"email":"a@b.co","name":"Ada","age":30}""");
++
++        var accepted = Assert.IsType<CreateUserOutcome.Accepted>(outcome);
++        Assert.Equal("a@b.co", accepted.User.Email);
++        Assert.Equal("Ada", accepted.User.Name);
++        Assert.Equal(30, accepted.User.Age);
++    }
++
++    /// <summary>Verifies that an optional field may be omitted from a well-formed payload.</summary>
++    [Fact]
++    public void AcceptsPayloadWithoutOptionalAge()
++    {
++        var outcome = CreateUserEndpoint.Handle("""{"email":"a@b.co","name":"Ada"}""");
++
++        var accepted = Assert.IsType<CreateUserOutcome.Accepted>(outcome);
++        Assert.Null(accepted.User.Age);
++    }
++
++    /// <summary>Verifies that an absent body produces a 400 problem response.</summary>
++    [Fact]
++    public void RejectsMissingPayload()
++    {
++        var problem = RejectedProblem(null);
++
++        Assert.Equal(ProblemResponse.RejectedStatus, problem.Status);
++        Assert.Equal(ProblemResponse.MissingBodyTitle, problem.Title);
++        Assert.Empty(problem.Errors);
++    }
++
++    /// <summary>Verifies that a blank body produces a 400 problem response.</summary>
++    [Fact]
++    public void RejectsBlankPayload()
++    {
++        var problem = RejectedProblem("   \n\t ");
++
++        Assert.Equal(ProblemResponse.MissingBodyTitle, problem.Title);
++    }
++
++    /// <summary>Verifies that syntactically invalid JSON produces a 400 problem response.</summary>
++    [Fact]
++    public void RejectsTruncatedJson()
++    {
++        var problem = RejectedProblem("""{"email":"a@b.co","name":"Ada","age":30""");
++
++        Assert.Equal(ProblemResponse.RejectedStatus, problem.Status);
++        Assert.Equal(ProblemResponse.MalformedBodyTitle, problem.Title);
++    }
++
++    /// <summary>Verifies that JSON of the wrong type produces a 400 problem response.</summary>
++    [Fact]
++    public void RejectsJsonThatIsNotAnObject()
++    {
++        var problem = RejectedProblem("""["a@b.co","Ada"]""");
++
++        Assert.Equal(ProblemResponse.MalformedBodyTitle, problem.Title);
++    }
++
++    /// <summary>Verifies that a null JSON payload produces a 400 problem response.</summary>
++    [Fact]
++    public void RejectsJsonNull()
++    {
++        var problem = RejectedProblem("null");
++
++        Assert.Equal(ProblemResponse.MalformedBodyTitle, problem.Title);
++    }
++
++    /// <summary>Verifies that a field of the wrong type produces a 400 problem response.</summary>
++    [Fact]
++    public void RejectsPayloadWithWrongFieldType()
++    {
++        var problem = RejectedProblem("""{"email":"a@b.co","name":"Ada","age":"thirty"}""");
++
++        Assert.Equal(ProblemResponse.MalformedBodyTitle, problem.Title);
++    }
++
++    /// <summary>Verifies that a parsed payload failing validation produces a 400 problem response listing every failure.</summary>
++    [Fact]
++    public void RejectsInvalidFields()
++    {
++        var problem = RejectedProblem("""{"email":"not-an-address","name":"","age":-1}""");
++
++        Assert.Equal(ProblemResponse.RejectedStatus, problem.Status);
++        Assert.Equal(ProblemResponse.InvalidFieldsTitle, problem.Title);
++        Assert.Equal(
++            new[]
++            {
++                Validator.InvalidEmailMessage,
++                Validator.MissingNameMessage,
++                Validator.NegativeAgeMessage,
++            },
++            problem.Errors);
++    }
++
++    /// <summary>Verifies that the problem document serializes with the RFC 9457 field names.</summary>
++    [Fact]
++    public void SerializesProblemDocument()
++    {
++        var problem = RejectedProblem("""{"email":"not-an-address","name":"Ada"}""");
++
++        var json = JsonSerializer.Serialize(problem, new JsonSerializerOptions(JsonSerializerDefaults.Web));
++        using var document = JsonDocument.Parse(json);
++        var root = document.RootElement;
++
++        Assert.Equal(ProblemResponse.RejectedStatus, root.GetProperty("status").GetInt32());
++        Assert.Equal(ProblemResponse.InvalidFieldsTitle, root.GetProperty("title").GetString());
++        Assert.Equal(Validator.InvalidEmailMessage, root.GetProperty("errors")[0].GetString());
++    }
++
++    /// <summary>Handles a payload and returns the problem document the endpoint would respond with.</summary>
++    /// <param name="body">Raw request body under test.</param>
++    /// <returns>The problem document carried by the rejected outcome.</returns>
++    private static ProblemResponse RejectedProblem(string? body)
++    {
++        var rejected = Assert.IsType<CreateUserOutcome.Rejected>(CreateUserEndpoint.Handle(body));
++        return rejected.Problem;
++    }
++}
+diff --git a/examples/csharp/Example/CreateUserEndpoint.cs b/examples/csharp/Example/CreateUserEndpoint.cs
+new file mode 100644
+index 0000000..60e8fcd
+--- /dev/null
++++ b/examples/csharp/Example/CreateUserEndpoint.cs
+@@ -0,0 +1,84 @@
++using System.Text.Json;
++
++namespace Example;
++
++/// <summary>Problem document returned when a request cannot be processed.</summary>
++/// <param name="Status">HTTP status code describing the failure class.</param>
++/// <param name="Title">Short, stable, user-facing summary of the failure.</param>
++/// <param name="Errors">User-facing messages explaining every rejection reason; empty when the body itself was unusable.</param>
++/// <remarks>Serializes to an RFC 9457 problem document, with <paramref name="Errors"/> exposed as the <c>errors</c> extension member.</remarks>
++public sealed record ProblemResponse(int Status, string Title, IReadOnlyList<string> Errors)
++{
++    /// <summary>Status code returned for every rejected create-user request.</summary>
++    public const int RejectedStatus = 400;
++
++    /// <summary>Title used when the caller sent no request body.</summary>
++    public const string MissingBodyTitle = "Missing request body";
++
++    /// <summary>Title used when the body is not a JSON create-user request.</summary>
++    public const string MalformedBodyTitle = "Malformed request body";
++
++    /// <summary>Title used when the body parsed but its fields failed validation.</summary>
++    public const string InvalidFieldsTitle = "Request validation failed";
++}
++
++/// <summary>Outcome of handling a create-user request.</summary>
++public abstract record CreateUserOutcome
++{
++    /// <summary>The request parsed and passed validation.</summary>
++    /// <param name="User">Validated request data ready for persistence.</param>
++    public sealed record Accepted(CreateUserRequest User) : CreateUserOutcome;
++
++    /// <summary>The request was rejected and must not be persisted.</summary>
++    /// <param name="Problem">Problem document to return to the caller.</param>
++    public sealed record Rejected(ProblemResponse Problem) : CreateUserOutcome;
++}
++
++/// <summary>Create-user endpoint: parses the request body, then validates the parsed request.</summary>
++public static class CreateUserEndpoint
++{
++    /// <summary>Deserialization settings for request bodies.</summary>
++    private static readonly JsonSerializerOptions RequestJsonOptions = new()
++    {
++        PropertyNameCaseInsensitive = true,
++    };
++
++    /// <summary>Handles a create-user request body.</summary>
++    /// <param name="body">Raw JSON request body, or <see langword="null"/> when the caller sent no payload.</param>
++    /// <returns>Accepted request data for a status-201 response, or the problem document to return instead.</returns>
++    public static CreateUserOutcome Handle(string? body)
++    {
++        if (string.IsNullOrWhiteSpace(body))
++        {
++            return Reject(ProblemResponse.MissingBodyTitle, Array.Empty<string>());
++        }
++
++        CreateUserRequest? request;
++        try
++        {
++            request = JsonSerializer.Deserialize<CreateUserRequest>(body, RequestJsonOptions);
++        }
++        catch (JsonException)
++        {
++            return Reject(ProblemResponse.MalformedBodyTitle, Array.Empty<string>());
++        }
++
++        if (request is null)
++        {
++            return Reject(ProblemResponse.MalformedBodyTitle, Array.Empty<string>());
++        }
++
++        IReadOnlyList<string> errors = Validator.Validate(request);
++
++        return errors.Count == 0
++            ? new CreateUserOutcome.Accepted(request)
++            : Reject(ProblemResponse.InvalidFieldsTitle, errors);
++    }
++
++    /// <summary>Builds a rejected outcome carrying a problem document.</summary>
++    /// <param name="title">Problem title from <see cref="ProblemResponse"/>.</param>
++    /// <param name="errors">User-facing rejection messages.</param>
++    /// <returns>The rejected outcome.</returns>
++    private static CreateUserOutcome.Rejected Reject(string title, IReadOnlyList<string> errors)
++        => new(new ProblemResponse(ProblemResponse.RejectedStatus, title, errors));
++}
+diff --git a/examples/csharp/Example/Program.cs b/examples/csharp/Example/Program.cs
+index 0acc3ff..8b285b1 100644
+--- a/examples/csharp/Example/Program.cs
++++ b/examples/csharp/Example/Program.cs
+@@ -9,6 +9,15 @@ public sealed record CreateUserRequest(string? Email, string? Name, int? Age);
+ /// <summary>Validates create-user requests.</summary>
+ public static class Validator
+ {
++    /// <summary>Message returned when the email is missing or malformed.</summary>
++    public const string InvalidEmailMessage = "email must be a valid address";
++
++    /// <summary>Message returned when the name is missing.</summary>
++    public const string MissingNameMessage = "name is required";
++
++    /// <summary>Message returned when the age is negative.</summary>
++    public const string NegativeAgeMessage = "age must be non-negative";
++
+     /// <summary>Validates a create-user request.</summary>
+     /// <param name="request">Untrusted request data.</param>
+     /// <returns>Validation errors; empty when the request is valid.</returns>
+@@ -18,17 +27,17 @@ public static class Validator
+ 
+         if (string.IsNullOrWhiteSpace(request.Email) || !request.Email.Contains('@'))
+         {
+-            errors.Add("email must be a valid address");
++            errors.Add(InvalidEmailMessage);
+         }
+ 
+         if (string.IsNullOrWhiteSpace(request.Name))
+         {
+-            errors.Add("name is required");
++            errors.Add(MissingNameMessage);
+         }
+ 
+         if (request.Age is < 0)
+         {
+-            errors.Add("age must be non-negative");
++            errors.Add(NegativeAgeMessage);
+         }
+ 
+         return errors;
+diff --git a/examples/csharp/README.md b/examples/csharp/README.md
+index dc70d65..d3be48a 100644
+--- a/examples/csharp/README.md
++++ b/examples/csharp/README.md
+@@ -9,6 +9,19 @@ dotnet restore
+ dotnet test
+ ```
+ 
++## Create-user endpoint
++
++`CreateUserEndpoint.Handle` parses a raw JSON body and returns either `CreateUserOutcome.Accepted` (respond 201) or `CreateUserOutcome.Rejected` carrying an RFC 9457 problem document (respond 400 with its `Status`, `Title`, and `Errors`).
++
++| Payload | Outcome | Problem title |
++|---|---|---|
++| JSON object with valid fields | `Accepted` | — |
++| Missing, `null`, or blank body | `Rejected` | `Missing request body` |
++| Invalid JSON, JSON that is not an object, or wrong field types | `Rejected` | `Malformed request body` |
++| Parsed body failing `Validator` | `Rejected` | `Request validation failed` |
++
++`Example.Tests/CreateUserEndpointTests.cs` covers the valid, missing, and malformed payload cases.
++
+ ## Try an agent
+ 
+ ```bash

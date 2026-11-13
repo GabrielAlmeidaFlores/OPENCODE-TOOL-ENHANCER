@@ -1,0 +1,175 @@
+diff --git a/examples/typescript/src/app.test.ts b/examples/typescript/src/app.test.ts
+index 15cd72f..5a99896 100644
+--- a/examples/typescript/src/app.test.ts
++++ b/examples/typescript/src/app.test.ts
+@@ -4,7 +4,28 @@ import assert from "node:assert/strict";
+ import { validateCreateUser } from "./validation.js";
+ import { lineTotal, orderTotal } from "./pricing.js";
+ import { loadOrders, type OrderStore } from "./repository.js";
+-import { resolveUserFile, BASE_DIR } from "./files.js";
++import { resolveUserFile, BASE_DIR, MESSAGE_UNSAFE_FILE_NAME, UnsafeFileNameError } from "./files.js";
++
++/** Names a client may legitimately request, including ones that only look like traversal. */
++const VALID_FILE_NAMES = ["avatar.png", "nested/avatar.png", "..avatar.png", "100%-done.png"];
++
++/** Names that climb out of the base directory once normalized. */
++const TRAVERSAL_FILE_NAMES = [
++  "../secrets.txt",
++  "../../etc/passwd",
++  "nested/../../escape.txt",
++  "/etc/passwd",
++  "",
++];
++
++/** Names that only become traversal after percent-decoding, including double encoding. */
++const ENCODED_TRAVERSAL_FILE_NAMES = [
++  "%2e%2e%2fsecrets.txt",
++  "%2E%2E%2Fsecrets.txt",
++  "..%2f..%2fetc%2fpasswd",
++  "%2e%2e%00.png",
++  "%252e%252e%252fsecrets.txt",
++];
+ 
+ test("validates a valid user", () => {
+   assert.deepEqual(validateCreateUser({ email: "a@b.co", name: "Ada", age: 30 }), {
+@@ -47,3 +68,34 @@ test("loads orders in order", async () => {
+ test("resolves a normal file name", () => {
+   assert.equal(resolveUserFile("avatar.png"), `${BASE_DIR}/avatar.png`);
+ });
++
++test("keeps the response shape for every valid file name", () => {
++  for (const name of VALID_FILE_NAMES) {
++    const resolved = resolveUserFile(name);
++    assert.equal(typeof resolved, "string");
++    assert.equal(resolved, `${BASE_DIR}/${name}`);
++  }
++});
++
++test("rejects traversal file names", () => {
++  for (const name of TRAVERSAL_FILE_NAMES) {
++    assert.throws(() => resolveUserFile(name), UnsafeFileNameError, `expected rejection for ${name}`);
++  }
++});
++
++test("rejects percent-encoded traversal file names", () => {
++  for (const name of ENCODED_TRAVERSAL_FILE_NAMES) {
++    assert.throws(
++      () => resolveUserFile(name),
++      UnsafeFileNameError,
++      `expected rejection for ${name}`,
++    );
++  }
++});
++
++test("reports the rejection reason for unsafe names", () => {
++  assert.throws(() => resolveUserFile("../secrets.txt"), {
++    name: "UnsafeFileNameError",
++    message: MESSAGE_UNSAFE_FILE_NAME,
++  });
++});
+diff --git a/examples/typescript/src/files.ts b/examples/typescript/src/files.ts
+index 642f872..0615dca 100644
+--- a/examples/typescript/src/files.ts
++++ b/examples/typescript/src/files.ts
+@@ -1,15 +1,97 @@
+-import { join } from "node:path";
++import { isAbsolute, join, relative, sep } from "node:path";
+ 
+ /** Base directory used by {@link resolveUserFile}. */
+ export const BASE_DIR = "/srv/user-files";
+ 
++/** Message carried by {@link UnsafeFileNameError}. */
++export const MESSAGE_UNSAFE_FILE_NAME = "file name must resolve inside the base directory";
++
++/**
++ * Bound on percent-decoding passes applied before validation.
++ *
++ * @remarks Upstream proxies may decode a request path more than once, so the
++ * decoded forms are validated too, stopping at the first stable or malformed form.
++ */
++const MAX_PERCENT_DECODE_PASSES = 4;
++
++/** Character that truncates a path at the file-system boundary. */
++const NULL_BYTE = "\u0000";
++
++/** Segment that climbs out of a directory when normalized. */
++const PARENT_SEGMENT = "..";
++
++/** Thrown by {@link resolveUserFile} when a name would escape {@link BASE_DIR}. */
++export class UnsafeFileNameError extends Error {
++  /** Builds the error with the message documented by {@link MESSAGE_UNSAFE_FILE_NAME}. */
++  constructor() {
++    super(MESSAGE_UNSAFE_FILE_NAME);
++    this.name = UnsafeFileNameError.name;
++  }
++}
++
++/**
++ * Yields a name together with each percent-decoded form reachable by repeated decoding.
++ *
++ * @param name - Raw user-supplied name.
++ * @returns The raw name first, then each successfully decoded variant.
++ * @remarks Decoding stops at the first malformed escape sequence, because such a
++ * string cannot be rewritten into a separator by a decoder that follows the URL standard.
++ */
++function* percentDecodedVariants(name: string): Generator<string> {
++  yield name;
++  let current = name;
++  for (let pass = 0; pass < MAX_PERCENT_DECODE_PASSES; pass += 1) {
++    let decoded: string;
++    try {
++      decoded = decodeURIComponent(current);
++    } catch {
++      return;
++    }
++    if (decoded === current) {
++      return;
++    }
++    yield decoded;
++    current = decoded;
++  }
++}
++
++/**
++ * Reports whether a name normalizes to a strict descendant of {@link BASE_DIR}.
++ *
++ * @param name - Candidate name, already percent-decoded when it came from a URL.
++ * @returns `true` when the joined path stays inside {@link BASE_DIR}.
++ * @remarks The check is lexical: the file system is never touched and symbolic
++ * links are not resolved.
++ */
++function isContainedName(name: string): boolean {
++  if (name.length === 0 || name.includes(NULL_BYTE) || isAbsolute(name)) {
++    return false;
++  }
++
++  const relativePath = relative(BASE_DIR, join(BASE_DIR, name));
++
++  return (
++    relativePath !== "" &&
++    relativePath !== PARENT_SEGMENT &&
++    !relativePath.startsWith(`${PARENT_SEGMENT}${sep}`) &&
++    !isAbsolute(relativePath)
++  );
++}
++
+ /**
+  * Resolves a user-supplied file name under {@link BASE_DIR}.
+  *
+- * @param name - User-supplied file name.
+- * @returns The joined path.
+- * @remarks Intentionally vulnerable to path traversal to support the security benchmark task.
++ * @param name - User-supplied file name, percent-encoded or not.
++ * @returns The path of the requested file inside {@link BASE_DIR}.
++ * @throws {UnsafeFileNameError} When the name is empty, absolute, contains a NUL
++ * byte, or normalizes outside {@link BASE_DIR} in its raw or percent-decoded form.
+  */
+ export function resolveUserFile(name: string): string {
++  for (const variant of percentDecodedVariants(name)) {
++    if (!isContainedName(variant)) {
++      throw new UnsafeFileNameError();
++    }
++  }
++
+   return join(BASE_DIR, name);
+ }

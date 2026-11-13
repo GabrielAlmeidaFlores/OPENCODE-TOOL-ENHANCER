@@ -1,0 +1,19 @@
+{
+  "run_id": "r1-optimized-ts-validation",
+  "arm": "optimized",
+  "task_file": "benchmarks/tasks/ts-validation.json",
+  "task_id": "ts-validation",
+  "working_directory": "examples/typescript",
+  "commit": "a8eb1be59924ceac3aca12adfb2fe880877eaead",
+  "model": "deepseek/deepseek-flash",
+  "agent": "coordinator",
+  "max_wall_time_seconds": 900,
+  "started_at": "2026-11-13T18:09:28.217169+00:00",
+  "opencode_version": "opencode v2.2.7",
+  "run_exit": 0,
+  "stats_exit": 0,
+  "export_exit": 0,
+  "verification_exit": 0,
+  "wall_time_seconds": 62,
+  "finished_at": "2026-11-13T18:10:31.068200+00:00"
+}

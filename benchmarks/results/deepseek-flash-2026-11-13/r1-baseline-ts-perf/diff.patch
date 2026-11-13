@@ -1,0 +1,94 @@
+diff --git a/examples/typescript/src/app.test.ts b/examples/typescript/src/app.test.ts
+index 15cd72f..8f8454e 100644
+--- a/examples/typescript/src/app.test.ts
++++ b/examples/typescript/src/app.test.ts
+@@ -36,14 +36,37 @@ test("totals an order", () => {
+ 
+ test("loads orders in order", async () => {
+   const store: OrderStore = {
+-    async findById(id) {
+-      return { id, total: 1 };
++    async findByIds(ids) {
++      return ids.map((id) => ({ id, total: 1 })).reverse();
+     },
+   };
+   const orders = await loadOrders(store, ["a", "b"]);
+   assert.deepEqual(orders.map((o) => o.id), ["a", "b"]);
+ });
+ 
++test("issues one query per request", async () => {
++  let queryCount = 0;
++  const store: OrderStore = {
++    async findByIds(ids) {
++      queryCount += 1;
++      return ids.map((id) => ({ id, total: 1 }));
++    },
++  };
++  await loadOrders(store, ["a", "b", "c"]);
++  assert.equal(queryCount, 1);
++});
++
++test("reports the first missing order", async () => {
++  const store: OrderStore = {
++    async findByIds(ids) {
++      return ids.filter((id) => id !== "b").map((id) => ({ id, total: 1 }));
++    },
++  };
++  await assert.rejects(loadOrders(store, ["a", "b", "c"]), {
++    message: "order not found: b",
++  });
++});
++
+ test("resolves a normal file name", () => {
+   assert.equal(resolveUserFile("avatar.png"), `${BASE_DIR}/avatar.png`);
+ });
+diff --git a/examples/typescript/src/repository.ts b/examples/typescript/src/repository.ts
+index dafec55..41a33ba 100644
+--- a/examples/typescript/src/repository.ts
++++ b/examples/typescript/src/repository.ts
+@@ -7,12 +7,12 @@ export interface Order {
+ /** Data access contract used by {@link loadOrders}. */
+ export interface OrderStore {
+   /**
+-   * Looks up one order by identifier.
++   * Looks up orders by identifier in a single query.
+    *
+-   * @param id - Order identifier.
+-   * @returns The order when found.
++   * @param ids - Order identifiers to resolve.
++   * @returns The orders that exist, in any order.
+    */
+-  findById(id: string): Promise<Order | undefined>;
++  findByIds(ids: string[]): Promise<Order[]>;
+ }
+ 
+ /**
+@@ -22,16 +22,21 @@ export interface OrderStore {
+  * @param ids - Order identifiers in the desired output order.
+  * @returns The resolved orders.
+  * @throws Error when an identifier does not resolve.
+- * @remarks Intentionally performs one lookup per identifier to support the performance benchmark task.
++ * @remarks Performs exactly one store query per call.
+  */
+ export async function loadOrders(store: OrderStore, ids: string[]): Promise<Order[]> {
+-  const orders: Order[] = [];
+-  for (const id of ids) {
+-    const order = await store.findById(id);
++  if (ids.length === 0) {
++    return [];
++  }
++
++  const found = await store.findByIds(ids);
++  const ordersById = new Map(found.map((order) => [order.id, order]));
++
++  return ids.map((id) => {
++    const order = ordersById.get(id);
+     if (!order) {
+       throw new Error(`order not found: ${id}`);
+     }
+-    orders.push(order);
+-  }
+-  return orders;
++    return order;
++  });
+ }

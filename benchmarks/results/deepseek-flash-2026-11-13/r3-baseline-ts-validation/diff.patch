@@ -1,0 +1,243 @@
+diff --git a/examples/typescript/src/app.test.ts b/examples/typescript/src/app.test.ts
+index 15cd72f..d4f03a2 100644
+--- a/examples/typescript/src/app.test.ts
++++ b/examples/typescript/src/app.test.ts
+@@ -1,11 +1,31 @@
+ import { test } from "node:test";
+ import assert from "node:assert/strict";
+ 
+-import { validateCreateUser } from "./validation.js";
++import { validateCreateUser, type CreateUser } from "./validation.js";
++import {
++  handleCreateUser,
++  HTTP_STATUS_BAD_REQUEST,
++  HTTP_STATUS_CREATED,
++  type CreateUserResponse,
++} from "./app.js";
+ import { lineTotal, orderTotal } from "./pricing.js";
+ import { loadOrders, type OrderStore } from "./repository.js";
+ import { resolveUserFile, BASE_DIR } from "./files.js";
+ 
++function assertBadRequest(response: CreateUserResponse): string[] {
++  if (response.status !== HTTP_STATUS_BAD_REQUEST) {
++    assert.fail(`expected HTTP ${HTTP_STATUS_BAD_REQUEST}, received ${response.status}`);
++  }
++  return response.body.errors;
++}
++
++function assertCreated(response: CreateUserResponse): CreateUser {
++  if (response.status !== HTTP_STATUS_CREATED) {
++    assert.fail(`expected HTTP ${HTTP_STATUS_CREATED}, received ${response.status}`);
++  }
++  return response.body.user;
++}
++
+ test("validates a valid user", () => {
+   assert.deepEqual(validateCreateUser({ email: "a@b.co", name: "Ada", age: 30 }), {
+     ok: true,
+@@ -19,6 +39,48 @@ test("rejects a missing email", () => {
+   assert.match(result.errors.join(","), /email/);
+ });
+ 
++test("creates a user from a valid payload", () => {
++  const response = handleCreateUser({ email: "a@b.co", name: "Ada", age: 30 });
++  assert.equal(response.status, HTTP_STATUS_CREATED);
++  assert.deepEqual(assertCreated(response), { email: "a@b.co", name: "Ada", age: 30 });
++});
++
++test("accepts a payload without the optional age", () => {
++  const response = handleCreateUser({ email: "a@b.co", name: "Ada" });
++  assert.equal(assertCreated(response).age, undefined);
++});
++
++test("rejects a payload with missing fields", () => {
++  const errors = assertBadRequest(handleCreateUser({}));
++  assert.equal(errors.length, 2);
++  assert.match(errors.join(","), /email/);
++  assert.match(errors.join(","), /name/);
++});
++
++test("rejects malformed field values", () => {
++  const errors = assertBadRequest(
++    handleCreateUser({ email: "not-an-email", name: "   ", age: "30" }),
++  );
++  assert.equal(errors.length, 3);
++  assert.match(errors.join(","), /email/);
++  assert.match(errors.join(","), /name/);
++  assert.match(errors.join(","), /age/);
++});
++
++test("rejects a negative, fractional, or non-numeric age", () => {
++  for (const age of [-1, 1.5, Number.NaN, null]) {
++    const errors = assertBadRequest(handleCreateUser({ email: "a@b.co", name: "Ada", age }));
++    assert.match(errors.join(","), /age/);
++  }
++});
++
++test("rejects non-object payloads", () => {
++  for (const payload of [null, undefined, "text", 42, true, []]) {
++    const errors = assertBadRequest(handleCreateUser(payload));
++    assert.match(errors.join(","), /JSON object/);
++  }
++});
++
+ test("prices taxable and non-taxable items", () => {
+   assert.equal(lineTotal({ unitPrice: 10, quantity: 2, taxable: false }), 20);
+   assert.equal(lineTotal({ unitPrice: 10, quantity: 2, taxable: true }), 24);
+diff --git a/examples/typescript/src/app.ts b/examples/typescript/src/app.ts
+new file mode 100644
+index 0000000..8a72c5b
+--- /dev/null
++++ b/examples/typescript/src/app.ts
+@@ -0,0 +1,36 @@
++import { parseCreateUser, type CreateUser } from "./validation.js";
++
++/** Status returned by {@link handleCreateUser} when validation fails. */
++export const HTTP_STATUS_BAD_REQUEST = 400;
++
++/** Status returned by {@link handleCreateUser} when a user is created. */
++export const HTTP_STATUS_CREATED = 201;
++
++/** Successful response from {@link handleCreateUser}. */
++export interface CreateUserCreatedResponse {
++  status: typeof HTTP_STATUS_CREATED;
++  body: { user: CreateUser };
++}
++
++/** Validation failure response from {@link handleCreateUser}. */
++export interface CreateUserBadRequestResponse {
++  status: typeof HTTP_STATUS_BAD_REQUEST;
++  body: { errors: string[] };
++}
++
++/** Response returned by {@link handleCreateUser}. */
++export type CreateUserResponse = CreateUserCreatedResponse | CreateUserBadRequestResponse;
++
++/**
++ * Handles a create-user request at the API boundary.
++ *
++ * @param payload - Untrusted request body.
++ * @returns A 201 response with the validated user, or a 400 response with validation errors.
++ */
++export function handleCreateUser(payload: unknown): CreateUserResponse {
++  const result = parseCreateUser(payload);
++  if (!result.ok) {
++    return { status: HTTP_STATUS_BAD_REQUEST, body: { errors: result.errors } };
++  }
++  return { status: HTTP_STATUS_CREATED, body: { user: result.user } };
++}
+diff --git a/examples/typescript/src/validation.ts b/examples/typescript/src/validation.ts
+index 3dda1d3..dfcd56a 100644
+--- a/examples/typescript/src/validation.ts
++++ b/examples/typescript/src/validation.ts
+@@ -5,34 +5,95 @@ export interface CreateUserInput {
+   age?: unknown;
+ }
+ 
++/** Validated create-user payload. */
++export interface CreateUser {
++  email: string;
++  name: string;
++  age?: number;
++}
++
+ /** Outcome of {@link validateCreateUser}. */
+ export interface ValidationResult {
+   ok: boolean;
+   errors: string[];
+ }
+ 
+-/**
+- * Validates a create-user request at the API boundary.
+- *
+- * @param input - Untrusted request data.
+- * @returns Whether the input is valid and the list of validation errors.
+- */
+-export function validateCreateUser(input: CreateUserInput): ValidationResult {
++/** Outcome of {@link parseCreateUser}. */
++export type CreateUserParseResult =
++  | { ok: true; user: CreateUser }
++  | { ok: false; errors: string[] };
++
++/** Messages returned to API callers when a payload is rejected. */
++export const VALIDATION_MESSAGE = {
++  bodyNotObject: "request body must be a JSON object",
++  emailInvalid: "email must be a valid address",
++  nameRequired: "name is required",
++  ageInvalid: "age must be a non-negative integer",
++} as const;
++
++const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
++
++function isRecord(value: unknown): value is Record<string, unknown> {
++  return typeof value === "object" && value !== null && !Array.isArray(value);
++}
++
++function parseFields(fields: Record<string, unknown>): CreateUserParseResult {
++  const { email, name, age } = fields;
+   const errors: string[] = [];
+ 
+-  if (typeof input.email !== "string" || !input.email.includes("@")) {
+-    errors.push("email must be a valid address");
++  if (typeof email !== "string" || !EMAIL_PATTERN.test(email)) {
++    errors.push(VALIDATION_MESSAGE.emailInvalid);
+   }
+ 
+-  if (typeof input.name !== "string" || input.name.trim().length === 0) {
+-    errors.push("name is required");
++  if (typeof name !== "string" || name.trim().length === 0) {
++    errors.push(VALIDATION_MESSAGE.nameRequired);
+   }
+ 
+-  if (input.age !== undefined) {
+-    if (typeof input.age !== "number" || !Number.isInteger(input.age) || input.age < 0) {
+-      errors.push("age must be a non-negative integer");
++  if (age !== undefined) {
++    if (typeof age !== "number" || !Number.isInteger(age) || age < 0) {
++      errors.push(VALIDATION_MESSAGE.ageInvalid);
+     }
+   }
+ 
+-  return { ok: errors.length === 0, errors };
++  if (errors.length > 0) {
++    return { ok: false, errors };
++  }
++
++  const user: CreateUser = {
++    email: email as string,
++    name: name as string,
++  };
++  if (typeof age === "number") {
++    user.age = age;
++  }
++
++  return { ok: true, user };
++}
++
++/**
++ * Parses a create-user request at the API boundary.
++ *
++ * @param input - Untrusted request data.
++ * @returns The validated user, or the list of validation errors.
++ * @remarks Accepts `unknown` because callers pass parsed JSON that may not be an object.
++ */
++export function parseCreateUser(input: unknown): CreateUserParseResult {
++  if (!isRecord(input)) {
++    return { ok: false, errors: [VALIDATION_MESSAGE.bodyNotObject] };
++  }
++  return parseFields(input);
++}
++
++/**
++ * Validates a create-user request at the API boundary.
++ *
++ * @param input - Untrusted request data.
++ * @returns Whether the input is valid and the list of validation errors.
++ */
++export function validateCreateUser(input: unknown): ValidationResult {
++  const result = parseCreateUser(input);
++  if (!result.ok) {
++    return { ok: false, errors: result.errors };
++  }
++  return { ok: true, errors: [] };
+ }

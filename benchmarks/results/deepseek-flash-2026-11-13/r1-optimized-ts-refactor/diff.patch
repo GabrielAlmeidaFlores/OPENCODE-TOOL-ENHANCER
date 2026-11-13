@@ -1,0 +1,47 @@
+diff --git a/examples/typescript/src/app.test.ts b/examples/typescript/src/app.test.ts
+index 15cd72f..f36630d 100644
+--- a/examples/typescript/src/app.test.ts
++++ b/examples/typescript/src/app.test.ts
+@@ -34,6 +34,17 @@ test("totals an order", () => {
+   );
+ });
+ 
++test("preserves float accumulation for fractional prices", () => {
++  assert.equal(
++    orderTotal([
++      { unitPrice: 0.1, quantity: 3, taxable: true },
++      { unitPrice: 19.99, quantity: 2, taxable: false },
++      { unitPrice: 4.5, quantity: 1, taxable: true },
++    ]),
++    45.739999999999995,
++  );
++});
++
+ test("loads orders in order", async () => {
+   const store: OrderStore = {
+     async findById(id) {
+diff --git a/examples/typescript/src/pricing.ts b/examples/typescript/src/pricing.ts
+index a842c4b..873ce68 100644
+--- a/examples/typescript/src/pricing.ts
++++ b/examples/typescript/src/pricing.ts
+@@ -25,18 +25,12 @@ export function lineTotal(item: LineItem): number {
+  * Calculates the total for an order.
+  *
+  * @param items - Line items in the order.
+- * @returns The sum of all line totals.
+- * @remarks Intentionally duplicates the branch in {@link lineTotal} to support the refactor benchmark task.
++ * @returns The sum of all line totals, accumulated left to right.
+  */
+ export function orderTotal(items: LineItem[]): number {
+   let total = 0;
+   for (const item of items) {
+-    const subtotal = item.unitPrice * item.quantity;
+-    if (item.taxable) {
+-      total += subtotal + subtotal * TAX_RATE;
+-    } else {
+-      total += subtotal;
+-    }
++    total += lineTotal(item);
+   }
+   return total;
+ }

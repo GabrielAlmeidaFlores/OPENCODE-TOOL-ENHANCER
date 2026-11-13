@@ -1,0 +1,114 @@
+diff --git a/examples/typescript/src/app.test.ts b/examples/typescript/src/app.test.ts
+index 15cd72f..364dea5 100644
+--- a/examples/typescript/src/app.test.ts
++++ b/examples/typescript/src/app.test.ts
+@@ -47,3 +47,29 @@ test("loads orders in order", async () => {
+ test("resolves a normal file name", () => {
+   assert.equal(resolveUserFile("avatar.png"), `${BASE_DIR}/avatar.png`);
+ });
++
++test("rejects a path traversal file name", () => {
++  assert.throws(
++    () => resolveUserFile("../secret.txt"),
++    /path traversal/,
++  );
++  assert.throws(
++    () => resolveUserFile("/etc/passwd"),
++    /path traversal/,
++  );
++  assert.throws(
++    () => resolveUserFile("..\\..\\secret.txt"),
++    /path traversal/,
++  );
++});
++
++test("rejects a percent-encoded path traversal file name", () => {
++  assert.throws(
++    () => resolveUserFile("%2e%2e%2fsecret.txt"),
++    /path traversal/,
++  );
++  assert.throws(
++    () => resolveUserFile("..%2f..%2fetc%2fpasswd"),
++    /path traversal/,
++  );
++});
+diff --git a/examples/typescript/src/files.ts b/examples/typescript/src/files.ts
+index 642f872..06f0b7b 100644
+--- a/examples/typescript/src/files.ts
++++ b/examples/typescript/src/files.ts
+@@ -1,15 +1,72 @@
+-import { join } from "node:path";
++import { resolve, sep } from "node:path";
+ 
+ /** Base directory used by {@link resolveUserFile}. */
+ export const BASE_DIR = "/srv/user-files";
+ 
++/** Message used when a request would escape {@link BASE_DIR}. */
++export const PATH_TRAVERSAL_MESSAGE =
++  "Invalid file name: path traversal resolves outside the base directory";
++
++/**
++ * Decodes percent-encoded characters so encoded traversal is validated too.
++ *
++ * @param name - User-supplied file name.
++ * @returns The decoded name, or the original name when it is not valid percent encoding.
++ */
++function decodeFileName(name: string): string {
++  try {
++    return decodeURIComponent(name);
++  } catch {
++    return name;
++  }
++}
++
++/**
++ * Normalizes Windows and POSIX separators before validation so a name cannot
++ * traverse on a different platform than the one running the check.
++ *
++ * @param name - Decoded user-supplied file name.
++ * @returns The name with backslashes replaced by forward slashes.
++ */
++function normalizeSeparators(name: string): string {
++  return name.replaceAll("\\", "/");
++}
++
++/**
++ * Reports whether a path is {@link BASE_DIR} itself or a descendant of it.
++ *
++ * @param baseDirectory - Absolute base directory.
++ * @param candidatePath - Absolute path to check.
++ * @returns `true` when the candidate does not escape the base directory.
++ */
++function isInsideBaseDirectory(baseDirectory: string, candidatePath: string): boolean {
++  return (
++    candidatePath === baseDirectory ||
++    candidatePath.startsWith(`${baseDirectory}${sep}`)
++  );
++}
++
+ /**
+  * Resolves a user-supplied file name under {@link BASE_DIR}.
+  *
+  * @param name - User-supplied file name.
+  * @returns The joined path.
+- * @remarks Intentionally vulnerable to path traversal to support the security benchmark task.
++ * @throws {Error} When the name or its percent-decoded form escapes {@link BASE_DIR}.
+  */
+ export function resolveUserFile(name: string): string {
+-  return join(BASE_DIR, name);
++  const baseDirectory = resolve(BASE_DIR);
++  const requestedPath = resolve(baseDirectory, name);
++  const decodedPath = resolve(
++    baseDirectory,
++    normalizeSeparators(decodeFileName(name)),
++  );
++
++  if (
++    !isInsideBaseDirectory(baseDirectory, requestedPath) ||
++    !isInsideBaseDirectory(baseDirectory, decodedPath)
++  ) {
++    throw new Error(PATH_TRAVERSAL_MESSAGE);
++  }
++
++  return requestedPath;
+ }

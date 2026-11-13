@@ -1,0 +1,23 @@
+
+> test
+> npm run build && node --test dist/*.test.js
+
+
+> build
+> tsc -p tsconfig.json
+
+✔ validates a valid user (2.201625ms)
+✔ rejects a missing email (0.267125ms)
+✔ prices taxable and non-taxable items (0.132834ms)
+✔ totals an order (0.114667ms)
+✔ totals an empty order as zero (0.081ms)
+✔ loads orders in order (0.2255ms)
+✔ resolves a normal file name (0.155292ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 151.422333

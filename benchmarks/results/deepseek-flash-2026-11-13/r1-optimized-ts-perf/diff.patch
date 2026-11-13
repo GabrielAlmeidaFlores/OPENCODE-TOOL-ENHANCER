@@ -1,0 +1,239 @@
+diff --git a/examples/typescript/AGENTS.md b/examples/typescript/AGENTS.md
+index 0f81157..5b8db52 100644
+--- a/examples/typescript/AGENTS.md
++++ b/examples/typescript/AGENTS.md
+@@ -15,7 +15,7 @@ Run `npm test` before declaring a task complete. It builds and runs `node --test
+ 
+ - `src/validation.ts` — request validation
+ - `src/pricing.ts` — pricing rules (contains intentional duplication)
+-- `src/repository.ts` — order loading (contains an intentional N+1)
++- `src/repository.ts` — order loading (batched: one store query per `loadOrders` call)
+ - `src/files.ts` — file resolution (contains an intentional traversal bug)
+ - `src/app.test.ts` — tests
+ 
+diff --git a/examples/typescript/README.md b/examples/typescript/README.md
+index a50456a..adb9aab 100644
+--- a/examples/typescript/README.md
++++ b/examples/typescript/README.md
+@@ -3,7 +3,7 @@
+ A minimal repository used by the benchmark tasks. It contains deliberate weaknesses for the tasks to fix:
+ 
+ - duplicated pricing logic
+-- an N+1 order loader
++- ~~an N+1 order loader~~ (fixed: `loadOrders` resolves one batch per request)
+ - a path traversal in file resolution
+ - incomplete input validation
+ 
+diff --git a/examples/typescript/src/app.test.ts b/examples/typescript/src/app.test.ts
+index 15cd72f..3559d75 100644
+--- a/examples/typescript/src/app.test.ts
++++ b/examples/typescript/src/app.test.ts
+@@ -3,9 +3,71 @@ import assert from "node:assert/strict";
+ 
+ import { validateCreateUser } from "./validation.js";
+ import { lineTotal, orderTotal } from "./pricing.js";
+-import { loadOrders, type OrderStore } from "./repository.js";
++import {
++  loadOrders,
++  MESSAGE_ORDER_NOT_FOUND_PREFIX,
++  type Order,
++  type OrderStore,
++} from "./repository.js";
+ import { resolveUserFile, BASE_DIR } from "./files.js";
+ 
++/** Upper bound on store round trips allowed for a single {@link loadOrders} call. */
++const MAX_QUERIES_PER_REQUEST = 1;
++const FIRST_ORDER_ID = "a";
++const SECOND_ORDER_ID = "b";
++const MISSING_ORDER_ID = "missing";
++const ALSO_MISSING_ORDER_ID = "also-missing";
++
++/** Store plus the identifier batches it received, in call order. */
++interface RecordingStore {
++  store: OrderStore;
++  batches: string[][];
++}
++
++/**
++ * Builds an {@link OrderStore} backed by `orders` that records every batch.
++ *
++ * @param orders - Orders the store can resolve.
++ * @returns The recording store and the batches it received.
++ */
++function createRecordingStore(orders: Order[]): RecordingStore {
++  const ordersById = new Map(orders.map((order) => [order.id, order]));
++  const batches: string[][] = [];
++  const store: OrderStore = {
++    async findByIds(ids) {
++      batches.push([...ids]);
++      return ids.flatMap((id) => {
++        const order = ordersById.get(id);
++        return order ? [order] : [];
++      });
++    },
++  };
++  return { store, batches };
++}
++
++/**
++ * Wraps `store` so the test fails when `loadOrders` issues more than
++ * {@link MAX_QUERIES_PER_REQUEST} query.
++ *
++ * @param store - Store to guard.
++ * @returns The guarded store and a function returning the observed query count.
++ */
++function guardQueryCount(store: OrderStore): { store: OrderStore; queryCount: () => number } {
++  let queries = 0;
++  return {
++    store: {
++      async findByIds(ids) {
++        queries += 1;
++        if (queries > MAX_QUERIES_PER_REQUEST) {
++          throw new Error(`query budget exceeded: ${queries} queries for one request`);
++        }
++        return store.findByIds(ids);
++      },
++    },
++    queryCount: () => queries,
++  };
++}
++
+ test("validates a valid user", () => {
+   assert.deepEqual(validateCreateUser({ email: "a@b.co", name: "Ada", age: 30 }), {
+     ok: true,
+@@ -35,13 +97,60 @@ test("totals an order", () => {
+ });
+ 
+ test("loads orders in order", async () => {
+-  const store: OrderStore = {
+-    async findById(id) {
+-      return { id, total: 1 };
+-    },
+-  };
+-  const orders = await loadOrders(store, ["a", "b"]);
+-  assert.deepEqual(orders.map((o) => o.id), ["a", "b"]);
++  const { store } = createRecordingStore([
++    { id: FIRST_ORDER_ID, total: 1 },
++    { id: SECOND_ORDER_ID, total: 2 },
++  ]);
++  const orders = await loadOrders(store, [SECOND_ORDER_ID, FIRST_ORDER_ID]);
++  assert.deepEqual(orders.map((o) => o.id), [SECOND_ORDER_ID, FIRST_ORDER_ID]);
++});
++
++test("loads orders with one query per request", async () => {
++  const requestedIds = [FIRST_ORDER_ID, SECOND_ORDER_ID, "c", "d", "e"];
++  const { store: recordingStore, batches } = createRecordingStore(
++    requestedIds.map((id, index) => ({ id, total: index })),
++  );
++  const { store, queryCount } = guardQueryCount(recordingStore);
++
++  const orders = await loadOrders(store, requestedIds);
++
++  assert.deepEqual(orders.map((o) => o.id), requestedIds);
++  assert.equal(queryCount(), MAX_QUERIES_PER_REQUEST);
++  assert.equal(batches.length, MAX_QUERIES_PER_REQUEST);
++  assert.deepEqual([...batches[0]!].sort(), [...requestedIds].sort());
++});
++
++test("repeats duplicated identifiers without extra queries", async () => {
++  const { store: recordingStore, batches } = createRecordingStore([
++    { id: FIRST_ORDER_ID, total: 1 },
++  ]);
++  const { store, queryCount } = guardQueryCount(recordingStore);
++
++  const orders = await loadOrders(store, [FIRST_ORDER_ID, FIRST_ORDER_ID]);
++
++  assert.deepEqual(orders.map((o) => o.id), [FIRST_ORDER_ID, FIRST_ORDER_ID]);
++  assert.equal(queryCount(), MAX_QUERIES_PER_REQUEST);
++  assert.equal(batches.length, MAX_QUERIES_PER_REQUEST);
++});
++
++test("throws for the first unresolved identifier in request order", async () => {
++  const { store } = createRecordingStore([{ id: FIRST_ORDER_ID, total: 1 }]);
++
++  await assert.rejects(
++    loadOrders(store, [FIRST_ORDER_ID, MISSING_ORDER_ID, ALSO_MISSING_ORDER_ID]),
++    { name: "Error", message: `${MESSAGE_ORDER_NOT_FOUND_PREFIX}${MISSING_ORDER_ID}` },
++  );
++});
++
++test("queries nothing for an empty identifier list", async () => {
++  const { store: recordingStore, batches } = createRecordingStore([]);
++  const { store, queryCount } = guardQueryCount(recordingStore);
++
++  const orders = await loadOrders(store, []);
++
++  assert.deepEqual(orders, []);
++  assert.equal(queryCount(), 0);
++  assert.deepEqual(batches, []);
+ });
+ 
+ test("resolves a normal file name", () => {
+diff --git a/examples/typescript/src/repository.ts b/examples/typescript/src/repository.ts
+index dafec55..cc88f3a 100644
+--- a/examples/typescript/src/repository.ts
++++ b/examples/typescript/src/repository.ts
+@@ -4,32 +4,52 @@ export interface Order {
+   total: number;
+ }
+ 
+-/** Data access contract used by {@link loadOrders}. */
++/** Prefix of the message raised when a requested identifier has no stored order. */
++export const MESSAGE_ORDER_NOT_FOUND_PREFIX = "order not found: ";
++
++/**
++ * Data access contract used by {@link loadOrders}.
++ *
++ * @remarks Implementations must resolve a whole identifier batch in one round
++ * trip; a per-identifier implementation reintroduces the N+1 access pattern.
++ */
+ export interface OrderStore {
+   /**
+-   * Looks up one order by identifier.
++   * Looks up several orders in a single query.
+    *
+-   * @param id - Order identifier.
+-   * @returns The order when found.
++   * @param ids - Order identifiers to resolve, possibly with duplicates.
++   * @returns The orders that exist for `ids`; unknown identifiers are omitted.
+    */
+-  findById(id: string): Promise<Order | undefined>;
++  findByIds(ids: string[]): Promise<Order[]>;
+ }
+ 
+ /**
+  * Loads orders by identifier while preserving the requested order.
+  *
+  * @param store - Order data store.
+- * @param ids - Order identifiers in the desired output order.
+- * @returns The resolved orders.
+- * @throws Error when an identifier does not resolve.
+- * @remarks Intentionally performs one lookup per identifier to support the performance benchmark task.
++ * @param ids - Order identifiers in the desired output order; duplicates are
++ * repeated in the output.
++ * @returns The resolved orders, one per requested identifier.
++ * @throws Error when an identifier does not resolve. The reported identifier is
++ * the first unresolved one in `ids`.
++ * @remarks Performs at most one store query per call, including zero queries
++ * when `ids` is empty.
+  */
+ export async function loadOrders(store: OrderStore, ids: string[]): Promise<Order[]> {
++  if (ids.length === 0) {
++    return [];
++  }
++
++  const ordersById = new Map<string, Order>();
++  for (const order of await store.findByIds(ids)) {
++    ordersById.set(order.id, order);
++  }
++
+   const orders: Order[] = [];
+   for (const id of ids) {
+-    const order = await store.findById(id);
++    const order = ordersById.get(id);
+     if (!order) {
+-      throw new Error(`order not found: ${id}`);
++      throw new Error(`${MESSAGE_ORDER_NOT_FOUND_PREFIX}${id}`);
+     }
+     orders.push(order);
+   }

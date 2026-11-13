@@ -1,0 +1,19 @@
+{
+  "run_id": "r1-baseline-ts-validation",
+  "arm": "baseline",
+  "task_file": "benchmarks/tasks/ts-validation.json",
+  "task_id": "ts-validation",
+  "working_directory": "examples/typescript",
+  "commit": "a7983f878d8a3abd320dcd700bf3901d3e38ed9c",
+  "model": "deepseek/deepseek-flash",
+  "agent": "build",
+  "max_wall_time_seconds": 900,
+  "started_at": "2026-11-13T18:08:23.180845+00:00",
+  "opencode_version": "opencode v2.2.7",
+  "run_exit": 0,
+  "stats_exit": 0,
+  "export_exit": 0,
+  "verification_exit": 0,
+  "wall_time_seconds": 63,
+  "finished_at": "2026-11-13T18:09:27.237600+00:00"
+}

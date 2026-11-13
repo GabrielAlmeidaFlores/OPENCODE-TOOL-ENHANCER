@@ -1,0 +1,19 @@
+{
+  "run_id": "r3-baseline-ts-security",
+  "arm": "baseline",
+  "task_file": "benchmarks/tasks/ts-security.json",
+  "task_id": "ts-security",
+  "working_directory": "examples/typescript",
+  "commit": "a7983f878d8a3abd320dcd700bf3901d3e38ed9c",
+  "model": "deepseek/deepseek-flash",
+  "agent": "build",
+  "max_wall_time_seconds": 900,
+  "started_at": "2026-11-13T18:41:21.291699+00:00",
+  "opencode_version": "opencode v2.2.7",
+  "run_exit": 0,
+  "stats_exit": 0,
+  "export_exit": 0,
+  "verification_exit": 0,
+  "wall_time_seconds": 41,
+  "finished_at": "2026-11-13T18:42:03.372748+00:00"
+}

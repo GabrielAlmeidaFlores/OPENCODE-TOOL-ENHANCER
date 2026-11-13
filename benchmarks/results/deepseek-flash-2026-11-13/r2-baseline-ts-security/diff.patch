@@ -1,0 +1,99 @@
+diff --git a/examples/typescript/src/app.test.ts b/examples/typescript/src/app.test.ts
+index 15cd72f..770e601 100644
+--- a/examples/typescript/src/app.test.ts
++++ b/examples/typescript/src/app.test.ts
+@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
+ import { validateCreateUser } from "./validation.js";
+ import { lineTotal, orderTotal } from "./pricing.js";
+ import { loadOrders, type OrderStore } from "./repository.js";
+-import { resolveUserFile, BASE_DIR } from "./files.js";
++import { resolveUserFile, BASE_DIR, INVALID_FILE_NAME_MESSAGE } from "./files.js";
+ 
+ test("validates a valid user", () => {
+   assert.deepEqual(validateCreateUser({ email: "a@b.co", name: "Ada", age: 30 }), {
+@@ -47,3 +47,28 @@ test("loads orders in order", async () => {
+ test("resolves a normal file name", () => {
+   assert.equal(resolveUserFile("avatar.png"), `${BASE_DIR}/avatar.png`);
+ });
++
++test("resolves a file name in a subdirectory", () => {
++  assert.equal(resolveUserFile("images/avatar.png"), `${BASE_DIR}/images/avatar.png`);
++});
++
++for (const name of [
++  "../secret.txt",
++  "../../etc/passwd",
++  "images/../../secret.txt",
++  "/etc/passwd",
++]) {
++  test(`rejects traversal in ${name}`, () => {
++    assert.throws(() => resolveUserFile(name), new Error(INVALID_FILE_NAME_MESSAGE));
++  });
++}
++
++for (const name of ["..%2Fsecret.txt", "%2e%2e%2fsecret.txt", "%2e%2e%2F%2e%2e%2Fetc%2Fpasswd"]) {
++  test(`rejects encoded traversal in ${name}`, () => {
++    assert.throws(() => resolveUserFile(name), new Error(INVALID_FILE_NAME_MESSAGE));
++  });
++}
++
++test("rejects malformed percent encoding", () => {
++  assert.throws(() => resolveUserFile("%zz"), new Error(INVALID_FILE_NAME_MESSAGE));
++});
+diff --git a/examples/typescript/src/files.ts b/examples/typescript/src/files.ts
+index 642f872..dcaf733 100644
+--- a/examples/typescript/src/files.ts
++++ b/examples/typescript/src/files.ts
+@@ -1,15 +1,47 @@
+-import { join } from "node:path";
++import { isAbsolute, relative, resolve, sep } from "node:path";
+ 
+ /** Base directory used by {@link resolveUserFile}. */
+ export const BASE_DIR = "/srv/user-files";
+ 
++/** Message thrown when a name escapes {@link BASE_DIR}. */
++export const INVALID_FILE_NAME_MESSAGE = "file name resolves outside the base directory";
++
++/**
++ * Decodes percent-encoded input once so encoded traversal is checked like plain traversal.
++ *
++ * @param name - User-supplied file name, possibly percent-encoded.
++ * @returns The decoded file name.
++ * @throws Error when the input contains malformed percent encoding.
++ */
++function decodeFileName(name: string): string {
++  try {
++    return decodeURIComponent(name);
++  } catch {
++    throw new Error(INVALID_FILE_NAME_MESSAGE);
++  }
++}
++
+ /**
+  * Resolves a user-supplied file name under {@link BASE_DIR}.
+  *
+- * @param name - User-supplied file name.
+- * @returns The joined path.
+- * @remarks Intentionally vulnerable to path traversal to support the security benchmark task.
++ * @param name - User-supplied file name, possibly percent-encoded.
++ * @returns An absolute path that stays inside {@link BASE_DIR}.
++ * @throws Error when the name is empty, malformed, absolute, or escapes {@link BASE_DIR}.
+  */
+ export function resolveUserFile(name: string): string {
+-  return join(BASE_DIR, name);
++  const decoded = decodeFileName(name);
++  const candidate = resolve(BASE_DIR, decoded);
++  const relativePath = relative(BASE_DIR, candidate);
++
++  const escapesBase =
++    relativePath === "" ||
++    relativePath === ".." ||
++    relativePath.startsWith(`..${sep}`) ||
++    isAbsolute(relativePath);
++
++  if (escapesBase) {
++    throw new Error(INVALID_FILE_NAME_MESSAGE);
++  }
++
++  return candidate;
+ }

@@ -1,0 +1,177 @@
+diff --git a/examples/csharp/Example.Tests/ValidationTests.cs b/examples/csharp/Example.Tests/ValidationTests.cs
+index 96ef51a..7f01dd7 100644
+--- a/examples/csharp/Example.Tests/ValidationTests.cs
++++ b/examples/csharp/Example.Tests/ValidationTests.cs
+@@ -1,9 +1,11 @@
+ using Example;
++using Microsoft.AspNetCore.Http;
++using Microsoft.AspNetCore.Http.HttpResults;
+ using Xunit;
+ 
+ namespace Example.Tests;
+ 
+-/// <summary>Tests for <see cref="Validator"/> and <see cref="FileResolver"/>.</summary>
++/// <summary>Tests for <see cref="Validator"/>, <see cref="CreateUserEndpoint"/>, and <see cref="FileResolver"/>.</summary>
+ public class ValidationTests
+ {
+     /// <summary>Verifies that a valid request produces no errors.</summary>
+@@ -30,6 +32,63 @@ public class ValidationTests
+         Assert.Contains(errors, error => error.Contains("age"));
+     }
+ 
++    /// <summary>Verifies that a valid payload returns a created response.</summary>
++    [Fact]
++    public void AcceptsValidPayload()
++    {
++        var result = CreateUserEndpoint.HandleJson("{\"email\":\"a@b.co\",\"name\":\"Ada\",\"age\":30}");
++
++        var created = Assert.IsType<Created<CreateUserRequest>>(result);
++        Assert.Equal(StatusCodes.Status201Created, created.StatusCode);
++        Assert.Equal("Ada", created.Value?.Name);
++    }
++
++    /// <summary>Verifies that a missing payload returns a problem response.</summary>
++    [Fact]
++    public void RejectsMissingPayload()
++    {
++        var result = CreateUserEndpoint.HandleJson(null);
++
++        var problem = Assert.IsType<ProblemHttpResult>(result);
++        Assert.Equal(StatusCodes.Status400BadRequest, problem.StatusCode);
++        Assert.Equal(StatusCodes.Status400BadRequest, problem.ProblemDetails.Status);
++        Assert.Contains("required", problem.ProblemDetails.Detail);
++    }
++
++    /// <summary>Verifies that a payload with missing fields returns a problem response.</summary>
++    [Fact]
++    public void RejectsMissingFields()
++    {
++        var result = CreateUserEndpoint.HandleJson("{\"name\":\"Ada\"}");
++
++        var problem = Assert.IsType<ProblemHttpResult>(result);
++        Assert.Equal(StatusCodes.Status400BadRequest, problem.StatusCode);
++        Assert.Contains("email", problem.ProblemDetails.Detail);
++    }
++
++    /// <summary>Verifies that a malformed payload returns a problem response.</summary>
++    [Fact]
++    public void RejectsMalformedPayload()
++    {
++        var result = CreateUserEndpoint.HandleJson("{\"email\":");
++
++        var problem = Assert.IsType<ProblemHttpResult>(result);
++        Assert.Equal(StatusCodes.Status400BadRequest, problem.StatusCode);
++        Assert.Contains("JSON", problem.ProblemDetails.Detail);
++    }
++
++    /// <summary>Verifies that malformed field values return a problem response.</summary>
++    [Fact]
++    public void RejectsMalformedFields()
++    {
++        var result = CreateUserEndpoint.HandleJson("{\"email\":\"invalid\",\"name\":\"Ada\",\"age\":-1}");
++
++        var problem = Assert.IsType<ProblemHttpResult>(result);
++        Assert.Equal(StatusCodes.Status400BadRequest, problem.StatusCode);
++        Assert.Contains("email", problem.ProblemDetails.Detail);
++        Assert.Contains("age", problem.ProblemDetails.Detail);
++    }
++
+     /// <summary>Verifies that a normal file name resolves under the base directory.</summary>
+     [Fact]
+     public void ResolvesNormalFileName()
+diff --git a/examples/csharp/Example/Example.csproj b/examples/csharp/Example/Example.csproj
+index 2581f31..90f028c 100644
+--- a/examples/csharp/Example/Example.csproj
++++ b/examples/csharp/Example/Example.csproj
+@@ -6,4 +6,8 @@
+     <RootNamespace>Example</RootNamespace>
+     <RollForward>LatestMajor</RollForward>
+   </PropertyGroup>
++
++  <ItemGroup>
++    <FrameworkReference Include="Microsoft.AspNetCore.App" />
++  </ItemGroup>
+ </Project>
+diff --git a/examples/csharp/Example/Program.cs b/examples/csharp/Example/Program.cs
+index 0acc3ff..46999e4 100644
+--- a/examples/csharp/Example/Program.cs
++++ b/examples/csharp/Example/Program.cs
+@@ -1,3 +1,6 @@
++using System.Text.Json;
++using Microsoft.AspNetCore.Http;
++
+ namespace Example;
+ 
+ /// <summary>Create-user request received by the example endpoint.</summary>
+@@ -35,6 +38,71 @@ public static class Validator
+     }
+ }
+ 
++/// <summary>HTTP-facing create-user endpoint.</summary>
++public static class CreateUserEndpoint
++{
++    private const string InvalidRequestTitle = "Invalid request";
++    private const string MissingBodyDetail = "A request body is required.";
++    private const string MalformedBodyDetail = "The request body is not valid JSON.";
++
++    private static readonly JsonSerializerOptions JsonOptions = new()
++    {
++        PropertyNameCaseInsensitive = true
++    };
++
++    /// <summary>Handles a bound create-user request.</summary>
++    /// <param name="request">Request data bound from the payload, or null when the payload is missing.</param>
++    /// <returns>A 201 response for valid input; otherwise an RFC 7807 problem response.</returns>
++    /// <remarks>A request that passes <see cref="Validator.Validate"/> has a non-null email.</remarks>
++    public static IResult Handle(CreateUserRequest? request)
++    {
++        if (request is null)
++        {
++            return Results.Problem(
++                title: InvalidRequestTitle,
++                detail: MissingBodyDetail,
++                statusCode: StatusCodes.Status400BadRequest);
++        }
++
++        var errors = Validator.Validate(request);
++        if (errors.Count > 0)
++        {
++            return Results.Problem(
++                title: InvalidRequestTitle,
++                detail: string.Join("; ", errors),
++                statusCode: StatusCodes.Status400BadRequest);
++        }
++
++        return Results.Created($"/users/{Uri.EscapeDataString(request.Email!)}", request);
++    }
++
++    /// <summary>Parses and handles a raw create-user payload.</summary>
++    /// <param name="body">Raw request body, or null when the payload is missing.</param>
++    /// <returns>A 201 response for valid input; otherwise an RFC 7807 problem response.</returns>
++    public static IResult HandleJson(string? body)
++    {
++        if (string.IsNullOrWhiteSpace(body))
++        {
++            return Handle(null);
++        }
++
++        CreateUserRequest? request;
++        try
++        {
++            request = JsonSerializer.Deserialize<CreateUserRequest>(body, JsonOptions);
++        }
++        catch (JsonException)
++        {
++            return Results.Problem(
++                title: InvalidRequestTitle,
++                detail: MalformedBodyDetail,
++                statusCode: StatusCodes.Status400BadRequest);
++        }
++
++        return Handle(request);
++    }
++}
++
+ /// <summary>Resolves user-supplied file names under a base directory.</summary>
+ public static class FileResolver
+ {

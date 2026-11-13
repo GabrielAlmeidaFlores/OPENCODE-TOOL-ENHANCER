@@ -93,6 +93,7 @@ nav:
       - Optimization: cost-optimization/README.md
       - Observability: cost-optimization/observability.md
       - Benchmark methodology: benchmarks/methodology.md
+      - DeepSeek Flash results: benchmarks/results-deepseek-flash.md
   - Research:
       - Baseline: research/baseline.md
       - Phase 1 report: research/phase1-research-report.md

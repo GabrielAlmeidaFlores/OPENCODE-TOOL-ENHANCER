@@ -1,0 +1,487 @@
+diff --git a/examples/csharp/AGENTS.md b/examples/csharp/AGENTS.md
+index 5225baf..b358852 100644
+--- a/examples/csharp/AGENTS.md
++++ b/examples/csharp/AGENTS.md
+@@ -12,8 +12,9 @@ Run `dotnet test` before declaring a task complete.
+ 
+ ## Structure
+ 
+-- `Example/Program.cs` — request validation and file resolution
+-- `Example.Tests/ValidationTests.cs` — xunit tests
++- `Example/Program.cs` — request validation, endpoint problem responses, and file resolution
++- `Example.Tests/ValidationTests.cs` — validator and file-resolver tests
++- `Example.Tests/EndpointTests.cs` — endpoint payload and problem-response tests
+ 
+ ## Conventions
+ 
+diff --git a/examples/csharp/Example.Tests/EndpointTests.cs b/examples/csharp/Example.Tests/EndpointTests.cs
+new file mode 100644
+index 0000000..d024e7f
+--- /dev/null
++++ b/examples/csharp/Example.Tests/EndpointTests.cs
+@@ -0,0 +1,161 @@
++using System.Text.Json;
++using Example;
++using Xunit;
++
++namespace Example.Tests;
++
++/// <summary>Tests for <see cref="CreateUserEndpoint"/> payload handling and problem responses.</summary>
++public class EndpointTests
++{
++    private const string ValidPayload = """{"email":"ada@example.com","name":"Ada","age":30}""";
++
++    private const string ValidPayloadWithoutAge = """{"email":"ada@example.com","name":"Ada"}""";
++
++    private const string ValidPayloadWithUpperCasedFields = """{"EMAIL":"ada@example.com","NAME":"Ada","AGE":30}""";
++
++    private const string ValidPayloadWithUnknownField = """{"email":"ada@example.com","name":"Ada","age":30,"role":"admin"}""";
++
++    private const string InvalidPayload = """{"email":"not-an-email","name":"   ","age":-1}""";
++
++    private const string EmptyPayload = "";
++
++    private const string WhitespacePayload = "   ";
++
++    private const string JsonNullPayload = "null";
++
++    private const string TruncatedJsonPayload = """{"email":"ada@example.com","name":""";
++
++    private const string ArrayPayload = """[1,2,3]""";
++
++    private const string ScalarJsonPayload = "\"ada\"";
++
++    private const string TypeMismatchPayload = """{"email":"ada@example.com","name":"Ada","age":"thirty"}""";
++
++    /// <summary>Verifies that a valid payload yields the created user and no problem.</summary>
++    [Fact]
++    public void AcceptsValidPayload()
++    {
++        var response = CreateUserEndpoint.Handle(ValidPayload);
++
++        Assert.Equal(HttpStatus.Created, response.StatusCode);
++        Assert.Null(response.Problem);
++
++        var user = Assert.IsType<CreateUserResponse>(response.User);
++        Assert.Equal("ada@example.com", user.Email);
++        Assert.Equal("Ada", user.Name);
++        Assert.Equal(30, user.Age);
++    }
++
++    /// <summary>Verifies that the optional age may be omitted.</summary>
++    [Fact]
++    public void AcceptsPayloadWithoutAge()
++    {
++        var response = CreateUserEndpoint.Handle(ValidPayloadWithoutAge);
++
++        Assert.Equal(HttpStatus.Created, response.StatusCode);
++
++        var user = Assert.IsType<CreateUserResponse>(response.User);
++        Assert.Null(user.Age);
++    }
++
++    /// <summary>Verifies that JSON field names are matched without regard to case.</summary>
++    [Fact]
++    public void AcceptsDifferentlyCasedFieldNames()
++    {
++        var response = CreateUserEndpoint.Handle(ValidPayloadWithUpperCasedFields);
++
++        Assert.Equal(HttpStatus.Created, response.StatusCode);
++
++        var user = Assert.IsType<CreateUserResponse>(response.User);
++        Assert.Equal("ada@example.com", user.Email);
++    }
++
++    /// <summary>Verifies that fields the endpoint does not model are ignored.</summary>
++    [Fact]
++    public void IgnoresUnknownFields()
++    {
++        var response = CreateUserEndpoint.Handle(ValidPayloadWithUnknownField);
++
++        Assert.Equal(HttpStatus.Created, response.StatusCode);
++        Assert.Null(response.Problem);
++    }
++
++    /// <summary>Verifies that a missing payload returns a 400 problem response instead of throwing.</summary>
++    /// <param name="payload">Request body variants that carry no object.</param>
++    [Theory]
++    [InlineData(null)]
++    [InlineData(EmptyPayload)]
++    [InlineData(WhitespacePayload)]
++    [InlineData(JsonNullPayload)]
++    public void ReturnsMissingBodyProblem(string? payload)
++    {
++        var response = CreateUserEndpoint.Handle(payload);
++
++        var problem = AssertProblem(response, ProblemMessages.MissingBodyType, ProblemMessages.MissingBodyTitle);
++        Assert.Empty(problem.Errors);
++    }
++
++    /// <summary>Verifies that a payload that is not a single JSON object returns a 400 problem response.</summary>
++    /// <param name="payload">Request bodies that cannot be read as one user object.</param>
++    [Theory]
++    [InlineData(TruncatedJsonPayload)]
++    [InlineData(ArrayPayload)]
++    [InlineData(ScalarJsonPayload)]
++    [InlineData(TypeMismatchPayload)]
++    [InlineData("not json at all")]
++    public void ReturnsMalformedBodyProblem(string payload)
++    {
++        var response = CreateUserEndpoint.Handle(payload);
++
++        var problem = AssertProblem(response, ProblemMessages.MalformedBodyType, ProblemMessages.MalformedBodyTitle);
++        Assert.Empty(problem.Errors);
++    }
++
++    /// <summary>Verifies that a well-formed payload with invalid values returns field-keyed errors.</summary>
++    [Fact]
++    public void ReturnsValidationProblemWithFieldErrors()
++    {
++        var response = CreateUserEndpoint.Handle(InvalidPayload);
++
++        var problem = AssertProblem(response, ProblemMessages.ValidationType, ProblemMessages.ValidationTitle);
++
++        var errors = problem.Errors;
++        Assert.Equal(
++            new[] { FieldNames.Age, FieldNames.Email, FieldNames.Name },
++            errors.Keys.OrderBy(key => key, StringComparer.Ordinal));
++        Assert.Equal(new[] { ValidationMessages.EmailInvalid }, errors[FieldNames.Email]);
++        Assert.Equal(new[] { ValidationMessages.NameRequired }, errors[FieldNames.Name]);
++        Assert.Equal(new[] { ValidationMessages.AgeNegative }, errors[FieldNames.Age]);
++    }
++
++    /// <summary>Verifies that the problem payload uses the RFC 7807 property names and the 400 status.</summary>
++    [Fact]
++    public void SerializesProblemWithRfc7807PropertyNames()
++    {
++        var response = CreateUserEndpoint.Handle(null);
++
++        var problem = Assert.IsType<ProblemResponse>(response.Problem);
++        var json = JsonSerializer.Serialize(problem);
++
++        Assert.Contains($"\"{ProblemJsonNames.Type}\":\"{ProblemMessages.MissingBodyType}\"", json);
++        Assert.Contains($"\"{ProblemJsonNames.Status}\":{HttpStatus.BadRequest}", json);
++        Assert.Contains($"\"{ProblemJsonNames.Title}\":\"{ProblemMessages.MissingBodyTitle}\"", json);
++    }
++
++    /// <summary>Asserts that a response carries the expected 400 problem and no user.</summary>
++    /// <param name="response">Response produced by <see cref="CreateUserEndpoint.Handle"/>.</param>
++    /// <param name="expectedType">Expected problem type URI.</param>
++    /// <param name="expectedTitle">Expected problem title.</param>
++    /// <returns>The problem carried by the response, for further assertions.</returns>
++    private static ProblemResponse AssertProblem(EndpointResponse response, string expectedType, string expectedTitle)
++    {
++        Assert.Equal(HttpStatus.BadRequest, response.StatusCode);
++        Assert.Null(response.User);
++
++        var problem = Assert.IsType<ProblemResponse>(response.Problem);
++        Assert.Equal(expectedType, problem.Type);
++        Assert.Equal(expectedTitle, problem.Title);
++        Assert.Equal(HttpStatus.BadRequest, problem.Status);
++        return problem;
++    }
++}
+diff --git a/examples/csharp/Example/Program.cs b/examples/csharp/Example/Program.cs
+index 0acc3ff..36d8d1b 100644
+--- a/examples/csharp/Example/Program.cs
++++ b/examples/csharp/Example/Program.cs
+@@ -1,3 +1,6 @@
++using System.Text.Json;
++using System.Text.Json.Serialization;
++
+ namespace Example;
+ 
+ /// <summary>Create-user request received by the example endpoint.</summary>
+@@ -6,35 +9,255 @@ namespace Example;
+ /// <param name="Age">Optional age supplied by the caller.</param>
+ public sealed record CreateUserRequest(string? Email, string? Name, int? Age);
+ 
++/// <summary>Field names used as validation-error keys and problem-response keys.</summary>
++public static class FieldNames
++{
++    /// <summary>Key for the email field.</summary>
++    public const string Email = "email";
++
++    /// <summary>Key for the display-name field.</summary>
++    public const string Name = "name";
++
++    /// <summary>Key for the age field.</summary>
++    public const string Age = "age";
++}
++
++/// <summary>JSON property names of the RFC 7807 problem payload.</summary>
++public static class ProblemJsonNames
++{
++    /// <summary>Property name of the problem type URI.</summary>
++    public const string Type = "type";
++
++    /// <summary>Property name of the short problem title.</summary>
++    public const string Title = "title";
++
++    /// <summary>Property name of the HTTP status code.</summary>
++    public const string Status = "status";
++
++    /// <summary>Property name of the problem explanation.</summary>
++    public const string Detail = "detail";
++
++    /// <summary>Property name of the field-keyed validation errors.</summary>
++    public const string Errors = "errors";
++}
++
++/// <summary>HTTP status codes returned by <see cref="CreateUserEndpoint"/>.</summary>
++public static class HttpStatus
++{
++    /// <summary>201 Created; the request was accepted.</summary>
++    public const int Created = 201;
++
++    /// <summary>400 Bad Request; the request body was missing, malformed, or invalid.</summary>
++    public const int BadRequest = 400;
++}
++
++/// <summary>Stable, user-facing validation messages.</summary>
++public static class ValidationMessages
++{
++    /// <summary>Reported when the email is absent or lacks an at sign.</summary>
++    public const string EmailInvalid = "email must be a valid address";
++
++    /// <summary>Reported when the display name is absent or blank.</summary>
++    public const string NameRequired = "name is required";
++
++    /// <summary>Reported when the age is below zero.</summary>
++    public const string AgeNegative = "age must be non-negative";
++}
++
++/// <summary>Stable, user-facing problem metadata returned by <see cref="CreateUserEndpoint"/>.</summary>
++public static class ProblemMessages
++{
++    /// <summary>Problem type URI for a request that carried no body.</summary>
++    public const string MissingBodyType = "urn:example:problem:missing-body";
++
++    /// <summary>Title for a request that carried no body.</summary>
++    public const string MissingBodyTitle = "Request body is required";
++
++    /// <summary>Detail for a request that carried no body.</summary>
++    public const string MissingBodyDetail = "Send a JSON object containing email, name, and an optional age.";
++
++    /// <summary>Problem type URI for a body that is not a JSON object.</summary>
++    public const string MalformedBodyType = "urn:example:problem:malformed-body";
++
++    /// <summary>Title for a body that is not a JSON object.</summary>
++    public const string MalformedBodyTitle = "Request body is malformed";
++
++    /// <summary>Detail for a body that is not a JSON object.</summary>
++    public const string MalformedBodyDetail = "The request body must be a single JSON object with email, name, and age.";
++
++    /// <summary>Problem type URI for a body that failed field validation.</summary>
++    public const string ValidationType = "urn:example:problem:validation-failed";
++
++    /// <summary>Title for a body that failed field validation.</summary>
++    public const string ValidationTitle = "Request validation failed";
++
++    /// <summary>Detail for a body that failed field validation.</summary>
++    public const string ValidationDetail = "One or more fields are invalid.";
++}
++
++/// <summary>Single field-level validation failure.</summary>
++/// <param name="Field">Name of the offending field, taken from <see cref="FieldNames"/>.</param>
++/// <param name="Message">Stable, user-facing message from <see cref="ValidationMessages"/>.</param>
++public sealed record ValidationError(string Field, string Message);
++
+ /// <summary>Validates create-user requests.</summary>
+ public static class Validator
+ {
+     /// <summary>Validates a create-user request.</summary>
+     /// <param name="request">Untrusted request data.</param>
+-    /// <returns>Validation errors; empty when the request is valid.</returns>
++    /// <returns>Validation messages; empty when the request is valid.</returns>
+     public static IReadOnlyList<string> Validate(CreateUserRequest request)
++        => ValidateFields(request).Select(error => error.Message).ToList();
++
++    /// <summary>Validates a create-user request and reports the offending field for each message.</summary>
++    /// <param name="request">Untrusted request data.</param>
++    /// <returns>Field-level errors; empty when the request is valid.</returns>
++    public static IReadOnlyList<ValidationError> ValidateFields(CreateUserRequest request)
+     {
+-        var errors = new List<string>();
++        var errors = new List<ValidationError>();
+ 
+         if (string.IsNullOrWhiteSpace(request.Email) || !request.Email.Contains('@'))
+         {
+-            errors.Add("email must be a valid address");
++            errors.Add(new ValidationError(FieldNames.Email, ValidationMessages.EmailInvalid));
+         }
+ 
+         if (string.IsNullOrWhiteSpace(request.Name))
+         {
+-            errors.Add("name is required");
++            errors.Add(new ValidationError(FieldNames.Name, ValidationMessages.NameRequired));
+         }
+ 
+         if (request.Age is < 0)
+         {
+-            errors.Add("age must be non-negative");
++            errors.Add(new ValidationError(FieldNames.Age, ValidationMessages.AgeNegative));
+         }
+ 
+         return errors;
+     }
+ }
+ 
++/// <summary>RFC 7807 problem details returned when a request cannot be accepted.</summary>
++/// <param name="Type">Problem type URI.</param>
++/// <param name="Title">Short, human-readable summary of the problem type.</param>
++/// <param name="Status">HTTP status code for this occurrence.</param>
++/// <param name="Detail">Human-readable explanation of this occurrence.</param>
++/// <param name="Errors">Validation errors keyed by field name; empty when no field failed.</param>
++public sealed record ProblemResponse(
++    [property: JsonPropertyName(ProblemJsonNames.Type)] string Type,
++    [property: JsonPropertyName(ProblemJsonNames.Title)] string Title,
++    [property: JsonPropertyName(ProblemJsonNames.Status)] int Status,
++    [property: JsonPropertyName(ProblemJsonNames.Detail)] string Detail,
++    [property: JsonPropertyName(ProblemJsonNames.Errors)] IReadOnlyDictionary<string, IReadOnlyList<string>> Errors)
++{
++    private static readonly IReadOnlyDictionary<string, IReadOnlyList<string>> NoFieldErrors =
++        new Dictionary<string, IReadOnlyList<string>>();
++
++    /// <summary>Builds the problem for a request that carried no body.</summary>
++    /// <returns>A 400 problem whose type, title, and detail come from <see cref="ProblemMessages"/>.</returns>
++    public static ProblemResponse MissingBody()
++        => new(
++            ProblemMessages.MissingBodyType,
++            ProblemMessages.MissingBodyTitle,
++            HttpStatus.BadRequest,
++            ProblemMessages.MissingBodyDetail,
++            NoFieldErrors);
++
++    /// <summary>Builds the problem for a body that is not a single JSON object.</summary>
++    /// <returns>A 400 problem whose type, title, and detail come from <see cref="ProblemMessages"/>.</returns>
++    public static ProblemResponse MalformedBody()
++        => new(
++            ProblemMessages.MalformedBodyType,
++            ProblemMessages.MalformedBodyTitle,
++            HttpStatus.BadRequest,
++            ProblemMessages.MalformedBodyDetail,
++            NoFieldErrors);
++
++    /// <summary>Builds the problem for a body whose fields failed validation.</summary>
++    /// <param name="errors">Field-level errors from <see cref="Validator.ValidateFields"/>; must not be empty.</param>
++    /// <returns>A 400 problem that groups the messages by field name.</returns>
++    public static ProblemResponse FromValidationErrors(IReadOnlyList<ValidationError> errors)
++        => new(
++            ProblemMessages.ValidationType,
++            ProblemMessages.ValidationTitle,
++            HttpStatus.BadRequest,
++            ProblemMessages.ValidationDetail,
++            errors
++                .GroupBy(error => error.Field)
++                .ToDictionary(
++                    group => group.Key,
++                    group => (IReadOnlyList<string>)group.Select(error => error.Message).ToList()));
++}
++
++/// <summary>Response body returned for an accepted create-user request.</summary>
++/// <param name="Email">Validated email address.</param>
++/// <param name="Name">Validated display name.</param>
++/// <param name="Age">Validated age, or <see langword="null"/> when the caller omitted it.</param>
++public sealed record CreateUserResponse(string Email, string Name, int? Age);
++
++/// <summary>Outcome of handling a create-user request: either a created user or a problem.</summary>
++/// <param name="StatusCode">HTTP status code the endpoint would return.</param>
++/// <param name="User">Created user when <paramref name="StatusCode"/> is <see cref="HttpStatus.Created"/>.</param>
++/// <param name="Problem">Problem details when the request was rejected.</param>
++public sealed record EndpointResponse(int StatusCode, CreateUserResponse? User, ProblemResponse? Problem)
++{
++    /// <summary>Records an accepted request.</summary>
++    /// <param name="user">Validated user data.</param>
++    /// <returns>A 201 response carrying the created user and no problem.</returns>
++    public static EndpointResponse Created(CreateUserResponse user) => new(HttpStatus.Created, user, null);
++
++    /// <summary>Records a rejected request.</summary>
++    /// <param name="problem">Problem details describing the rejection.</param>
++    /// <returns>A response carrying the problem status code and no user.</returns>
++    public static EndpointResponse FromProblem(ProblemResponse problem) => new(problem.Status, null, problem);
++}
++
++/// <summary>Create-user endpoint: parses the request body, validates it, and reports problems.</summary>
++public static class CreateUserEndpoint
++{
++    private static readonly JsonSerializerOptions PayloadOptions = new()
++    {
++        PropertyNameCaseInsensitive = true,
++    };
++
++    /// <summary>Handles a create-user request body.</summary>
++    /// <param name="requestBody">Raw request body, or <see langword="null"/> when the caller sent none.</param>
++    /// <returns>A 201 response with the created user, or a 400 problem response for invalid input.</returns>
++    public static EndpointResponse Handle(string? requestBody)
++    {
++        if (string.IsNullOrWhiteSpace(requestBody))
++        {
++            return EndpointResponse.FromProblem(ProblemResponse.MissingBody());
++        }
++
++        CreateUserRequest? request;
++        try
++        {
++            request = JsonSerializer.Deserialize<CreateUserRequest>(requestBody, PayloadOptions);
++        }
++        catch (JsonException)
++        {
++            return EndpointResponse.FromProblem(ProblemResponse.MalformedBody());
++        }
++
++        if (request is null)
++        {
++            return EndpointResponse.FromProblem(ProblemResponse.MissingBody());
++        }
++
++        var errors = Validator.ValidateFields(request);
++        if (errors.Count > 0)
++        {
++            return EndpointResponse.FromProblem(ProblemResponse.FromValidationErrors(errors));
++        }
++
++        if (request.Email is not { } email || request.Name is not { } name)
++        {
++            return EndpointResponse.FromProblem(ProblemResponse.MalformedBody());
++        }
++
++        return EndpointResponse.Created(new CreateUserResponse(email, name, request.Age));
++    }
++}
++
+ /// <summary>Resolves user-supplied file names under a base directory.</summary>
+ public static class FileResolver
+ {
+diff --git a/examples/csharp/README.md b/examples/csharp/README.md
+index dc70d65..a494ad6 100644
+--- a/examples/csharp/README.md
++++ b/examples/csharp/README.md
+@@ -9,6 +9,27 @@ dotnet restore
+ dotnet test
+ ```
+ 
++## Endpoint contract
++
++`CreateUserEndpoint.Handle(string? requestBody)` accepts a raw JSON body and returns an
++`EndpointResponse` carrying the HTTP status code, a `CreateUserResponse`, or an RFC 7807
++`ProblemResponse`:
++
++| Input | Status | Body |
++| --- | --- | --- |
++| Valid object with `email`, `name`, optional `age` | 201 | `CreateUserResponse` |
++| No body, empty body, or the JSON literal `null` | 400 | Problem `urn:example:problem:missing-body` |
++| Truncated JSON, array, scalar, or wrong field type | 400 | Problem `urn:example:problem:malformed-body` |
++| Well-formed object that fails field validation | 400 | Problem `urn:example:problem:validation-failed` with field-keyed `errors` |
++
++`Validator.ValidateFields` reports each failure with the offending field name; `Validator.Validate`
++keeps returning the same messages as a flat list. Messages are defined in `ValidationMessages` and
++`ProblemMessages` so the endpoint, the tests, and the wire payload cannot drift apart.
++
++```csharp
++var response = CreateUserEndpoint.Handle("""{"email":"ada@example.com","name":"Ada"}""");
++```
++
+ ## Try an agent
+ 
+ ```bash

@@ -1,0 +1,148 @@
+diff --git a/examples/typescript/src/app.test.ts b/examples/typescript/src/app.test.ts
+index 15cd72f..1a286f0 100644
+--- a/examples/typescript/src/app.test.ts
++++ b/examples/typescript/src/app.test.ts
+@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
+ import { validateCreateUser } from "./validation.js";
+ import { lineTotal, orderTotal } from "./pricing.js";
+ import { loadOrders, type OrderStore } from "./repository.js";
+-import { resolveUserFile, BASE_DIR } from "./files.js";
++import { resolveUserFile, BASE_DIR, UnsafeFileNameError } from "./files.js";
+ 
+ test("validates a valid user", () => {
+   assert.deepEqual(validateCreateUser({ email: "a@b.co", name: "Ada", age: 30 }), {
+@@ -47,3 +47,36 @@ test("loads orders in order", async () => {
+ test("resolves a normal file name", () => {
+   assert.equal(resolveUserFile("avatar.png"), `${BASE_DIR}/avatar.png`);
+ });
++
++test("resolves a nested valid file name under the base directory", () => {
++  assert.equal(resolveUserFile("images/avatar.png"), `${BASE_DIR}/images/avatar.png`);
++});
++
++test("rejects direct traversal in file names", () => {
++  const names = [
++    "../secret.txt",
++    "../../etc/passwd",
++    "images/../../escape.txt",
++    "..",
++    "..\\windows\\win.ini",
++    "/etc/passwd",
++  ];
++  for (const name of names) {
++    assert.throws(() => resolveUserFile(name), UnsafeFileNameError, name);
++  }
++});
++
++test("rejects percent-encoded traversal in file names", () => {
++  const names = [
++    "%2e%2e%2fsecret.txt",
++    "%2E%2E%5Csecret.txt",
++    "..%2Fsecret.txt",
++    "images%2F%2e%2e%2Fescape.txt",
++    "%252e%252e%252fsecret.txt",
++    "%25252e%25252e%25252fsecret.txt",
++    "%2e%2e",
++  ];
++  for (const name of names) {
++    assert.throws(() => resolveUserFile(name), UnsafeFileNameError, name);
++  }
++});
+diff --git a/examples/typescript/src/files.ts b/examples/typescript/src/files.ts
+index 642f872..0b85340 100644
+--- a/examples/typescript/src/files.ts
++++ b/examples/typescript/src/files.ts
+@@ -1,15 +1,89 @@
+-import { join } from "node:path";
++import { join, resolve, sep } from "node:path";
+ 
+ /** Base directory used by {@link resolveUserFile}. */
+ export const BASE_DIR = "/srv/user-files";
+ 
++/** Number of percent-decoding passes used to expose layered encoding. */
++const MAX_DECODE_PASSES = 5;
++
++/** Matches a `..` path segment delimited by start, end, or a separator. */
++const TRAVERSAL_SEGMENT = /(?:^|[\\/])\.\.(?:$|[\\/])/;
++
++/** Matches an absolute POSIX path or a Windows drive or UNC prefix. */
++const ABSOLUTE_PATH = /^(?:[\\/]|[A-Za-z]:[\\/])/;
++
++/**
++ * Error thrown when a user-supplied file name could escape {@link BASE_DIR}.
++ */
++export class UnsafeFileNameError extends Error {
++  constructor(name: string) {
++    super(`unsafe file name: ${JSON.stringify(name)}`);
++    this.name = "UnsafeFileNameError";
++  }
++}
++
++/**
++ * Percent-decodes a value repeatedly until it stops changing.
++ *
++ * @param value - Raw value to decode.
++ * @returns The fully decoded value, or `undefined` when it is not valid percent-encoding.
++ * @throws UnsafeFileNameError when the encoding depth exceeds {@link MAX_DECODE_PASSES}.
++ */
++function decodeRepeatedly(value: string): string | undefined {
++  let current = value;
++  for (let pass = 0; pass < MAX_DECODE_PASSES; pass += 1) {
++    let decoded: string;
++    try {
++      decoded = decodeURIComponent(current);
++    } catch {
++      return undefined;
++    }
++    if (decoded === current) {
++      return current;
++    }
++    current = decoded;
++  }
++  throw new UnsafeFileNameError(value);
++}
++
++/**
++ * Rejects one candidate form of a file name when it can escape the base directory.
++ *
++ * @param candidate - Decoded or raw file name.
++ * @param original - Name as supplied by the caller, used for the error message.
++ * @throws UnsafeFileNameError when the candidate is absolute, empty, contains a NUL
++ * byte, or contains a parent-directory segment.
++ */
++function assertSafeCandidate(candidate: string, original: string): void {
++  if (
++    candidate.length === 0 ||
++    candidate.includes("\0") ||
++    ABSOLUTE_PATH.test(candidate) ||
++    TRAVERSAL_SEGMENT.test(candidate)
++  ) {
++    throw new UnsafeFileNameError(original);
++  }
++}
++
+ /**
+  * Resolves a user-supplied file name under {@link BASE_DIR}.
+  *
+- * @param name - User-supplied file name.
+- * @returns The joined path.
+- * @remarks Intentionally vulnerable to path traversal to support the security benchmark task.
++ * @param name - User-supplied file name, optionally percent-encoded.
++ * @returns The joined path, unchanged for valid names.
++ * @throws UnsafeFileNameError when the name is absolute, empty, or escapes the base
++ * directory directly or through percent-encoding.
+  */
+ export function resolveUserFile(name: string): string {
++  assertSafeCandidate(name, name);
++  const decoded = decodeRepeatedly(name);
++  if (decoded !== undefined && decoded !== name) {
++    assertSafeCandidate(decoded, name);
++  }
++
++  const base = resolve(BASE_DIR);
++  const target = resolve(base, name);
++  if (target !== base && !target.startsWith(base + sep)) {
++    throw new UnsafeFileNameError(name);
++  }
+   return join(BASE_DIR, name);
+ }

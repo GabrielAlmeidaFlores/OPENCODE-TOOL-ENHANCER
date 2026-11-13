@@ -1,0 +1,115 @@
+{
+  "range": {
+    "from": 1767236400000,
+    "to": 1794594424945
+  },
+  "sessions": 16,
+  "subagents": 0,
+  "prompts": 16,
+  "steps": 206,
+  "tokens": {
+    "input": 357540,
+    "output": 59602,
+    "reasoning": 80512,
+    "cache": {
+      "read": 4747904,
+      "write": 0
+    }
+  },
+  "cost": 0.15194311199999994,
+  "tools": {
+    "mode": "detail",
+    "totals": {
+      "calls": 278,
+      "succeeded": 278,
+      "failed": 0,
+      "unfinished": 0
+    },
+    "usage": [
+      {
+        "name": "shell",
+        "calls": 143,
+        "succeeded": 143,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 193
+      },
+      {
+        "name": "read",
+        "calls": 87,
+        "succeeded": 87,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 24
+      },
+      {
+        "name": "edit",
+        "calls": 15,
+        "succeeded": 15,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 19
+      },
+      {
+        "name": "write",
+        "calls": 13,
+        "succeeded": 13,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 27
+      },
+      {
+        "name": "grep",
+        "calls": 12,
+        "succeeded": 12,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 72
+      },
+      {
+        "name": "glob",
+        "calls": 5,
+        "succeeded": 5,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 256
+      },
+      {
+        "name": "todowrite",
+        "calls": 3,
+        "succeeded": 3,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 46
+      }
+    ]
+  },
+  "activeDays": 1,
+  "streak": 1,
+  "activity": [
+    {
+      "date": "2026-11-13",
+      "steps": 206
+    }
+  ],
+  "models": [
+    {
+      "model": {
+        "id": "deepseek-flash",
+        "providerID": "deepseek",
+        "variant": "default"
+      },
+      "steps": 206,
+      "tokens": {
+        "input": 357540,
+        "output": 59602,
+        "reasoning": 80512,
+        "cache": {
+          "read": 4747904,
+          "write": 0
+        }
+      },
+      "cost": 0.15194311199999994
+    }
+  ]
+}

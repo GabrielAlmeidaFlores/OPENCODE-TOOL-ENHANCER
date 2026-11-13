@@ -1,0 +1,123 @@
+{
+  "range": {
+    "from": 1767236400000,
+    "to": 1794595522106
+  },
+  "sessions": 32,
+  "subagents": 0,
+  "prompts": 32,
+  "steps": 407,
+  "tokens": {
+    "input": 686102,
+    "output": 112716,
+    "reasoning": 153155,
+    "cache": {
+      "read": 9174656,
+      "write": 0
+    }
+  },
+  "cost": 0.28996186800000023,
+  "tools": {
+    "mode": "detail",
+    "totals": {
+      "calls": 549,
+      "succeeded": 549,
+      "failed": 0,
+      "unfinished": 0
+    },
+    "usage": [
+      {
+        "name": "shell",
+        "calls": 255,
+        "succeeded": 255,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 305
+      },
+      {
+        "name": "read",
+        "calls": 188,
+        "succeeded": 188,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 27
+      },
+      {
+        "name": "edit",
+        "calls": 40,
+        "succeeded": 40,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 18.5
+      },
+      {
+        "name": "grep",
+        "calls": 28,
+        "succeeded": 28,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 62
+      },
+      {
+        "name": "write",
+        "calls": 21,
+        "succeeded": 21,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 27
+      },
+      {
+        "name": "glob",
+        "calls": 11,
+        "succeeded": 11,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 56
+      },
+      {
+        "name": "todowrite",
+        "calls": 5,
+        "succeeded": 5,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 21
+      },
+      {
+        "name": "execute",
+        "calls": 1,
+        "succeeded": 1,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 420
+      }
+    ]
+  },
+  "activeDays": 1,
+  "streak": 1,
+  "activity": [
+    {
+      "date": "2026-11-13",
+      "steps": 407
+    }
+  ],
+  "models": [
+    {
+      "model": {
+        "id": "deepseek-flash",
+        "providerID": "deepseek",
+        "variant": "default"
+      },
+      "steps": 407,
+      "tokens": {
+        "input": 686102,
+        "output": 112716,
+        "reasoning": 153155,
+        "cache": {
+          "read": 9174656,
+          "write": 0
+        }
+      },
+      "cost": 0.28996186800000023
+    }
+  ]
+}

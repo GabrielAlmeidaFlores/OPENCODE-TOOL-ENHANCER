@@ -35,7 +35,7 @@ The measurement does not include:
 - Retrieval quality.
 - Task cost or correctness.
 
-Those require the deferred benchmark program. Do not present these startup numbers as token savings or as a complete overhead comparison.
+Those require a dedicated benchmark run. Do not present these startup numbers as token savings or as a complete overhead comparison.
 
 ## Reproduction
 

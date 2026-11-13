@@ -2,7 +2,7 @@
 
 > **Status:** Experimental · **Last verified:** 2026-11-12 · **Evidence:** round 1 discovery executed; code-change pilots pending
 
-The pilots validate the profile on real codebases instead of only the bundled fixtures. They are separate from the deferred benchmark program and do not claim statistical cost results.
+The pilots validate the profile on real codebases instead of only the bundled fixtures. They are separate from the benchmark program and do not claim statistical cost results.
 
 ## Selected repositories
 

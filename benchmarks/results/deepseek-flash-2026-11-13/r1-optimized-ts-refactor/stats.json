@@ -1,0 +1,99 @@
+{
+  "range": {
+    "from": 1767236400000,
+    "to": 1794593547945
+  },
+  "sessions": 7,
+  "subagents": 0,
+  "prompts": 7,
+  "steps": 85,
+  "tokens": {
+    "input": 157694,
+    "output": 22393,
+    "reasoning": 28063,
+    "cache": {
+      "read": 1859584,
+      "write": 0
+    }
+  },
+  "cost": 0.05950645199999999,
+  "tools": {
+    "mode": "detail",
+    "totals": {
+      "calls": 111,
+      "succeeded": 111,
+      "failed": 0,
+      "unfinished": 0
+    },
+    "usage": [
+      {
+        "name": "shell",
+        "calls": 63,
+        "succeeded": 63,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 79
+      },
+      {
+        "name": "read",
+        "calls": 36,
+        "succeeded": 36,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 13
+      },
+      {
+        "name": "write",
+        "calls": 6,
+        "succeeded": 6,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 17
+      },
+      {
+        "name": "grep",
+        "calls": 3,
+        "succeeded": 3,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 94
+      },
+      {
+        "name": "edit",
+        "calls": 3,
+        "succeeded": 3,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 10
+      }
+    ]
+  },
+  "activeDays": 1,
+  "streak": 1,
+  "activity": [
+    {
+      "date": "2026-11-13",
+      "steps": 85
+    }
+  ],
+  "models": [
+    {
+      "model": {
+        "id": "deepseek-flash",
+        "providerID": "deepseek",
+        "variant": "default"
+      },
+      "steps": 85,
+      "tokens": {
+        "input": 157694,
+        "output": 22393,
+        "reasoning": 28063,
+        "cache": {
+          "read": 1859584,
+          "write": 0
+        }
+      },
+      "cost": 0.05950645199999999
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+
+> test
+> npm run build && node --test dist/*.test.js
+
+
+> build
+> tsc -p tsconfig.json
+
+✔ validates a valid user (6.052292ms)
+✔ rejects a missing email (0.794709ms)
+✔ accepts a valid create-user request (0.571625ms)
+✔ accepts a create-user request without the optional age (0.299ms)
+✔ normalizes surrounding whitespace (0.382625ms)
+✔ returns 400 for a missing email (0.725417ms)
+✔ returns 400 for a missing name (0.289083ms)
+✔ returns 400 for a malformed email (0.240375ms)
+✔ returns 400 for a blank name (0.439333ms)
+✔ returns 400 for malformed field types (0.320583ms)
+✔ reports every invalid field in one response (0.4445ms)
+✔ returns 400 for a non-object request body (0.777458ms)
+✔ returns 400 for a non-integer age (0.723ms)
+✔ prices taxable and non-taxable items (0.288ms)
+✔ totals an order (0.127833ms)
+✔ loads orders in order (1.9035ms)
+✔ resolves a normal file name (0.178792ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 768.585959

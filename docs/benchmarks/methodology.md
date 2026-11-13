@@ -1,8 +1,8 @@
 # Benchmark Methodology
 
-> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+> **Status:** Stable · **Last verified:** 2026-11-13 · **Evidence:** harness verified locally; one result set published
 
-Status: methodology and harness only. No results are published.
+Status: methodology, harness, and one published DeepSeek Flash result set.
 
 ## Question
 
@@ -87,7 +87,9 @@ Place results in `benchmarks/results/<run-id>/` with:
 - `verification.log`
 - `notes.md`
 
-No results exist yet.
+The first result set is published at `docs/benchmarks/results-deepseek-flash.md`. It reports 30 isolated runs across 5 tasks, 2 arms, and 3 repeats with `deepseek/deepseek-flash`.
+
+The optimized configuration did not reduce cost in that result set. Do not generalize that negative result to other models or task sizes without running the harness.
 
 ## Correctness and rework rubric
 

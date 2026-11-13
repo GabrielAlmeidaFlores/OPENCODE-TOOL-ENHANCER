@@ -1,0 +1,19 @@
+{
+  "run_id": "r1-optimized-ts-security",
+  "arm": "optimized",
+  "task_file": "benchmarks/tasks/ts-security.json",
+  "task_id": "ts-security",
+  "working_directory": "examples/typescript",
+  "commit": "a8eb1be59924ceac3aca12adfb2fe880877eaead",
+  "model": "deepseek/deepseek-flash",
+  "agent": "coordinator",
+  "max_wall_time_seconds": 900,
+  "started_at": "2026-11-13T18:16:20.837691+00:00",
+  "opencode_version": "opencode v2.2.7",
+  "run_exit": 0,
+  "stats_exit": 0,
+  "export_exit": 0,
+  "verification_exit": 0,
+  "wall_time_seconds": 75,
+  "finished_at": "2026-11-13T18:17:37.692636+00:00"
+}

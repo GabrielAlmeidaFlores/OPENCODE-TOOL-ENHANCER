@@ -1,0 +1,19 @@
+{
+  "run_id": "r2-optimized-ts-refactor",
+  "arm": "optimized",
+  "task_file": "benchmarks/tasks/ts-refactor.json",
+  "task_id": "ts-refactor",
+  "working_directory": "examples/typescript",
+  "commit": "a8eb1be59924ceac3aca12adfb2fe880877eaead",
+  "model": "deepseek/deepseek-flash",
+  "agent": "coordinator",
+  "max_wall_time_seconds": 900,
+  "started_at": "2026-11-13T18:27:09.805890+00:00",
+  "opencode_version": "opencode v2.2.7",
+  "run_exit": 0,
+  "stats_exit": 0,
+  "export_exit": 0,
+  "verification_exit": 0,
+  "wall_time_seconds": 39,
+  "finished_at": "2026-11-13T18:27:54.203002+00:00"
+}

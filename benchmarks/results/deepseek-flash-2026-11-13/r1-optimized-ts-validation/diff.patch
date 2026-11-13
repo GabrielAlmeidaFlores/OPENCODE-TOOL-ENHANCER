@@ -1,0 +1,332 @@
+diff --git a/examples/typescript/README.md b/examples/typescript/README.md
+index a50456a..a0424a8 100644
+--- a/examples/typescript/README.md
++++ b/examples/typescript/README.md
+@@ -5,7 +5,6 @@ A minimal repository used by the benchmark tasks. It contains deliberate weaknes
+ - duplicated pricing logic
+ - an N+1 order loader
+ - a path traversal in file resolution
+-- incomplete input validation
+ 
+ ## Run
+ 
+diff --git a/examples/typescript/src/validation.test.ts b/examples/typescript/src/validation.test.ts
+new file mode 100644
+index 0000000..bf24317
+--- /dev/null
++++ b/examples/typescript/src/validation.test.ts
+@@ -0,0 +1,124 @@
++import { test } from "node:test";
++import assert from "node:assert/strict";
++
++import {
++  AGE_ERROR,
++  BODY_ERROR,
++  EMAIL_ERROR,
++  HTTP_BAD_REQUEST,
++  HTTP_OK,
++  NAME_ERROR,
++  UNKNOWN_FIELD_ERROR_TEMPLATE,
++  FIELD_PLACEHOLDER,
++  createUserEndpoint,
++  validateCreateUser,
++} from "./validation.js";
++
++const VALID_INPUT = { email: "a@b.co", name: "Ada", age: 30 };
++const FIELD_PASSWORD = "password";
++const EMAIL_WITH_PADDING = "  a@b.co  ";
++const NAME_WITH_PADDING = "  Ada  ";
++const MALFORMED_EMAILS: readonly unknown[] = [
++  "not-an-email",
++  "a@b",
++  "@b.co",
++  "a@.co",
++  "a b@c.co",
++  "",
++  42,
++  null,
++];
++const MALFORMED_NAMES: readonly unknown[] = ["", "   ", 7, null];
++const MALFORMED_AGES: readonly unknown[] = [-1, 1.5, "30", Number.NaN, null];
++const MALFORMED_BODIES: readonly unknown[] = [undefined, null, "user", 7, [{ email: "a@b.co" }]];
++
++test("accepts a complete valid request", () => {
++  assert.deepEqual(validateCreateUser(VALID_INPUT), { ok: true, errors: [] });
++});
++
++test("accepts a request without the optional age", () => {
++  const { email, name } = VALID_INPUT;
++  assert.deepEqual(validateCreateUser({ email, name }), { ok: true, errors: [] });
++});
++
++test("trims surrounding whitespace from accepted text fields", () => {
++  const response = createUserEndpoint({ email: EMAIL_WITH_PADDING, name: NAME_WITH_PADDING });
++  assert.deepEqual(response, {
++    status: HTTP_OK,
++    body: { user: { email: "a@b.co", name: "Ada" } },
++  });
++});
++
++test("rejects a missing email", () => {
++  const result = validateCreateUser({ name: "Ada" });
++  assert.equal(result.ok, false);
++  assert.deepEqual(result.errors, [EMAIL_ERROR]);
++});
++
++test("rejects a missing name", () => {
++  const result = validateCreateUser({ email: "a@b.co" });
++  assert.equal(result.ok, false);
++  assert.deepEqual(result.errors, [NAME_ERROR]);
++});
++
++test("rejects a malformed email", () => {
++  for (const email of MALFORMED_EMAILS) {
++    const result = validateCreateUser({ email, name: "Ada" });
++    assert.equal(result.ok, false, `expected ${String(email)} to be rejected`);
++    assert.deepEqual(result.errors, [EMAIL_ERROR], `unexpected errors for ${String(email)}`);
++  }
++});
++
++test("rejects a malformed name", () => {
++  for (const name of MALFORMED_NAMES) {
++    const result = validateCreateUser({ email: "a@b.co", name });
++    assert.equal(result.ok, false, `expected ${String(name)} to be rejected`);
++    assert.deepEqual(result.errors, [NAME_ERROR], `unexpected errors for ${String(name)}`);
++  }
++});
++
++test("rejects a malformed age", () => {
++  for (const age of MALFORMED_AGES) {
++    const result = validateCreateUser({ email: "a@b.co", name: "Ada", age });
++    assert.equal(result.ok, false, `expected ${String(age)} to be rejected`);
++    assert.deepEqual(result.errors, [AGE_ERROR], `unexpected errors for ${String(age)}`);
++  }
++});
++
++test("rejects a body that is not a JSON object", () => {
++  for (const body of MALFORMED_BODIES) {
++    const result = validateCreateUser(body);
++    assert.equal(result.ok, false);
++    assert.deepEqual(result.errors, [BODY_ERROR]);
++  }
++});
++
++test("rejects unsupported fields", () => {
++  const result = validateCreateUser({ ...VALID_INPUT, [FIELD_PASSWORD]: "secret" });
++  assert.equal(result.ok, false);
++  assert.deepEqual(result.errors, [
++    UNKNOWN_FIELD_ERROR_TEMPLATE.replace(FIELD_PLACEHOLDER, FIELD_PASSWORD),
++  ]);
++});
++
++test("reports every failing field at once", () => {
++  const response = createUserEndpoint({ age: -2 });
++  assert.deepEqual(response, {
++    status: HTTP_BAD_REQUEST,
++    body: { errors: [EMAIL_ERROR, NAME_ERROR, AGE_ERROR] },
++  });
++});
++
++test("returns 400 for invalid input", () => {
++  const response = createUserEndpoint({ email: "not-an-email", name: "" });
++  assert.equal(response.status, HTTP_BAD_REQUEST);
++  assert.deepEqual(response.body, { errors: [EMAIL_ERROR, NAME_ERROR] });
++});
++
++test("returns 200 with the normalized user for valid input", () => {
++  const response = createUserEndpoint(VALID_INPUT);
++  assert.deepEqual(response, {
++    status: HTTP_OK,
++    body: { user: { email: "a@b.co", name: "Ada", age: 30 } },
++  });
++});
+diff --git a/examples/typescript/src/validation.ts b/examples/typescript/src/validation.ts
+index 3dda1d3..c9935a7 100644
+--- a/examples/typescript/src/validation.ts
++++ b/examples/typescript/src/validation.ts
+@@ -1,38 +1,175 @@
+-/** Input accepted by {@link validateCreateUser}. */
++/** Input accepted by {@link validateCreateUser} before normalization. */
+ export interface CreateUserInput {
+   email?: unknown;
+   name?: unknown;
+   age?: unknown;
+ }
+ 
++/** Normalized user payload produced for a valid request. */
++export interface CreateUser {
++  email: string;
++  name: string;
++  age?: number;
++}
++
+ /** Outcome of {@link validateCreateUser}. */
+ export interface ValidationResult {
+   ok: boolean;
+   errors: string[];
+ }
+ 
++/** HTTP status returned when a request passes validation. */
++export const HTTP_OK = 200;
++
++/** HTTP status returned when a request fails validation. */
++export const HTTP_BAD_REQUEST = 400;
++
++/** Validation message for a missing or malformed email. */
++export const EMAIL_ERROR = "email must be a valid address";
++
++/** Validation message for a missing or malformed name. */
++export const NAME_ERROR = "name is required";
++
++/** Validation message for an age that is not a non-negative integer. */
++export const AGE_ERROR = "age must be a non-negative integer";
++
++/** Validation message for a request body that is not a JSON object. */
++export const BODY_ERROR = "request body must be a JSON object";
++
++/** Template for the validation message about an unsupported field. */
++export const UNKNOWN_FIELD_ERROR_TEMPLATE = 'unknown field "{field}"';
++
++/** Placeholder replaced with an unsupported field name in {@link UNKNOWN_FIELD_ERROR_TEMPLATE}. */
++export const FIELD_PLACEHOLDER = "{field}";
++
++/** Response produced by {@link createUserEndpoint}. */
++export type CreateUserResponse =
++  | { status: typeof HTTP_BAD_REQUEST; body: { errors: string[] } }
++  | { status: typeof HTTP_OK; body: { user: CreateUser } };
++
++/** Longest email accepted, per the RFC 5321 forward-path limit. */
++const MAX_EMAIL_LENGTH = 254;
++
++/** Longest display name accepted. */
++const MAX_NAME_LENGTH = 100;
++
++/** Fields accepted by the create-user endpoint. */
++const ALLOWED_FIELDS: ReadonlySet<string> = new Set(["email", "name", "age"]);
++
++/** Matches a single-`@` address with a dotted, non-empty domain. */
++const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
++
+ /**
+- * Validates a create-user request at the API boundary.
++ * Decides whether untrusted data has the shape of a JSON object.
+  *
+  * @param input - Untrusted request data.
+- * @returns Whether the input is valid and the list of validation errors.
++ * @returns True for a plain object, false for null, arrays, and primitives.
++ */
++function isJsonObject(input: unknown): input is Record<string, unknown> {
++  return typeof input === "object" && input !== null && !Array.isArray(input);
++}
++
++/**
++ * Returns the trimmed email when it is a well-formed address.
++ *
++ * @param value - Untrusted email field.
++ * @returns The normalized address, or null when the field is malformed.
+  */
+-export function validateCreateUser(input: CreateUserInput): ValidationResult {
++function normalizeEmail(value: unknown): string | null {
++  if (typeof value !== "string") {
++    return null;
++  }
++  const email = value.trim();
++  if (email.length === 0 || email.length > MAX_EMAIL_LENGTH || !EMAIL_PATTERN.test(email)) {
++    return null;
++  }
++  return email;
++}
++
++/**
++ * Returns the trimmed name when it is acceptable.
++ *
++ * @param value - Untrusted name field.
++ * @returns The normalized name, or null when the field is missing or malformed.
++ */
++function normalizeName(value: unknown): string | null {
++  if (typeof value !== "string") {
++    return null;
++  }
++  const name = value.trim();
++  if (name.length === 0 || name.length > MAX_NAME_LENGTH) {
++    return null;
++  }
++  return name;
++}
++
++/**
++ * Validates untrusted input and returns the normalized user when accepted.
++ *
++ * @param input - Untrusted request data.
++ * @returns The validation errors and, when there are none, the normalized user.
++ */
++function parseCreateUser(input: unknown): { errors: string[]; user: CreateUser | null } {
++  if (!isJsonObject(input)) {
++    return { errors: [BODY_ERROR], user: null };
++  }
++
+   const errors: string[] = [];
+ 
+-  if (typeof input.email !== "string" || !input.email.includes("@")) {
+-    errors.push("email must be a valid address");
++  for (const field of Object.keys(input)) {
++    if (!ALLOWED_FIELDS.has(field)) {
++      errors.push(UNKNOWN_FIELD_ERROR_TEMPLATE.replace(FIELD_PLACEHOLDER, field));
++    }
++  }
++
++  const email = normalizeEmail(input.email);
++  if (email === null) {
++    errors.push(EMAIL_ERROR);
+   }
+ 
+-  if (typeof input.name !== "string" || input.name.trim().length === 0) {
+-    errors.push("name is required");
++  const name = normalizeName(input.name);
++  if (name === null) {
++    errors.push(NAME_ERROR);
+   }
+ 
++  let age: number | undefined;
+   if (input.age !== undefined) {
+-    if (typeof input.age !== "number" || !Number.isInteger(input.age) || input.age < 0) {
+-      errors.push("age must be a non-negative integer");
++    const candidate = input.age;
++    if (typeof candidate !== "number" || !Number.isInteger(candidate) || candidate < 0) {
++      errors.push(AGE_ERROR);
++    } else {
++      age = candidate;
+     }
+   }
+ 
++  if (email === null || name === null || errors.length > 0) {
++    return { errors, user: null };
++  }
++
++  return { errors, user: { email, name, ...(age === undefined ? {} : { age }) } };
++}
++
++/**
++ * Validates a create-user request at the API boundary.
++ *
++ * @param input - Untrusted request data.
++ * @returns Whether the input is valid and the list of validation errors.
++ */
++export function validateCreateUser(input: unknown): ValidationResult {
++  const { errors } = parseCreateUser(input);
+   return { ok: errors.length === 0, errors };
+ }
++
++/**
++ * Handles a create-user request, mapping invalid input to a 400 response.
++ *
++ * @param input - Untrusted request data.
++ * @returns A 400 response listing the validation errors, or a 200 response with the normalized user.
++ */
++export function createUserEndpoint(input: unknown): CreateUserResponse {
++  const { errors, user } = parseCreateUser(input);
++  if (user === null) {
++    return { status: HTTP_BAD_REQUEST, body: { errors } };
++  }
++  return { status: HTTP_OK, body: { user } };
++}

@@ -1,0 +1,261 @@
+diff --git a/examples/csharp/Example.Tests/ValidationTests.cs b/examples/csharp/Example.Tests/ValidationTests.cs
+index 96ef51a..4951d4d 100644
+--- a/examples/csharp/Example.Tests/ValidationTests.cs
++++ b/examples/csharp/Example.Tests/ValidationTests.cs
+@@ -1,9 +1,12 @@
++using System.Text;
+ using Example;
++using Microsoft.AspNetCore.Http;
++using Microsoft.AspNetCore.Http.HttpResults;
+ using Xunit;
+ 
+ namespace Example.Tests;
+ 
+-/// <summary>Tests for <see cref="Validator"/> and <see cref="FileResolver"/>.</summary>
++/// <summary>Tests for <see cref="Validator"/>, <see cref="UserEndpoint"/>, and <see cref="FileResolver"/>.</summary>
+ public class ValidationTests
+ {
+     /// <summary>Verifies that a valid request produces no errors.</summary>
+@@ -37,4 +40,74 @@ public class ValidationTests
+         var result = FileResolver.Resolve("/srv/user-files", "avatar.png");
+         Assert.EndsWith("/srv/user-files/avatar.png", result.Replace('\\', '/'));
+     }
++
++    /// <summary>Verifies that the endpoint returns the user for a valid payload.</summary>
++    [Fact]
++    public async Task EndpointAcceptsValidPayload()
++    {
++        var request = JsonRequest("""{"email":"a@b.co","name":"Ada","age":30}""");
++
++        var result = await UserEndpoint.CreateUserAsync(request);
++
++        var ok = Assert.IsType<Ok<CreateUserResponse>>(result);
++        Assert.Equal(StatusCodes.Status200OK, ok.StatusCode);
++        Assert.Equal("a@b.co", ok.Value?.Email);
++        Assert.Equal("Ada", ok.Value?.Name);
++        Assert.Equal(30, ok.Value?.Age);
++    }
++
++    /// <summary>Verifies that the endpoint returns a problem response when required fields are missing.</summary>
++    [Fact]
++    public async Task EndpointRejectsMissingFields()
++    {
++        var request = JsonRequest("""{"age":30}""");
++
++        var result = await UserEndpoint.CreateUserAsync(request);
++
++        var problem = Assert.IsType<ProblemHttpResult>(result);
++        Assert.Equal(StatusCodes.Status400BadRequest, problem.StatusCode);
++        Assert.Equal("application/problem+json", problem.ContentType);
++        Assert.Equal(UserEndpoint.ValidationProblemTitle, problem.ProblemDetails.Title);
++
++        var errors = Assert.IsAssignableFrom<IReadOnlyList<string>>(
++            problem.ProblemDetails.Extensions[UserEndpoint.ValidationErrorsKey]);
++        Assert.Contains(Validator.EmailErrorMessage, errors);
++        Assert.Contains(Validator.NameErrorMessage, errors);
++    }
++
++    /// <summary>Verifies that the endpoint returns a problem response for malformed JSON.</summary>
++    [Fact]
++    public async Task EndpointRejectsMalformedPayload()
++    {
++        var request = JsonRequest("""{"email":"a@b.co","name":""");
++
++        var result = await UserEndpoint.CreateUserAsync(request);
++
++        var problem = Assert.IsType<ProblemHttpResult>(result);
++        Assert.Equal(StatusCodes.Status400BadRequest, problem.StatusCode);
++        Assert.Equal("application/problem+json", problem.ContentType);
++        Assert.Equal(UserEndpoint.MalformedPayloadTitle, problem.ProblemDetails.Title);
++    }
++
++    /// <summary>Verifies that the endpoint returns a problem response for an empty payload.</summary>
++    [Fact]
++    public async Task EndpointRejectsEmptyPayload()
++    {
++        var request = JsonRequest(string.Empty);
++
++        var result = await UserEndpoint.CreateUserAsync(request);
++
++        var problem = Assert.IsType<ProblemHttpResult>(result);
++        Assert.Equal(StatusCodes.Status400BadRequest, problem.StatusCode);
++        Assert.Equal(UserEndpoint.MalformedPayloadTitle, problem.ProblemDetails.Title);
++    }
++
++    private static HttpRequest JsonRequest(string body)
++    {
++        var context = new DefaultHttpContext();
++        context.Request.Method = HttpMethods.Post;
++        context.Request.ContentType = "application/json";
++        context.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(body));
++        return context.Request;
++    }
+ }
+diff --git a/examples/csharp/Example/Example.csproj b/examples/csharp/Example/Example.csproj
+index 2581f31..5c52a12 100644
+--- a/examples/csharp/Example/Example.csproj
++++ b/examples/csharp/Example/Example.csproj
+@@ -1,9 +1,14 @@
+ <Project Sdk="Microsoft.NET.Sdk">
+   <PropertyGroup>
++    <OutputType>Exe</OutputType>
+     <TargetFramework>net8.0</TargetFramework>
+     <ImplicitUsings>enable</ImplicitUsings>
+     <Nullable>enable</Nullable>
+     <RootNamespace>Example</RootNamespace>
+     <RollForward>LatestMajor</RollForward>
+   </PropertyGroup>
++
++  <ItemGroup>
++    <FrameworkReference Include="Microsoft.AspNetCore.App" />
++  </ItemGroup>
+ </Project>
+diff --git a/examples/csharp/Example/Program.cs b/examples/csharp/Example/Program.cs
+index 0acc3ff..83d32f4 100644
+--- a/examples/csharp/Example/Program.cs
++++ b/examples/csharp/Example/Program.cs
+@@ -1,3 +1,8 @@
++using System.Text.Json;
++using Microsoft.AspNetCore.Builder;
++using Microsoft.AspNetCore.Http;
++using Microsoft.AspNetCore.Http.HttpResults;
++
+ namespace Example;
+ 
+ /// <summary>Create-user request received by the example endpoint.</summary>
+@@ -6,9 +11,94 @@ namespace Example;
+ /// <param name="Age">Optional age supplied by the caller.</param>
+ public sealed record CreateUserRequest(string? Email, string? Name, int? Age);
+ 
++/// <summary>Create-user response returned for accepted requests.</summary>
++/// <param name="Email">Validated email address.</param>
++/// <param name="Name">Validated display name.</param>
++/// <param name="Age">Optional validated age.</param>
++public sealed record CreateUserResponse(string? Email, string? Name, int? Age);
++
++/// <summary>HTTP endpoint that validates create-user requests.</summary>
++public static class UserEndpoint
++{
++    /// <summary>Route template for the create-user endpoint.</summary>
++    public const string Route = "/users";
++
++    /// <summary>Problem title used when request fields fail validation.</summary>
++    public const string ValidationProblemTitle = "One or more validation errors occurred.";
++
++    /// <summary>Problem title used when the request body is not valid JSON.</summary>
++    public const string MalformedPayloadTitle = "The request payload is malformed.";
++
++    /// <summary>Problem title used when the request body is not JSON.</summary>
++    public const string UnsupportedContentTypeTitle = "The request content type is not supported.";
++
++    /// <summary>Problem extension key that carries validation errors.</summary>
++    public const string ValidationErrorsKey = "errors";
++
++    /// <summary>Handles a create-user request.</summary>
++    /// <param name="request">Incoming HTTP request whose body contains JSON.</param>
++    /// <returns>
++    /// <c>200</c> with the accepted user, <c>400</c> with a problem response for malformed or
++    /// invalid JSON, or <c>415</c> with a problem response for a non-JSON content type.
++    /// </returns>
++    public static async Task<IResult> CreateUserAsync(HttpRequest request)
++    {
++        CreateUserRequest? payload;
++
++        try
++        {
++            payload = await request.ReadFromJsonAsync<CreateUserRequest>();
++        }
++        catch (JsonException)
++        {
++            return MalformedPayloadResult();
++        }
++        catch (InvalidOperationException)
++        {
++            return UnsupportedContentTypeResult();
++        }
++
++        if (payload is null)
++        {
++            return MalformedPayloadResult();
++        }
++
++        var errors = Validator.Validate(payload);
++
++        if (errors.Count > 0)
++        {
++            return TypedResults.Problem(
++                title: ValidationProblemTitle,
++                statusCode: StatusCodes.Status400BadRequest,
++                extensions: new Dictionary<string, object?> { [ValidationErrorsKey] = errors });
++        }
++
++        return TypedResults.Ok(new CreateUserResponse(payload.Email, payload.Name, payload.Age));
++    }
++
++    private static ProblemHttpResult MalformedPayloadResult()
++        => TypedResults.Problem(
++            title: MalformedPayloadTitle,
++            statusCode: StatusCodes.Status400BadRequest);
++
++    private static ProblemHttpResult UnsupportedContentTypeResult()
++        => TypedResults.Problem(
++            title: UnsupportedContentTypeTitle,
++            statusCode: StatusCodes.Status415UnsupportedMediaType);
++}
++
+ /// <summary>Validates create-user requests.</summary>
+ public static class Validator
+ {
++    /// <summary>Error reported when the email is absent or lacks an at sign.</summary>
++    public const string EmailErrorMessage = "email must be a valid address";
++
++    /// <summary>Error reported when the name is absent or blank.</summary>
++    public const string NameErrorMessage = "name is required";
++
++    /// <summary>Error reported when the age is negative.</summary>
++    public const string AgeErrorMessage = "age must be non-negative";
++
+     /// <summary>Validates a create-user request.</summary>
+     /// <param name="request">Untrusted request data.</param>
+     /// <returns>Validation errors; empty when the request is valid.</returns>
+@@ -18,17 +108,17 @@ public static class Validator
+ 
+         if (string.IsNullOrWhiteSpace(request.Email) || !request.Email.Contains('@'))
+         {
+-            errors.Add("email must be a valid address");
++            errors.Add(EmailErrorMessage);
+         }
+ 
+         if (string.IsNullOrWhiteSpace(request.Name))
+         {
+-            errors.Add("name is required");
++            errors.Add(NameErrorMessage);
+         }
+ 
+         if (request.Age is < 0)
+         {
+-            errors.Add("age must be non-negative");
++            errors.Add(AgeErrorMessage);
+         }
+ 
+         return errors;
+@@ -46,3 +136,19 @@ public static class FileResolver
+     public static string Resolve(string baseDirectory, string name)
+         => Path.Combine(baseDirectory, name);
+ }
++
++/// <summary>Hosts the example HTTP endpoint.</summary>
++public static class Program
++{
++    /// <summary>Starts the web host and maps the create-user endpoint.</summary>
++    /// <param name="args">Command-line arguments passed to the host.</param>
++    public static void Main(string[] args)
++    {
++        var builder = WebApplication.CreateBuilder(args);
++        var app = builder.Build();
++
++        app.MapPost(UserEndpoint.Route, UserEndpoint.CreateUserAsync);
++
++        app.Run();
++    }
++}

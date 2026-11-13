@@ -1,0 +1,107 @@
+{
+  "range": {
+    "from": 1767236400000,
+    "to": 1794593953096
+  },
+  "sessions": 12,
+  "subagents": 0,
+  "prompts": 12,
+  "steps": 155,
+  "tokens": {
+    "input": 257251,
+    "output": 39068,
+    "reasoning": 51024,
+    "cache": {
+      "read": 3374464,
+      "write": 0
+    }
+  },
+  "cost": 0.10276624199999995,
+  "tools": {
+    "mode": "detail",
+    "totals": {
+      "calls": 197,
+      "succeeded": 197,
+      "failed": 0,
+      "unfinished": 0
+    },
+    "usage": [
+      {
+        "name": "shell",
+        "calls": 107,
+        "succeeded": 107,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 103
+      },
+      {
+        "name": "read",
+        "calls": 60,
+        "succeeded": 60,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 17
+      },
+      {
+        "name": "edit",
+        "calls": 11,
+        "succeeded": 11,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 10
+      },
+      {
+        "name": "write",
+        "calls": 10,
+        "succeeded": 10,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 17
+      },
+      {
+        "name": "grep",
+        "calls": 8,
+        "succeeded": 8,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 58
+      },
+      {
+        "name": "glob",
+        "calls": 1,
+        "succeeded": 1,
+        "failed": 0,
+        "unfinished": 0,
+        "durationP50": 56
+      }
+    ]
+  },
+  "activeDays": 1,
+  "streak": 1,
+  "activity": [
+    {
+      "date": "2026-11-13",
+      "steps": 155
+    }
+  ],
+  "models": [
+    {
+      "model": {
+        "id": "deepseek-flash",
+        "providerID": "deepseek",
+        "variant": "default"
+      },
+      "steps": 155,
+      "tokens": {
+        "input": 257251,
+        "output": 39068,
+        "reasoning": 51024,
+        "cache": {
+          "read": 3374464,
+          "write": 0
+        }
+      },
+      "cost": 0.10276624199999995
+    }
+  ]
+}

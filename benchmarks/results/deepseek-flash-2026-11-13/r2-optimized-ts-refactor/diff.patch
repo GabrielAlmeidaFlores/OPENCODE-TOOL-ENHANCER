@@ -1,0 +1,48 @@
+diff --git a/examples/typescript/src/app.test.ts b/examples/typescript/src/app.test.ts
+index 15cd72f..e78d495 100644
+--- a/examples/typescript/src/app.test.ts
++++ b/examples/typescript/src/app.test.ts
+@@ -34,6 +34,18 @@ test("totals an order", () => {
+   );
+ });
+ 
++test("totals an empty order as zero and agrees with the sum of line totals", () => {
++  assert.equal(orderTotal([]), 0);
++  const items = [
++    { unitPrice: 3, quantity: 3, taxable: true },
++    { unitPrice: 7, quantity: 1, taxable: false },
++  ];
++  assert.equal(
++    orderTotal(items),
++    items.reduce((sum, item) => sum + lineTotal(item), 0),
++  );
++});
++
+ test("loads orders in order", async () => {
+   const store: OrderStore = {
+     async findById(id) {
+diff --git a/examples/typescript/src/pricing.ts b/examples/typescript/src/pricing.ts
+index a842c4b..9797a88 100644
+--- a/examples/typescript/src/pricing.ts
++++ b/examples/typescript/src/pricing.ts
+@@ -25,18 +25,12 @@ export function lineTotal(item: LineItem): number {
+  * Calculates the total for an order.
+  *
+  * @param items - Line items in the order.
+- * @returns The sum of all line totals.
+- * @remarks Intentionally duplicates the branch in {@link lineTotal} to support the refactor benchmark task.
++ * @returns The sum of the {@link lineTotal} of every item; zero for an empty order.
+  */
+ export function orderTotal(items: LineItem[]): number {
+   let total = 0;
+   for (const item of items) {
+-    const subtotal = item.unitPrice * item.quantity;
+-    if (item.taxable) {
+-      total += subtotal + subtotal * TAX_RATE;
+-    } else {
+-      total += subtotal;
+-    }
++    total += lineTotal(item);
+   }
+   return total;
+ }

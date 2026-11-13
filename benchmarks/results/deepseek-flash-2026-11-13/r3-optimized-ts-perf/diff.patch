@@ -1,0 +1,132 @@
+diff --git a/examples/typescript/src/app.test.ts b/examples/typescript/src/app.test.ts
+index 15cd72f..65fc392 100644
+--- a/examples/typescript/src/app.test.ts
++++ b/examples/typescript/src/app.test.ts
+@@ -36,14 +36,61 @@ test("totals an order", () => {
+ 
+ test("loads orders in order", async () => {
+   const store: OrderStore = {
+-    async findById(id) {
+-      return { id, total: 1 };
++    async findByIds(ids) {
++      return ids.map((id) => ({ id, total: 1 }));
+     },
+   };
+   const orders = await loadOrders(store, ["a", "b"]);
+   assert.deepEqual(orders.map((o) => o.id), ["a", "b"]);
+ });
+ 
++test("issues exactly one store query per request", async () => {
++  let queryCount = 0;
++  const store: OrderStore = {
++    async findByIds(ids) {
++      queryCount += 1;
++      return ids.map((id) => ({ id, total: 1 }));
++    },
++  };
++
++  const orders = await loadOrders(store, ["a", "b", "c"]);
++  assert.equal(orders.length, 3);
++  assert.equal(queryCount, 1, "a request must issue exactly one store query");
++
++  queryCount = 0;
++  assert.deepEqual(await loadOrders(store, []), []);
++  assert.equal(queryCount, 0, "an empty request must not query the store");
++});
++
++test("preserves requested order and duplicates", async () => {
++  const store: OrderStore = {
++    async findByIds(ids) {
++      return ids.map((id) => ({ id, total: id.length }));
++    },
++  };
++  const orders = await loadOrders(store, ["bb", "a", "bb"]);
++  assert.deepEqual(
++    orders.map((o) => [o.id, o.total]),
++    [
++      ["bb", 2],
++      ["a", 1],
++      ["bb", 2],
++    ],
++  );
++});
++
++test("reports the first missing identifier in request order", async () => {
++  const store: OrderStore = {
++    async findByIds(ids) {
++      return ids.filter((id) => id !== "missing-a" && id !== "missing-b").map((id) => ({ id, total: 1 }));
++    },
++  };
++  await assert.rejects(loadOrders(store, ["kept", "missing-a", "missing-b"]), {
++    name: "Error",
++    message: "order not found: missing-a",
++  });
++});
++
+ test("resolves a normal file name", () => {
+   assert.equal(resolveUserFile("avatar.png"), `${BASE_DIR}/avatar.png`);
+ });
+diff --git a/examples/typescript/src/repository.ts b/examples/typescript/src/repository.ts
+index dafec55..373cb68 100644
+--- a/examples/typescript/src/repository.ts
++++ b/examples/typescript/src/repository.ts
+@@ -4,32 +4,48 @@ export interface Order {
+   total: number;
+ }
+ 
++/** Prefix of the error raised when a requested identifier has no persisted order. */
++const ORDER_NOT_FOUND_MESSAGE = "order not found";
++
+ /** Data access contract used by {@link loadOrders}. */
+ export interface OrderStore {
+   /**
+-   * Looks up one order by identifier.
++   * Resolves every requested order in a single query.
+    *
+-   * @param id - Order identifier.
+-   * @returns The order when found.
++   * @param ids - Order identifiers to resolve; duplicates may be present.
++   * @returns The orders that exist, in unspecified order; identifiers without an order are omitted.
++   * @remarks Implementations must issue exactly one query per call.
+    */
+-  findById(id: string): Promise<Order | undefined>;
++  findByIds(ids: readonly string[]): Promise<Order[]>;
+ }
+ 
+ /**
+  * Loads orders by identifier while preserving the requested order.
+  *
+  * @param store - Order data store.
+- * @param ids - Order identifiers in the desired output order.
+- * @returns The resolved orders.
+- * @throws Error when an identifier does not resolve.
+- * @remarks Intentionally performs one lookup per identifier to support the performance benchmark task.
++ * @param ids - Order identifiers in the desired output order; duplicates resolve to the same order.
++ * @returns The resolved orders, positionally aligned with `ids`.
++ * @throws Error when an identifier does not resolve; the first missing identifier in `ids` is reported.
++ * @remarks Issues one store query per call and none when `ids` is empty.
+  */
+ export async function loadOrders(store: OrderStore, ids: string[]): Promise<Order[]> {
++  if (ids.length === 0) {
++    return [];
++  }
++
++  const foundOrders = await store.findByIds(ids);
++  const ordersById = new Map<string, Order>();
++  for (const order of foundOrders) {
++    if (!ordersById.has(order.id)) {
++      ordersById.set(order.id, order);
++    }
++  }
++
+   const orders: Order[] = [];
+   for (const id of ids) {
+-    const order = await store.findById(id);
+-    if (!order) {
+-      throw new Error(`order not found: ${id}`);
++    const order = ordersById.get(id);
++    if (order === undefined) {
++      throw new Error(`${ORDER_NOT_FOUND_MESSAGE}: ${id}`);
+     }
+     orders.push(order);
+   }

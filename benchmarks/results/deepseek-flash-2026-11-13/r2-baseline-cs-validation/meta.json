@@ -1,0 +1,19 @@
+{
+  "run_id": "r2-baseline-cs-validation",
+  "arm": "baseline",
+  "task_file": "benchmarks/tasks/cs-validation.json",
+  "task_id": "cs-validation",
+  "working_directory": "examples/csharp",
+  "commit": "a7983f878d8a3abd320dcd700bf3901d3e38ed9c",
+  "model": "deepseek/deepseek-flash",
+  "agent": "build",
+  "max_wall_time_seconds": 1200,
+  "started_at": "2026-11-13T18:32:37.394855+00:00",
+  "opencode_version": "opencode v2.2.7",
+  "run_exit": 0,
+  "stats_exit": 0,
+  "export_exit": 0,
+  "verification_exit": 0,
+  "wall_time_seconds": 133,
+  "finished_at": "2026-11-13T18:34:51.599299+00:00"
+}

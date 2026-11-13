@@ -1,0 +1,19 @@
+{
+  "run_id": "r2-optimized-ts-perf",
+  "arm": "optimized",
+  "task_file": "benchmarks/tasks/ts-perf.json",
+  "task_id": "ts-perf",
+  "working_directory": "examples/typescript",
+  "commit": "a8eb1be59924ceac3aca12adfb2fe880877eaead",
+  "model": "deepseek/deepseek-flash",
+  "agent": "coordinator",
+  "max_wall_time_seconds": 900,
+  "started_at": "2026-11-13T18:28:53.022551+00:00",
+  "opencode_version": "opencode v2.2.7",
+  "run_exit": 0,
+  "stats_exit": 0,
+  "export_exit": 0,
+  "verification_exit": 0,
+  "wall_time_seconds": 94,
+  "finished_at": "2026-11-13T18:30:35.731725+00:00"
+}

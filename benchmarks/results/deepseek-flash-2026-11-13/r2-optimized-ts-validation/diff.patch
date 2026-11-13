@@ -1,0 +1,361 @@
+diff --git a/examples/typescript/AGENTS.md b/examples/typescript/AGENTS.md
+index 0f81157..0b1d17f 100644
+--- a/examples/typescript/AGENTS.md
++++ b/examples/typescript/AGENTS.md
+@@ -14,6 +14,7 @@ Run `npm test` before declaring a task complete. It builds and runs `node --test
+ ## Structure
+ 
+ - `src/validation.ts` — request validation
++- `src/endpoint.ts` — create-user handler mapping validation errors to 400 responses
+ - `src/pricing.ts` — pricing rules (contains intentional duplication)
+ - `src/repository.ts` — order loading (contains an intentional N+1)
+ - `src/files.ts` — file resolution (contains an intentional traversal bug)
+diff --git a/examples/typescript/src/app.test.ts b/examples/typescript/src/app.test.ts
+index 15cd72f..dd6ae7e 100644
+--- a/examples/typescript/src/app.test.ts
++++ b/examples/typescript/src/app.test.ts
+@@ -1,7 +1,13 @@
+ import { test } from "node:test";
+ import assert from "node:assert/strict";
+ 
+-import { validateCreateUser } from "./validation.js";
++import {
++  MESSAGE_AGE_INVALID,
++  MESSAGE_BODY_NOT_OBJECT,
++  MESSAGE_EMAIL_INVALID,
++  MESSAGE_NAME_REQUIRED,
++  validateCreateUser,
++} from "./validation.js";
+ import { lineTotal, orderTotal } from "./pricing.js";
+ import { loadOrders, type OrderStore } from "./repository.js";
+ import { resolveUserFile, BASE_DIR } from "./files.js";
+@@ -19,6 +25,32 @@ test("rejects a missing email", () => {
+   assert.match(result.errors.join(","), /email/);
+ });
+ 
++test("rejects a malformed email", () => {
++  const result = validateCreateUser({ email: "not-an-email", name: "Ada" });
++  assert.equal(result.ok, false);
++  assert.deepEqual(result.errors, [MESSAGE_EMAIL_INVALID]);
++});
++
++test("rejects a missing name", () => {
++  const result = validateCreateUser({ email: "a@b.co" });
++  assert.equal(result.ok, false);
++  assert.deepEqual(result.errors, [MESSAGE_NAME_REQUIRED]);
++});
++
++test("rejects a negative or fractional age", () => {
++  assert.deepEqual(validateCreateUser({ email: "a@b.co", name: "Ada", age: -1 }).errors, [
++    MESSAGE_AGE_INVALID,
++  ]);
++  assert.deepEqual(validateCreateUser({ email: "a@b.co", name: "Ada", age: 1.5 }).errors, [
++    MESSAGE_AGE_INVALID,
++  ]);
++});
++
++test("rejects a non-object body", () => {
++  assert.deepEqual(validateCreateUser(null).errors, [MESSAGE_BODY_NOT_OBJECT]);
++  assert.deepEqual(validateCreateUser([{ email: "a@b.co" }]).errors, [MESSAGE_BODY_NOT_OBJECT]);
++});
++
+ test("prices taxable and non-taxable items", () => {
+   assert.equal(lineTotal({ unitPrice: 10, quantity: 2, taxable: false }), 20);
+   assert.equal(lineTotal({ unitPrice: 10, quantity: 2, taxable: true }), 24);
+diff --git a/examples/typescript/src/endpoint.test.ts b/examples/typescript/src/endpoint.test.ts
+new file mode 100644
+index 0000000..22fba34
+--- /dev/null
++++ b/examples/typescript/src/endpoint.test.ts
+@@ -0,0 +1,128 @@
++import { test } from "node:test";
++import assert from "node:assert/strict";
++
++import {
++  createUserEndpoint,
++  ERROR_INVALID_REQUEST,
++  STATUS_BAD_REQUEST,
++  STATUS_CREATED,
++} from "./endpoint.js";
++import {
++  MESSAGE_AGE_INVALID,
++  MESSAGE_BODY_NOT_OBJECT,
++  MESSAGE_EMAIL_INVALID,
++  MESSAGE_NAME_REQUIRED,
++} from "./validation.js";
++
++test("accepts a complete valid body", () => {
++  assert.deepEqual(createUserEndpoint({ email: "a@b.co", name: "Ada", age: 30 }), {
++    status: STATUS_CREATED,
++    body: { user: { email: "a@b.co", name: "Ada", age: 30 } },
++  });
++});
++
++test("accepts a body without the optional age", () => {
++  assert.deepEqual(createUserEndpoint({ email: "a@b.co", name: "Ada" }), {
++    status: STATUS_CREATED,
++    body: { user: { email: "a@b.co", name: "Ada" } },
++  });
++});
++
++test("normalizes surrounding whitespace", () => {
++  assert.deepEqual(createUserEndpoint({ email: "  a@b.co  ", name: "  Ada  " }), {
++    status: STATUS_CREATED,
++    body: { user: { email: "a@b.co", name: "Ada" } },
++  });
++});
++
++test("rejects a body missing email with a 400", () => {
++  const response = createUserEndpoint({ name: "Ada" });
++  assert.equal(response.status, STATUS_BAD_REQUEST);
++  assert.deepEqual(response.body, {
++    error: ERROR_INVALID_REQUEST,
++    errors: [MESSAGE_EMAIL_INVALID],
++  });
++});
++
++test("rejects a body missing name with a 400", () => {
++  const response = createUserEndpoint({ email: "a@b.co" });
++  assert.equal(response.status, STATUS_BAD_REQUEST);
++  assert.deepEqual(response.body, {
++    error: ERROR_INVALID_REQUEST,
++    errors: [MESSAGE_NAME_REQUIRED],
++  });
++});
++
++test("rejects a blank name with a 400", () => {
++  const response = createUserEndpoint({ email: "a@b.co", name: "   " });
++  assert.equal(response.status, STATUS_BAD_REQUEST);
++  assert.deepEqual(response.body, {
++    error: ERROR_INVALID_REQUEST,
++    errors: [MESSAGE_NAME_REQUIRED],
++  });
++});
++
++test("rejects a malformed email with a 400", () => {
++  const response = createUserEndpoint({ email: "not-an-email", name: "Ada" });
++  assert.equal(response.status, STATUS_BAD_REQUEST);
++  assert.deepEqual(response.body, {
++    error: ERROR_INVALID_REQUEST,
++    errors: [MESSAGE_EMAIL_INVALID],
++  });
++});
++
++test("rejects a non-string email with a 400", () => {
++  const response = createUserEndpoint({ email: 42, name: "Ada" });
++  assert.equal(response.status, STATUS_BAD_REQUEST);
++  assert.deepEqual(response.body, {
++    error: ERROR_INVALID_REQUEST,
++    errors: [MESSAGE_EMAIL_INVALID],
++  });
++});
++
++test("reports every invalid field at once", () => {
++  const response = createUserEndpoint({ email: "nope", age: -1 });
++  assert.equal(response.status, STATUS_BAD_REQUEST);
++  assert.deepEqual(response.body, {
++    error: ERROR_INVALID_REQUEST,
++    errors: [MESSAGE_EMAIL_INVALID, MESSAGE_NAME_REQUIRED, MESSAGE_AGE_INVALID],
++  });
++});
++
++test("rejects a negative age with a 400", () => {
++  const response = createUserEndpoint({ email: "a@b.co", name: "Ada", age: -1 });
++  assert.equal(response.status, STATUS_BAD_REQUEST);
++  assert.deepEqual(response.body, {
++    error: ERROR_INVALID_REQUEST,
++    errors: [MESSAGE_AGE_INVALID],
++  });
++});
++
++test("rejects a fractional age with a 400", () => {
++  const response = createUserEndpoint({ email: "a@b.co", name: "Ada", age: 30.5 });
++  assert.equal(response.status, STATUS_BAD_REQUEST);
++  assert.deepEqual(response.body, {
++    error: ERROR_INVALID_REQUEST,
++    errors: [MESSAGE_AGE_INVALID],
++  });
++});
++
++test("rejects a stringified age instead of coercing it", () => {
++  const response = createUserEndpoint({ email: "a@b.co", name: "Ada", age: "30" });
++  assert.equal(response.status, STATUS_BAD_REQUEST);
++  assert.deepEqual(response.body, {
++    error: ERROR_INVALID_REQUEST,
++    errors: [MESSAGE_AGE_INVALID],
++  });
++});
++
++test("rejects a non-object body with a 400", () => {
++  for (const body of [undefined, null, "", "{}", 7, true, ["a@b.co"]]) {
++    const response = createUserEndpoint(body);
++    assert.equal(response.status, STATUS_BAD_REQUEST);
++    assert.deepEqual(response.body, {
++      error: ERROR_INVALID_REQUEST,
++      errors: [MESSAGE_BODY_NOT_OBJECT],
++    });
++  }
++});
+diff --git a/examples/typescript/src/endpoint.ts b/examples/typescript/src/endpoint.ts
+new file mode 100644
+index 0000000..4b905cb
+--- /dev/null
++++ b/examples/typescript/src/endpoint.ts
+@@ -0,0 +1,43 @@
++import { parseCreateUser, type CreateUser } from "./validation.js";
++
++/** Status returned when a create-user request is accepted. */
++export const STATUS_CREATED = 201;
++
++/** Status returned when a create-user request is rejected. */
++export const STATUS_BAD_REQUEST = 400;
++
++/** Machine-readable error code attached to a rejected create-user request. */
++export const ERROR_INVALID_REQUEST = "invalid_request";
++
++/** Body returned with {@link STATUS_CREATED}. */
++export interface CreateUserResponseBody {
++  user: CreateUser;
++}
++
++/** Body returned with {@link STATUS_BAD_REQUEST}. */
++export interface CreateUserErrorBody {
++  error: string;
++  errors: string[];
++}
++
++/** Response produced by {@link createUserEndpoint}. */
++export type CreateUserResponse =
++  | { status: typeof STATUS_CREATED; body: CreateUserResponseBody }
++  | { status: typeof STATUS_BAD_REQUEST; body: CreateUserErrorBody };
++
++/**
++ * Handles `POST /users` for the example API.
++ *
++ * @param body - Untrusted request body, already decoded from JSON when the transport parsed one.
++ * @returns A 201 response with the normalized user, or a 400 response listing every validation error.
++ */
++export function createUserEndpoint(body: unknown): CreateUserResponse {
++  const parsed = parseCreateUser(body);
++  if (!parsed.ok) {
++    return {
++      status: STATUS_BAD_REQUEST,
++      body: { error: ERROR_INVALID_REQUEST, errors: parsed.errors },
++    };
++  }
++  return { status: STATUS_CREATED, body: { user: parsed.value } };
++}
+diff --git a/examples/typescript/src/validation.ts b/examples/typescript/src/validation.ts
+index 3dda1d3..6cd11ef 100644
+--- a/examples/typescript/src/validation.ts
++++ b/examples/typescript/src/validation.ts
+@@ -1,38 +1,93 @@
+-/** Input accepted by {@link validateCreateUser}. */
++/** Raw create-user request body as received from the network. */
+ export interface CreateUserInput {
+   email?: unknown;
+   name?: unknown;
+   age?: unknown;
+ }
+ 
++/** Create-user request after validation and normalization. */
++export interface CreateUser {
++  email: string;
++  name: string;
++  age?: number;
++}
++
+ /** Outcome of {@link validateCreateUser}. */
+ export interface ValidationResult {
+   ok: boolean;
+   errors: string[];
+ }
+ 
++/** Outcome of {@link parseCreateUser}: normalized input or the collected errors. */
++export type ParseCreateUserResult =
++  | { ok: true; value: CreateUser }
++  | { ok: false; errors: string[] };
++
++/** Reported when `email` is absent, not a string, or not a `local@domain.tld` address. */
++export const MESSAGE_EMAIL_INVALID = "email must be a valid address";
++
++/** Reported when `name` is absent, not a string, or blank after trimming. */
++export const MESSAGE_NAME_REQUIRED = "name is required";
++
++/** Reported when `age` is present and not a non-negative integer. */
++export const MESSAGE_AGE_INVALID = "age must be a non-negative integer";
++
++/** Reported when the request body is not a JSON object. */
++export const MESSAGE_BODY_NOT_OBJECT = "request body must be a JSON object";
++
++const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
++
++function isRecord(value: unknown): value is Record<string, unknown> {
++  return typeof value === "object" && value !== null && !Array.isArray(value);
++}
++
+ /**
+- * Validates a create-user request at the API boundary.
++ * Validates and normalizes a create-user request body.
+  *
+- * @param input - Untrusted request data.
+- * @returns Whether the input is valid and the list of validation errors.
++ * @param input - Untrusted request data, typically a decoded JSON body.
++ * @returns The normalized user when every field is valid, otherwise all validation errors in field order.
++ * @remarks `age` is optional; when supplied it must be a non-negative integer. String and empty values are rejected rather than coerced.
+  */
+-export function validateCreateUser(input: CreateUserInput): ValidationResult {
+-  const errors: string[] = [];
+-
+-  if (typeof input.email !== "string" || !input.email.includes("@")) {
+-    errors.push("email must be a valid address");
++export function parseCreateUser(input: unknown): ParseCreateUserResult {
++  if (!isRecord(input)) {
++    return { ok: false, errors: [MESSAGE_BODY_NOT_OBJECT] };
+   }
+ 
+-  if (typeof input.name !== "string" || input.name.trim().length === 0) {
+-    errors.push("name is required");
++  const email = typeof input.email === "string" ? input.email.trim() : "";
++  const name = typeof input.name === "string" ? input.name.trim() : "";
++  const rawAge = input.age;
++
++  const errors: string[] = [];
++  if (!EMAIL_PATTERN.test(email)) {
++    errors.push(MESSAGE_EMAIL_INVALID);
++  }
++  if (name.length === 0) {
++    errors.push(MESSAGE_NAME_REQUIRED);
++  }
++  const hasValidAge =
++    rawAge === undefined ||
++    (typeof rawAge === "number" && Number.isInteger(rawAge) && rawAge >= 0);
++  if (!hasValidAge) {
++    errors.push(MESSAGE_AGE_INVALID);
+   }
+ 
+-  if (input.age !== undefined) {
+-    if (typeof input.age !== "number" || !Number.isInteger(input.age) || input.age < 0) {
+-      errors.push("age must be a non-negative integer");
+-    }
++  if (errors.length > 0) {
++    return { ok: false, errors };
+   }
+ 
+-  return { ok: errors.length === 0, errors };
++  return {
++    ok: true,
++    value: typeof rawAge === "number" ? { email, name, age: rawAge } : { email, name },
++  };
++}
++
++/**
++ * Validates a create-user request at the API boundary.
++ *
++ * @param input - Untrusted request data.
++ * @returns Whether the input is valid and the list of validation errors.
++ */
++export function validateCreateUser(input: unknown): ValidationResult {
++  const parsed = parseCreateUser(input);
++  return parsed.ok ? { ok: true, errors: [] } : { ok: false, errors: parsed.errors };
+ }
