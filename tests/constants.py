@@ -161,3 +161,6 @@ TEXT_TASK_ERROR = '{}: {}'
 TEXT_OPENCODE = '.opencode'
 KEY_CODEX = 'codex'
 KEY_COPILOT = 'copilot'
+
+TEXT_RUN_STATS_JSON = 'run-stats.json'
+TEXT_SCRIPTS_BENCHMARKING_SUMMARIZE_SESSION_PY = 'scripts/benchmarking/summarize_session.py'

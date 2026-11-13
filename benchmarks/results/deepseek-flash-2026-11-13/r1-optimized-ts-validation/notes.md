@@ -8,5 +8,7 @@
 - scope deviations: examples/typescript/README.md
 - review: automated rubric based on verification and changed-path scope; no independent blind review
 - wall time: 62s
-- cost: 0.049117
-- tokens in/out: 126411/17765
+- cost: 0.010068
+- tokens in/out: 22456/4452
+- steps: 13
+- tool calls: 13

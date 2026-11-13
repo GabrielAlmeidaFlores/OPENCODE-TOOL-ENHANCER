@@ -8,5 +8,7 @@
 - scope deviations: none
 - review: automated rubric based on verification and changed-path scope; no independent blind review
 - wall time: 203s
-- cost: 0.121590
-- tokens in/out: 280283/47975
+- cost: 0.018824
+- tokens in/out: 23032/8907
+- steps: 17
+- tool calls: 22

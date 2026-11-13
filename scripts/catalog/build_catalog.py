@@ -23,6 +23,7 @@ from scripts.lib.python_strings import (
     KEY_COMMANDS,
     KEY_ID,
     KEY_SKILLS,
+    KEY_TYPE,
     TEXT_CATALOG_REGISTRY_JSON,
     TEXT_DOCS_PROVENANCE_REGISTRY_YML,
     TEXT_MAIN,
@@ -51,7 +52,6 @@ KEY_SCHEMA_VERSION = 'schema_version'
 KEY_SECTION = 'section'
 KEY_SKILL = 'skill'
 KEY_SOURCE = 'source'
-KEY_TYPE = 'type'
 KEY_UPSTREAM_COMMIT = 'upstream_commit'
 KEY_UPSTREAM_PATH = 'upstream_path'
 TEXT_ARTIFACT_CATALOG = '# Artifact Catalog'

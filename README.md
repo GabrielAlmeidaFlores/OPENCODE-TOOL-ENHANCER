@@ -718,10 +718,10 @@ This repository distinguishes **verified**, **documented**, and **not yet measur
 | Command runtime | All eight commands verified on the TypeScript fixture through the reference adapter |
 | Skill runtime | All ten skills verified through the `skill` tool |
 | MCP startup overhead | Narrow `debug agents` measurement recorded |
-| Benchmarks | One published DeepSeek Flash result set; optimized configuration did not reduce cost |
+| Benchmarks | One published DeepSeek Flash result set; optimized configuration cost 14.2% more overall, with task-dependent wins and losses |
 | Real-repository pilots | Discovery 15/15; Hono 5/5, CleanArchitecture 5/5, turborepo 4/5 reviewed |
 | CI | Green on Ubuntu and macOS for run [43402329992](https://github.com/GabrielAlmeidaFlores/ToolWright/actions/runs/43402329992); nine jobs |
-| Repository tests | 303 unit and integration tests |
+| Repository tests | 305 unit and integration tests |
 | `toolwright` CLI | Install, uninstall, update check, rollback, doctor verified locally and in the `cli` job |
 | Profiles and catalog | Three manifests and 34 catalog entries verified locally and in CI |
 | Verification and governance | `toolwright verify` and `toolwright govern contracts` verified locally; CI runs both |
@@ -831,7 +831,7 @@ See [testing the repository](docs/architecture/testing.md) and [CI diagnosis](do
 
 ## Benchmarks
 
-The benchmark harness is reproducible. One result set is published for `deepseek/deepseek-flash`: 30 isolated runs across five tasks and three repeats. The optimized configuration **did not reduce cost**; see the result and limitations before reusing the claim.
+The benchmark harness is reproducible. One result set is published for `deepseek/deepseek-flash`: 30 isolated runs across five tasks and three repeats. The optimized configuration cost **14.2% more overall**; it was cheaper on two tasks and more expensive on three. See the result and limitations before reusing the claim.
 
 - [Methodology](docs/benchmarks/methodology.md)
 - [DeepSeek Flash results](docs/benchmarks/results-deepseek-flash.md)

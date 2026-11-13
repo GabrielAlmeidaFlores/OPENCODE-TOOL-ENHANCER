@@ -4,7 +4,7 @@
 # Usage: ./benchmarks/harness/run.sh --arm baseline|optimized --task <file.json> [--run-id ID] [--dry-run]
 # Arguments: --arm selects the configuration, --task selects the task definition, --run-id sets the output directory name, --dry-run prints the command.
 # Environment: Requires bash, python3, and git. opencode is required to execute a run but not for --dry-run. OPENCODE_BENCH_MODEL must be a provider/model#variant identifier for execution.
-# Outputs: Writes meta.json, session.jsonl, stats.json, export.json, verification.log, and notes.md under benchmarks/results/<run-id>.
+# Outputs: Writes meta.json, session.jsonl, stats.json, run-stats.json, export.json, verification.log, and notes.md under benchmarks/results/<run-id>.
 # Side effects: Executes opencode with --auto in a non-interactive session; use a disposable checkout.
 # References: docs/benchmarks/methodology.md, benchmarks/tasks/*.json
 set -euo pipefail
@@ -172,6 +172,8 @@ fi
 bash -lc "$VERIFY" > "$OUT/verification.log" 2>&1
 VERIFY_RC=$?
 set -e
+
+python3 "$ROOT/scripts/benchmarking/summarize_session.py" "$OUT/session.jsonl" "$OUT/run-stats.json"
 
 python3 - "$OUT/meta.json" "$RUN_RC" "$STATS_RC" "$EXPORT_RC" "$VERIFY_RC" "$START" "$END" <<'PY'
 import datetime

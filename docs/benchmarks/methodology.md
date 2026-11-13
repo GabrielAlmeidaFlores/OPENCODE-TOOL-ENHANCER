@@ -37,7 +37,7 @@ Start with 5 tasks covering: a small bug fix, a feature with tests, a refactor, 
 
 1. Freeze the repository at a commit. Record it. Run each task from its declared `working_directory`.
 2. Record model ID, variant, and provider.
-3. Run the baseline arm. Capture `opencode stats --json --cost` and `opencode session export`.
+3. Run the baseline arm. Capture the session export and the per-run summary derived from `session.jsonl`. Treat `opencode stats --project .` as cumulative when runs share a project identity; do not use it as a per-run value.
 4. Reset the working tree. Run the optimized arm.
 5. Score correctness with the verification command plus a blind review rubric.
 6. Record rework: follow-up prompts, failed gates, human interventions.
@@ -47,8 +47,8 @@ Start with 5 tasks covering: a small bug fix, a feature with tests, a refactor, 
 
 | Metric | Source |
 | --- | --- |
-| Input/output tokens | `opencode stats --json` |
-| Cost | `opencode stats --json --cost` |
+| Input/output tokens | `run-stats.json` derived from `session.jsonl` |
+| Cost | `run-stats.json` derived from `session.jsonl` |
 | Model calls | session export |
 | Tool calls | session export |
 | Iterations | session export |
@@ -82,14 +82,15 @@ The harness does not call a model by itself; it assumes `opencode run` is config
 Place results in `benchmarks/results/<run-id>/` with:
 
 - `meta.json` (commit, model, arm, task)
-- `stats.json`
+- `stats.json` (raw `opencode stats` snapshot)
+- `run-stats.json` (per-run values derived from the session log)
 - `export.json`
 - `verification.log`
 - `notes.md`
 
 The first result set is published at [`docs/benchmarks/results-deepseek-flash.md`](results-deepseek-flash.md). It reports 30 isolated runs across 5 tasks, 2 arms, and 3 repeats with `deepseek/deepseek-flash`.
 
-The optimized configuration did not reduce cost in that result set. Do not generalize that negative result to other models or task sizes without running the harness.
+The optimized configuration did not reduce cost overall in that result set, although it was cheaper on two of five tasks. Do not generalize that mixed result to other models or task sizes without running the harness.
 
 ## Correctness and rework rubric
 

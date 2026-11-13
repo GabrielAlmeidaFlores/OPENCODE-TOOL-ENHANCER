@@ -6,6 +6,16 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+### Fixed
+
+- Benchmark runs now write `run-stats.json` from each `session.jsonl`, so cost and token totals no longer reuse cumulative `opencode stats --project .` output.
+- Published DeepSeek Flash results were recomputed from per-run session events: the optimized arm cost 14.2% more overall, with wins on two tasks and losses on three.
+- Corrected the benchmark page to explain task-level differences instead of claiming a uniform cost increase.
+
+### Changed
+
+- Benchmark result charts and documentation now use per-run session metrics and state the aggregation limitation.
+
 ## [0.4.0] - 2026-11-13
 
 ### Added
