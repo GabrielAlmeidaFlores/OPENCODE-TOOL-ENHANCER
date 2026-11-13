@@ -66,7 +66,7 @@ used. It never stages or commits in the main repository and never runs Ralph.
 | Pilot | Status |
 | --- | --- |
 | `honojs/hono` | Discovery 5/5; code-change 5/5; independently reviewed and production-ready |
-| `ardalis/CleanArchitecture` | Discovery 5/5; code-change 5/5 executed (build, unit, SQL Server functional); 4 production-ready and 1 needs-fix after review |
+| `ardalis/CleanArchitecture` | Discovery 5/5; code-change 5/5 production-ready (build, unit, SQL Server functional, reviewed) |
 | `vercel/turborepo` | Discovery 5/5; code-change 4/5 verified by Jest and review; task 5 rejected |
 
 Runner capability is not evidence. The Hono smoke run proves the runner executes against a real

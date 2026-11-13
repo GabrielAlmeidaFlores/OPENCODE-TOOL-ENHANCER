@@ -1,6 +1,6 @@
 # CleanArchitecture Code-Change Pilot
 
-> **Status:** Experimental · **Last verified:** 2026-11-12 · **Evidence:** build, 14 unit tests, and 12–17 functional tests passed per task on .NET 11 with a documented reference workaround; one of five changes needs a security fix after review
+> **Status:** Experimental · **Last verified:** 2026-11-13 · **Evidence:** build, unit tests, and 10–17 functional tests passed per task on .NET 11 with a documented reference workaround; all five changes are production-ready after review
 
 Five code-change tasks on `ardalis/CleanArchitecture` at `302e8ac4d6`. Each ran in a disposable clone with a locally installed .NET 11 SDK and the `backend-developer` agent.
 
@@ -31,10 +31,10 @@ The SQL Server and SQLite functional suite was executed separately on each task 
 | Bug | 12 | Passed |
 | Feature | 10 | Passed |
 | Refactor | 10 | Passed |
-| Security | 10 | Passed |
+| Security | 15 | Passed |
 | Performance | 17 | Passed |
 
-The suite includes `Testcontainers.MsSql` SQL Server tests, SQLite fallback tests, and endpoint tests. The untouched base clone passes the same 10-test baseline with the reference workaround, so the task results are not caused by the workaround.
+The suite includes `Testcontainers.MsSql` SQL Server tests, SQLite fallback tests, and endpoint tests. The untouched base clone passes the same 10-test baseline with the reference workaround, so the task results are not caused by the workaround. The security task added five HTTPS-redirection tests.
 
 ## Independent review
 
@@ -45,7 +45,7 @@ A separate reviewer agent read each diff and built the solution. Verdicts:
 | Bug (`sp_rename`) | Production-ready | Root cause fixed in `Up` and `Down`; the added regression test is textual and is not part of the unit-test gate |
 | Feature (`ContributorStatus`) | Production-ready | Mapping is consistent; a legacy status value outside 1–3 would now fail the list endpoint instead of being ignored |
 | Refactor (`ContributorRoutes`) | Production-ready | Behavior-preserving; the doc comment overstates centralization because list/create still hard-code the route |
-| Security (HTTPS redirect order) | **Needs-fix** | The order is corrected, but enabling the redirect without forwarded-header handling causes proxy redirect loops and drops `Authorization` on 307 responses; no redirect test |
+| Security (HTTPS redirect order) | Production-ready after rerun | First version activated the redirect without forwarded-header handling; the rerun adds forwarded headers, secure loopback-only defaults, an explicit HTTPS port, and spoofing/redirect tests |
 | Performance (pagination) | Production-ready | Overflow guard is correct; `per_page` above the maximum now clamps to 200 instead of returning 400, a deliberate contract change that needs approval |
 
 The sub-agent could not complete every unit-test run because of a test-host hang, so the build and static review carried more weight for tasks 3–5. The functional suite above was executed separately and passed.
@@ -54,12 +54,14 @@ The sub-agent could not complete every unit-test run because of a test-host hang
 
 - The feature task first ended on an unavailable Web Search request after tests passed; it was rerun without Web Search.
 - A test-host runtime mismatch required enabling prerelease roll-forward.
+- The security task was rerun twice: the first version trusted forwarded headers from every source, and the second added the tests needed to prove the secure default.
 
 ## Limitations
 
 - The .NET 11 SDK and `global.json` patch are pilot-environment adaptations. The functional-test project also required explicit references that upstream does not declare; without them the baseline project does not compile under .NET 11.
 - The functional suite counts differ because task 1 added a migration test and task 5 added pagination cases.
-- Task 4 is not production-ready without forwarded-header configuration and a redirect test. Task 5's clamp contract change needs product approval.
+- Task 4 is production-ready with `ForwardedHeaders:Enabled=false` by default; operators behind a proxy must enable it and configure trusted proxies or networks. The test-host hang prevented a final clean unit-test run, but 12/12 unit tests passed during the pilot run and the product code did not change afterward.
+- Task 5's clamp contract change needs product approval.
 - No change was proposed upstream or committed to the project checkout.
 
 ## References

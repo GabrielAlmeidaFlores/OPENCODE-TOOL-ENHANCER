@@ -16,7 +16,7 @@ Status reflects the repository, not intentions. All planned phases are complete.
 
 ## Next after Phase 7
 
-- Discovery round 1 is complete: 15/15. Code-change rounds: Hono 5/5 independently reviewed; CleanArchitecture 5/5 executed with build, unit, and SQL Server functional tests, one change needs a review fix; turborepo 4/5 verified with one task rejected in review.
+- Discovery round 1 is complete: 15/15. Code-change rounds: Hono 5/5 independently reviewed; CleanArchitecture 5/5 independently reviewed with build, unit, and SQL Server functional tests; turborepo 4/5 verified with one task rejected in review.
 - Evaluate optional task board and memory-injection plugin only after the CLI, memory, and observability are stable.
 - Keep benchmarks deferred until correctness and rework measurement is reproducible.
 

@@ -15,7 +15,7 @@ Pilot round 1 discovery results, funded reruns, plugin live verification, releas
 ### Added
 
 - Hono code-change pilot round: five tasks, targeted tests, two independent reviews; see `docs/pilots/results/code-round-hono.md`.
-- CleanArchitecture code-change round: 5/5 with .NET 11 build, unit, and SQL Server functional verification, plus an independent review that marked one change needs-fix; turborepo 4/5 verified, with the performance task rejected in review.
+- CleanArchitecture code-change round: 5/5 with .NET 11 build, unit, and SQL Server functional verification, plus independent review and a secure HTTPS-redirect rerun; turborepo 4/5 verified, with the performance task rejected in review.
 - Pilot dependency setup via `--setup` and explicit agent selection via `--agent`.
 
 - Pilot round 1 discovery suite across Hono, CleanArchitecture, and turborepo: 6/15 structural tasks passed; failures and provider quota are recorded in `docs/pilots/results/round-1.md`.

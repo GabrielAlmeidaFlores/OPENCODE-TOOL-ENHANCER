@@ -1,6 +1,6 @@
 # turborepo Code-Change Pilot
 
-> **Status:** Experimental · **Last verified:** 2026-11-12 · **Evidence:** four of five tasks are production-ready after independent review; the performance task was rejected
+> **Status:** Experimental · **Last verified:** 2026-11-13 · **Evidence:** four of five tasks are production-ready after independent review; the performance task was rejected
 
 Five TypeScript tasks in `packages/turbo-ignore` on `vercel/turborepo` at `4e3bdf1ef8`. Rust tooling was unavailable, so the round targeted the JavaScript package.
 
