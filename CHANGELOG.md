@@ -6,6 +6,18 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-13
+
+### Added
+
+- `scripts/validation/check_adapter_discovery.sh`, an optional no-model-call check for Copilot instruction and skill discovery plus Codex `AGENTS.md` loading.
+- Integration coverage for the adapter discovery entry point.
+
+### Changed
+
+- Codex adapters set `sandbox_mode = "read-only"` for coordinator, planner, researcher, architect, code-reviewer, security-reviewer, and performance-analyst roles.
+- Write-capable Codex roles omit `sandbox_mode` and inherit the parent sandbox.
+
 ## [0.3.1] - 2026-11-13
 
 ### Added
