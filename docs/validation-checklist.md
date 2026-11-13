@@ -1,6 +1,6 @@
 # Validation Checklist
 
-> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+> **Status:** Stable · **Last verified:** 2026-11-13 · **Evidence:** verified locally and in CI
 
 Run the automated checks first:
 
@@ -46,6 +46,10 @@ Then complete the manual checks for your environment.
 - [ ] `toolwright update --check` exits 0 on a clean target and 1 after a managed file is modified.
 - [ ] `toolwright uninstall` without `--yes` refuses; with `--apply --yes` removes only unmodified managed files.
 - [ ] `toolwright rollback` lists backups without changing files.
+- [ ] `toolwright install --platform claude --apply` writes `CLAUDE.md`, agents, commands, and skills without `.opencode/`.
+- [ ] `toolwright install --platform copilot --apply` writes repository instructions, path instructions, prompts, skills, and `AGENTS.md`.
+- [ ] `toolwright install --platform codex --apply` writes `AGENTS.md` and read-only agent TOMLs with `sandbox_mode = "read-only"`.
+- [ ] `./scripts/validation/check_adapter_discovery.sh` exits 0 and skips unavailable CLIs.
 
 ## Stats, evals, and pilots
 

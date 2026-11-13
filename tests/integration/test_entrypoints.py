@@ -22,6 +22,7 @@ from tests.integration.test_entrypoints_strings import (
     KEY_PROJECT,
     KEY_PYTHON3,
     TEXT_BENCHMARKS_HARNESS_RUN_SH,
+    TEXT_ADAPTER_DISCOVERY_HEADER,
     TEXT_BENCHMARKS_TASKS,
     TEXT_CHECKED_D,
     TEXT_DEFAULT_MODE_MUST_NOT_CREATE_THE_TARGET,
@@ -33,6 +34,7 @@ from tests.integration.test_entrypoints_strings import (
     TEXT_OK,
     TEXT_PATH,
     TEXT_SCRIPTS_INSTALLATION_INSTALL_SH,
+    TEXT_SCRIPTS_VALIDATION_CHECK_ADAPTER_DISCOVERY_SH,
     TEXT_SCRIPTS_VALIDATION_VALIDATE_CONFIG_PY,
     TEXT_SCRIPTS_VALIDATION_VALIDATE_SH,
     TEXT_TASK_NOT_FOUND,
@@ -67,6 +69,18 @@ class ValidationEntryPointTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn(TEXT_OK, result.stdout)
+
+    def test_adapter_discovery_entrypoint_passes(self) -> None:
+        result = subprocess.run(
+            [KEY_BASH, TEXT_SCRIPTS_VALIDATION_CHECK_ADAPTER_DISCOVERY_SH],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=300,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn(TEXT_ADAPTER_DISCOVERY_HEADER, result.stdout)
 
     def test_validate_shell_entrypoint_passes(self) -> None:
         result = subprocess.run(

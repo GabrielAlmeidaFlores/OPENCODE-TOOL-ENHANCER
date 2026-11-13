@@ -43,6 +43,7 @@ The matrix marks unverified cells as `not verified`. It records supported featur
 | OpenCode agent discovery | CI `opencode profile` job |
 | OpenCode compatibility matrix | `toolwright compat` |
 | Adapter install, update, and uninstall | `docs/installation/adapter-validation.md` |
+| Optional native discovery checks | `./scripts/validation/check_adapter_discovery.sh` |
 | Copilot instruction discovery | `copilot instruction list` in a generated target |
 | Copilot skill discovery | `copilot skill list` in a generated target |
 | Codex instruction loading | `codex debug prompt-input "Summarize the repository instructions."` in a generated target |
