@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2034  # constants are consumed by scripts that source this library
 # Name: Shared shell strings
 # Purpose: Defines reusable shell string constants for scripts under scripts/.
 # Usage: source "$ROOT/scripts/lib/strings.sh"

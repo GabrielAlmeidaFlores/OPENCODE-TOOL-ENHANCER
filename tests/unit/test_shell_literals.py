@@ -28,7 +28,7 @@ VARIABLE = re.compile(r"\$(?:\([^)]*\)|\{[^}]*\}|[A-Za-z_][A-Za-z0-9_]*|[0-9@*#?
 def is_literal(value: str) -> bool:
     if "$" in value:
         return False
-    if value.strip() in {"EOF", "0", "1"}:
+    if value.strip() in {"EOF", "PY", "0", "1"}:
         return False
     if value.endswith((")", "}")) or value.startswith("("):
         return False

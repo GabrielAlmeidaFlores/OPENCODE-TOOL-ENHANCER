@@ -19,7 +19,7 @@ fi
 
 opencode stats --json --cost --project . > "$OUT"
 echo "wrote $OUT"
-python3 - "$OUT" <<"${SH_PY}"
+python3 - "$OUT" <<'PY'
 import json
 import sys
 

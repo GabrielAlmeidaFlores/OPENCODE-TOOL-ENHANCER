@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2059  # format strings are named constants
 # Name: Selective installer
 # Purpose: Installs the repository's OpenCode, agent, command, skill, and Ralph configuration into a target project, and optionally installs the external tool binaries.
 # Usage: ./scripts/installation/install.sh [--check|--dry-run|--apply] [--all|--only LIST] [--target DIR] [--clean]
