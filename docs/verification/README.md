@@ -2,7 +2,7 @@
 
 > **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally and in CI run 43277080347
 
-`ote verify` runs the repository's deterministic checks from `.ote/config.toml` and treats exit codes as authoritative. It is the gate used by Ralph, CI, and local workflows.
+`toolwright verify` runs the repository's deterministic checks from `.toolwright/config.toml` and treats exit codes as authoritative. It is the gate used by Ralph, CI, and local workflows.
 
 ## Configuration
 
@@ -32,11 +32,11 @@ TOML is used because Python 3.11 provides `tomllib` in the standard library; no 
 ## Commands
 
 ```bash
-ote verify
-ote verify --only test
-ote verify --only validate --only lint
-ote verify --no-cache
-ote verify --json
+toolwright verify
+toolwright verify --only test
+toolwright verify --only validate --only lint
+toolwright verify --no-cache
+toolwright verify --json
 ```
 
 Exit codes:
@@ -49,9 +49,9 @@ Exit codes:
 
 ## Cache
 
-A check with `inputs` caches a **passing** result under `.ote/cache/verify/<name>.json`. The key covers the command, timeout, and a SHA-256 digest of every declared input file. Editing an input invalidates the entry. Failures are never cached, so a fixed environment is re-tested.
+A check with `inputs` caches a **passing** result under `.toolwright/cache/verify/<name>.json`. The key covers the command, timeout, and a SHA-256 digest of every declared input file. Editing an input invalidates the entry. Failures are never cached, so a fixed environment is re-tested.
 
-`.ote/cache/` is gitignored.
+`.toolwright/cache/` is gitignored.
 
 ## Failure classes
 
@@ -99,12 +99,12 @@ The class is reported in text and JSON output and is used by cost and rework rep
 
 1. Add a `[verify.checks.<name>]` table with a command.
 2. Add `inputs` only when the check is deterministic and expensive enough to cache.
-3. Run `ote verify --only <name>`.
+3. Run `toolwright verify --only <name>`.
 4. Keep the command exit-code based; do not parse model output.
 
 ## CI
 
-The `cli` job runs `ote verify --only validate --only lint`, and the Ralph `code-assist` finalizer is instructed to run `ote verify` before completion.
+The `cli` job runs `toolwright verify --only validate --only lint`, and the Ralph `code-assist` finalizer is instructed to run `toolwright verify` before completion.
 
 ## References
 

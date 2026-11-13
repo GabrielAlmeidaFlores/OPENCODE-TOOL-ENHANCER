@@ -2,7 +2,7 @@
 """
 Generate the verified artifact catalog from the provenance registry.
 
-Public API: none. The script is executed directly or through ``ote catalog build``.
+Public API: none. The script is executed directly or through ``toolwright catalog build``.
 
 Inputs: ``docs/provenance/registry.yml``.
 Outputs: ``catalog/registry.json`` and ``catalog/index.md``.

@@ -1,4 +1,4 @@
-Repository: https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER
+Repository: https://github.com/GabrielAlmeidaFlores/toolwright
 
 # Install Ralph Orchestrator
 
@@ -45,7 +45,7 @@ Ralph 2.10.1 runs a git commit during landing even when `features.auto_merge` is
 Run this only inside a separate disposable clone:
 
 ```bash
-# Inside /tmp/ote-ralph or another disposable clone
+# Inside /tmp/toolwright-ralph or another disposable clone
 ralph run \
   -c configs/ralph/ralph.yml \
   -H configs/ralph/hats/code-assist.yml \

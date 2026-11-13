@@ -49,4 +49,4 @@ The first two attempts failed with `Agent not found: "coordinator"`. The runner 
 ## References
 
 - `docs/pilots/README.md`
-- `packages/ote_cli/ote_cli/pilot.py`
+- `packages/toolwright_cli/toolwright_cli/pilot.py`

@@ -1,24 +1,27 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.svg">
-    <img src="assets/logo.svg" alt="OPENCODE-TOOL-ENHANCER" width="520">
+    <img src="assets/logo.svg" alt="ToolWright" width="520">
   </picture>
 </p>
 
-<h1 align="center">OPENCODE-TOOL-ENHANCER</h1>
+<h1 align="center">ToolWright</h1>
 
 <p align="center">
-  <strong>A production-oriented OpenCode profile with sourced agents, Ralph orchestration, and a code-intelligence stack.</strong>
+  <strong>A provider-neutral multi-agent development toolkit for OpenCode, GitHub Copilot, Claude, and GPT.</strong>
 </p>
 
 <p align="center">
   <img alt="OpenCode 2.2.x" src="https://img.shields.io/badge/OpenCode-2.2.x-4F46E5?style=flat-square">
+  <img alt="GitHub Copilot" src="https://img.shields.io/badge/GitHub%20Copilot-instructions-24292F?style=flat-square">
+  <img alt="Claude Code" src="https://img.shields.io/badge/Claude%20Code-agents-D97757?style=flat-square">
+  <img alt="OpenAI GPT" src="https://img.shields.io/badge/OpenAI%20GPT-Codex%20agents-10A37F?style=flat-square">
   <img alt="Ralph 2.10.1" src="https://img.shields.io/badge/Ralph-2.10.1-06B6D4?style=flat-square">
   <img alt="MIT license" src="https://img.shields.io/badge/license-MIT-22C55E?style=flat-square">
 </p>
 
 <p align="center">
-  <a href="https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER">GitHub</a> ·
+  <a href="https://github.com/GabrielAlmeidaFlores/toolwright">GitHub</a> ·
   <a href="#quick-start">Quick start</a> ·
   <a href="#daily-workflows">Daily workflows</a> ·
   <a href="#configuration">Configuration</a> ·
@@ -27,6 +30,19 @@
 </p>
 
 ---
+
+## Compatibility at a glance
+
+ToolWright is **native on OpenCode** and ships portable agent, command, skill, and instruction artifacts for the other major coding assistants.
+
+| Platform | Integration | What is portable | What is not portable |
+|---|---|---|---|
+| OpenCode 2.2.x | Native configuration, agents, commands, skills, MCP, Ralph | Everything | Nothing in the default profile |
+| GitHub Copilot | Repository and path-specific instructions, `AGENTS.md`, prompt files | Agent roles, project rules, command prompts | OpenCode permissions, subagent spawning, Ralph |
+| Claude Code | `CLAUDE.md`, `.claude/agents/`, skills, commands | Agent roles, project rules, commands, skills | OpenCode permissions, Ralph backend assumptions |
+| OpenAI GPT / Codex | `AGENTS.md`, `.codex/agents/*.toml`, `~/.codex/AGENTS.md` | Agent roles, project rules, subagent definitions | OpenCode permissions, Ralph backend assumptions |
+
+Start with the [compatibility guide](docs/compatibility/README.md). The OpenCode profile remains the reference implementation; the other guides map the same roles and rules onto each platform's native files.
 
 ## Why this exists
 
@@ -53,7 +69,7 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 | Ralph | Core config + 4 official hat collections | [`configs/ralph/`](configs/ralph) |
 | Code intelligence | ripgrep, ast-grep, Serena, CodeGraph | [`docs/code-intelligence/`](docs/code-intelligence) |
 | Automation | Install, validate, benchmark, backup, restore | [`scripts/`](scripts) |
-| CLI | `ote` install, diagnostics, update, rollback | [`packages/ote_cli`](packages/ote_cli) |
+| CLI | `toolwright` install, diagnostics, update, rollback | [`packages/toolwright_cli`](packages/toolwright_cli) |
 | Profiles | Declarative install profiles | [`profiles/`](profiles) |
 | Catalog | Generated, verified artifact list | [`catalog/`](catalog) |
 | Verification | Deterministic checks with cache and failure classes | [`docs/verification/`](docs/verification) |
@@ -62,7 +78,7 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 | Specs | Requirements, design, tasks, evidence workflow | [`docs/specs/`](docs/specs) |
 | Observability | Cost, tokens, tool failures, arm comparison | [`docs/cost-optimization/observability.md`](docs/cost-optimization/observability.md) |
 | Evals and pilots | Deterministic checks and isolated real-repository runs | [`docs/evals/`](docs/evals), [`docs/pilots/`](docs/pilots) |
-| Task board | Optional Markdown board with worktrees | [`.ote/board/README.md`](.ote/board/README.md) |
+| Task board | Optional Markdown board with worktrees | [`.toolwright/board/README.md`](.toolwright/board/README.md) |
 | Plugin | Opt-in memory injection for OpenCode | [`docs/plugin/README.md`](docs/plugin/README.md) |
 | Examples | TypeScript, C#, multi-agent workflows | [`examples/`](examples) |
 | Benchmarks | Methodology, tasks, harness, results | [`benchmarks/`](benchmarks) |
@@ -81,11 +97,11 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 | MCP startup overhead | Narrow `debug agents` measurement recorded |
 | Benchmarks | Deferred by decision; no published results |
 | Real-repository pilots | Repositories selected and pinned; execution pending |
-| CI | Green on Ubuntu and macOS for run [43277080347](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/actions/runs/43277080347); six jobs including `cli` |
+| CI | Green on Ubuntu and macOS for run [43277080347](https://github.com/GabrielAlmeidaFlores/toolwright/actions/runs/43277080347); six jobs including `cli` |
 | Repository tests | 279 unit and integration tests; run with `make test` |
-| `ote` CLI | Install, uninstall, update check, rollback, doctor verified locally and in the `cli` job |
+| `toolwright` CLI | Install, uninstall, update check, rollback, doctor verified locally and in the `cli` job |
 | Profiles and catalog | Three manifests and 34 catalog entries verified locally and in run 43277080347 |
-| Verification and governance | `ote verify` and `ote govern contracts` verified locally; CI runs both |
+| Verification and governance | `toolwright verify` and `toolwright govern contracts` verified locally; CI runs both |
 | Memory and specs | Verified locally and in run 43277080347 |
 | Stats, eval, pilots | Discovery 15/15; code-change: Hono 5/5 reviewed, CleanArchitecture 5/5 reviewed, turborepo 4/5 (task 5 rejected) |
 | Task board and plugin | Board and worktree tests; plugin install, syntax, and live injection verified |
@@ -120,8 +136,8 @@ See [OpenCode installation](docs/installation/opencode.md) for platform details.
 ### 2. Inspect the installer
 
 ```bash
-git clone https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER.git OPENCODE-TOOL-ENHANCER
-cd OPENCODE-TOOL-ENHANCER
+git clone https://github.com/GabrielAlmeidaFlores/toolwright.git ToolWright
+cd ToolWright
 
 ./scripts/installation/install.sh --check
 ./scripts/installation/install.sh --dry-run --all
@@ -138,9 +154,9 @@ The installer defaults to check-only, prints every action, and never edits `~/.c
 Or use the CLI, which plans first, writes a lock, and supports rollback:
 
 ```bash
-uv tool install ./packages/ote_cli
-ote install --profile minimal --target /path/to/project --dry-run
-ote install --profile minimal --target /path/to/project --apply
+uv tool install ./packages/toolwright_cli
+toolwright install --profile minimal --target /path/to/project --dry-run
+toolwright install --profile minimal --target /path/to/project --apply
 ```
 
 This writes `.opencode/` and `.ralph/` in the target project. To replace an existing
@@ -602,13 +618,13 @@ make test        # unit and integration suites
 make validate    # validator, frontmatter, provenance, permissions, docs status
 make lint        # shell syntax and ShellCheck when installed
 make ci          # validate + test, the default gate
-make ote ARGS="doctor"   # run the CLI from the checkout
+make toolwright ARGS="doctor"   # run the CLI from the checkout
 ```
 
 | Layer | Covers |
 | --- | --- |
 | Unit | Validator rules, fixtures, repository invariants, version file, docs status, CLI parser, lock file, installer plan |
-| Integration | Validation entry points, benchmark dry-run, installer safety, OpenCode discovery, `ote` install/update/uninstall lifecycle |
+| Integration | Validation entry points, benchmark dry-run, installer safety, OpenCode discovery, `toolwright` install/update/uninstall lifecycle |
 
 See [testing the repository](docs/architecture/testing.md) for fixtures, conventions, and
 how to add a test, and [CI diagnosis](docs/troubleshooting/ci.md) for real workflow failures
@@ -638,7 +654,7 @@ The benchmark harness is reproducible, but **no results are published yet**. Thi
 ├── examples/                       # TypeScript, C#, multi-agent fixtures
 ├── benchmarks/                     # methodology, tasks, harness, results
 ├── scripts/                        # install, validate, benchmark, maintain
-├── packages/ote_cli/               # the ote command line
+├── packages/toolwright_cli/               # the toolwright command line
 ├── profiles/                       # install profile manifests
 ├── catalog/                        # generated and verified artifact catalog
 ├── tests/                          # unit, integration, and fixtures
@@ -652,11 +668,12 @@ The benchmark harness is reproducible, but **no results are published yet**. Thi
 
 | Document | What it covers |
 | --- | --- |
+| [Platform compatibility](docs/compatibility/README.md) | OpenCode, GitHub Copilot, Claude Code, OpenAI GPT/Codex |
 | [OpenCode installation](docs/installation/opencode.md) | Install, configure, verify |
 | [Code intelligence installation](docs/installation/code-intelligence.md) | ripgrep, ast-grep, Serena, CodeGraph |
 | [Ralph installation](docs/installation/ralph.md) | Install, preflight, first run |
 | [OpenCode V2 configuration](docs/configuration/opencode-v2.md) | Agents, permissions, MCP, compaction, model routing |
-| [CLI reference](docs/cli/README.md) | `ote` commands, lock file, exit codes, safety |
+| [CLI reference](docs/cli/README.md) | `toolwright` commands, lock file, exit codes, safety |
 | [Profiles](docs/profiles/README.md) | Manifest format and available profiles |
 | [Verified catalog](docs/catalog/README.md) | Catalog schema, generation, and drift checks |
 | [Verification engine](docs/verification/README.md) | Checks, cache, failure classes, CI gate |
@@ -665,9 +682,9 @@ The benchmark harness is reproducible, but **no results are published yet**. Thi
 | [Spec workflow](docs/specs/README.md) | Requirements, design, tasks, evidence |
 | [Deterministic evals](docs/evals/README.md) | Profile, catalog, governance, and validator checks |
 | [Pilot runner](docs/pilots/README.md) | Pinned repositories, isolation, artifacts |
-| [Task board](.ote/board/README.md) | Markdown tasks, WIP limit, worktrees |
+| [Task board](.toolwright/board/README.md) | Markdown tasks, WIP limit, worktrees |
 | [Memory plugin](docs/plugin/README.md) | Opt-in context injection, no telemetry |
-| [Install the CLI](docs/installation/ote-cli.md) | uv, pipx, wheel, verification |
+| [Install the CLI](docs/installation/toolwright-cli.md) | uv, pipx, wheel, verification |
 | [Agent roles](docs/agents/roles.md) | Responsibilities and delegation rules |
 | [Artifact compatibility](docs/agents/compatibility.md) | OpenCode compatibility and runtime status |
 | [Real-repository pilots](docs/pilots/README.md) | Selected repositories and pilot procedure |
@@ -681,6 +698,9 @@ The benchmark harness is reproducible, but **no results are published yet**. Thi
 | [Testing the repository](docs/architecture/testing.md) | Test layers, fixtures, and how to add a test |
 | [CI diagnosis](docs/troubleshooting/ci.md) | Real workflow failures and fixes |
 | [Security](docs/security/README.md) | Threat model, MCP trust, secret handling |
+| [GitHub Copilot](docs/compatibility/github-copilot.md) | Instructions, path rules, prompt files |
+| [Claude Code](docs/compatibility/claude.md) | `CLAUDE.md`, subagents, skills |
+| [OpenAI GPT and Codex](docs/compatibility/openai-gpt.md) | `AGENTS.md`, custom agents, ChatGPT |
 | [Compatibility policy](docs/compatibility/policy.md) | Supported versions and change rules |
 | [Release process](docs/release/README.md) | Versioning, checksums, rollback, drift |
 | [Docs site](mkdocs.yml) | MkDocs Material navigation |

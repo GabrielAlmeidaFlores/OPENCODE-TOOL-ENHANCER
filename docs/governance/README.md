@@ -9,7 +9,7 @@ Governance makes long agent runs auditable without adding a daemon or a second r
 | Area | Mechanism |
 |---|---|
 | Agent contracts | Derived from `agents/*/AGENT.md` mode and permissions |
-| Budgets | `[governance]` limits in `.ote/config.toml` |
+| Budgets | `[governance]` limits in `.toolwright/config.toml` |
 | Loop detection | Repeated actions above `max_repeats` |
 | Deadlock detection | Handoff bounces above `max_bounces` |
 | Risk gates | Required gates per risk level |
@@ -18,8 +18,8 @@ Governance makes long agent runs auditable without adding a daemon or a second r
 ## Contracts
 
 ```bash
-ote govern contracts
-ote govern contracts --json
+toolwright govern contracts
+toolwright govern contracts --json
 ```
 
 Each contract reports the agent's mode, whether it is read-only, its allowed and denied actions, and any violation:
@@ -64,8 +64,8 @@ Provide a JSON record:
 ```
 
 ```bash
-ote govern check --record run.json
-ote govern check --record run.json --json
+toolwright govern check --record run.json
+toolwright govern check --record run.json --json
 ```
 
 Exit code 1 means the record is blocked. Each violation names its kind: `budget`, `loop`, or `deadlock`.
@@ -73,9 +73,9 @@ Exit code 1 means the record is blocked. Each violation names its kind: `budget`
 ## Risk gates
 
 ```bash
-ote govern gate --risk low
-ote govern gate --risk medium
-ote govern gate --risk high
+toolwright govern gate --risk low
+toolwright govern gate --risk medium
+toolwright govern gate --risk high
 ```
 
 | Risk | Required gates |
@@ -90,10 +90,10 @@ ote govern gate --risk high
 - `advisory` — a violation is reported and the caller decides whether to continue.
 - `strict` — a violation must block the run in the calling orchestrator.
 
-`ote govern check` always evaluates and returns exit code 1 on a violation, independent of the
+`toolwright govern check` always evaluates and returns exit code 1 on a violation, independent of the
 recorded mode. Interpreting the mode is the caller's responsibility; runtime interception belongs
-to the orchestrator. The current integration point is `ote govern check` plus the Ralph finalizer's
-`ote verify` step.
+to the orchestrator. The current integration point is `toolwright govern check` plus the Ralph finalizer's
+`toolwright verify` step.
 
 ## Limitations
 

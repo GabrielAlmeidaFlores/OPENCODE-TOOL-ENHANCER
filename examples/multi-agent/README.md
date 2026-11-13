@@ -12,12 +12,12 @@ Add request validation to `examples/typescript`, with tests and a review.
 
 ```bash
 # From the main checkout, capture any uncommitted work as a patch.
-git diff > /tmp/ote-work.patch
+git diff > /tmp/toolwright-work.patch
 
 # Create a separate clone and start from the same state.
-git clone . /tmp/ote-ralph
-cd /tmp/ote-ralph
-git apply /tmp/ote-work.patch
+git clone . /tmp/toolwright-ralph
+cd /tmp/toolwright-ralph
+git apply /tmp/toolwright-work.patch
 
 # Record the starting point as a deliberate baseline commit in the disposable
 # clone, so Ralph's landing commit contains only its own changes.
@@ -33,10 +33,10 @@ ralph run \
 After the run, review the clone and export the change without touching the main checkout:
 
 ```bash
-git -C /tmp/ote-ralph log --oneline -3
-git -C /tmp/ote-ralph format-patch -1 --stdout > /tmp/ralph-change.patch
+git -C /tmp/toolwright-ralph log --oneline -3
+git -C /tmp/toolwright-ralph format-patch -1 --stdout > /tmp/ralph-change.patch
 
-cd /path/to/OPENCODE-TOOL-ENHANCER
+cd /path/to/ToolWright
 git apply /tmp/ralph-change.patch   # applies unstaged
 ```
 

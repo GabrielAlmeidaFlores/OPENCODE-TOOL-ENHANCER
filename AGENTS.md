@@ -1,10 +1,10 @@
-# Project Initialization: OPENCODE-TOOL-ENHANCER
+# Project Initialization: ToolWright
 
 Act as a **Principal Software Engineer, AI Agent Architect, Developer Productivity Engineer, and Technical Researcher**.
 
 Your task is to research, design, document, and build a comprehensive repository named:
 
-**OPENCODE-TOOL-ENHANCER**
+**ToolWright**
 
 The repository must provide a practical, reproducible, and cost-efficient configuration for OpenCode, enhanced with specialized AI agents, orchestration frameworks, code intelligence tools, MCP servers, and development automation.
 
@@ -492,7 +492,7 @@ Design a clean and maintainable documentation-oriented repository.
 
 Use the following structure as an initial proposal, adjusting it when necessary:
 
-OPENCODE-TOOL-ENHANCER/
+ToolWright/
 ├── README.md
 ├── CONTRIBUTING.md
 ├── LICENSE
@@ -765,4 +765,4 @@ Clearly identify assumptions, unresolved questions, risks and decisions that req
 
 After presenting the plan, proceed with implementation in small, verifiable stages.
 
-**Success criterion:** A developer should be able to clone OPENCODE-TOOL-ENHANCER, follow its documentation, configure OpenCode with specialized agents and orchestration, install the recommended code-intelligence tools, and reproduce a cost-efficient AI-assisted development workflow without relying on OpenCode's default general-purpose agent.
+**Success criterion:** A developer should be able to clone ToolWright, follow its documentation, configure OpenCode with specialized agents and orchestration, install the recommended code-intelligence tools, and reproduce a cost-efficient AI-assisted development workflow without relying on OpenCode's default general-purpose agent.

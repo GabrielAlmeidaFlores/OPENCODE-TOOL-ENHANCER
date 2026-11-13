@@ -27,7 +27,7 @@ jobs:
       - name: Verify tag and versions
         run: python scripts/release/check_version.py --tag "$GITHUB_REF_NAME"
       - name: Build wheel
-        run: python -m pip wheel ./packages/ote_cli --no-deps --wheel-dir dist
+        run: python -m pip wheel ./packages/toolwright_cli --no-deps --wheel-dir dist
       - name: Write checksums
         run: |
           cd dist

@@ -1,12 +1,12 @@
-# OPENCODE-TOOL-ENHANCER
+# ToolWright
 
 > **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally; CI green on run 43277080347
 
-A reproducible OpenCode profile built around four pillars:
+A provider-neutral multi-agent development toolkit, native on OpenCode and documented for GitHub Copilot, Claude Code, and OpenAI GPT/Codex. It is built around four pillars:
 
 | Pillar | What it provides |
 |---|---|
-| Environment | OpenCode V2 configuration, agents, commands, skills, Ralph hats, installer, `ote` CLI |
+| Environment | OpenCode V2 configuration, agents, commands, skills, Ralph hats, installer, `toolwright` CLI, and compatibility mappings for Copilot, Claude, and GPT |
 | Orchestration | Ralph as the loop owner, coordinator delegation, risk-based gates |
 | Intelligence | ripgrep, ast-grep, Serena, CodeGraph, Markdown memory, spec artifacts |
 | Optimization | Deterministic verification, governance budgets, cost/token reporting, evals |
@@ -14,15 +14,19 @@ A reproducible OpenCode profile built around four pillars:
 ## Start here
 
 ```bash
-git clone https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER.git
-cd OPENCODE-TOOL-ENHANCER
-uv tool install ./packages/ote_cli
-ote doctor
-ote install --profile minimal --target /path/to/project --apply
+git clone https://github.com/GabrielAlmeidaFlores/toolwright.git
+cd ToolWright
+uv tool install ./packages/toolwright_cli
+toolwright doctor
+toolwright install --profile minimal --target /path/to/project --apply
 ```
 
+- [Compatibility overview](compatibility/README.md)
 - [OpenCode installation](installation/opencode.md)
-- [Install the CLI](installation/ote-cli.md)
+- [GitHub Copilot](compatibility/github-copilot.md)
+- [Claude Code](compatibility/claude.md)
+- [OpenAI GPT / Codex](compatibility/openai-gpt.md)
+- [Install the CLI](installation/toolwright-cli.md)
 - [CLI reference](cli/README.md)
 - [Profiles](profiles/README.md)
 
@@ -35,7 +39,7 @@ ote install --profile minimal --target /path/to/project --apply
 | CLI | Wheel build, install lifecycle, profile/catalog verification, verification gates |
 | Catalog | 34 generated artifacts with drift enforcement |
 | Benchmarks | Deferred by decision; no published results |
-| Pilots | Runner ready; execution pending |
+| Pilots | Discovery 15/15; Hono 5/5, CleanArchitecture 5/5, turborepo 4/5 reviewed |
 
 Claims link to local evidence or a CI run. Vendor claims are labelled; no benchmark result is published without correctness and rework data.
 
@@ -47,7 +51,7 @@ Claims link to local evidence or a CI run. Vendor claims are labelled; no benchm
 4. Treat deterministic tools as the source of truth for correctness.
 5. Keep the default profile minimal; enable optional tools explicitly.
 
-Full rules: [AGENTS.md](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/blob/main/AGENTS.md).
+Full rules: [AGENTS.md](https://github.com/GabrielAlmeidaFlores/toolwright/blob/main/AGENTS.md).
 
 ## Project
 

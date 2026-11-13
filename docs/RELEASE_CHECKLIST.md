@@ -32,34 +32,34 @@ Use this checklist before tagging a release. A checked item must have reproducib
 
 ## CLI
 
-- [ ] `python3 -m pip wheel ./packages/ote_cli --no-deps` builds a wheel.
-- [ ] `ote --version` matches `VERSION`.
-- [ ] `ote doctor --json` exits 0.
-- [ ] `ote install --apply` into a temporary target writes a lock and state.
-- [ ] A second `ote install --apply` reports `already up to date`.
-- [ ] `ote update --check` exits 0, then 1 after a managed file changes.
-- [ ] `ote uninstall --apply --yes` removes managed files and keeps modified ones.
-- [ ] `ote rollback` lists backups without writing.
+- [ ] `python3 -m pip wheel ./packages/toolwright_cli --no-deps` builds a wheel.
+- [ ] `toolwright --version` matches `VERSION`.
+- [ ] `toolwright doctor --json` exits 0.
+- [ ] `toolwright install --apply` into a temporary target writes a lock and state.
+- [ ] A second `toolwright install --apply` reports `already up to date`.
+- [ ] `toolwright update --check` exits 0, then 1 after a managed file changes.
+- [ ] `toolwright uninstall --apply --yes` removes managed files and keeps modified ones.
+- [ ] `toolwright rollback` lists backups without writing.
 
 ## Profiles and catalog
 
-- [ ] `ote profile verify` passes.
-- [ ] `ote catalog verify` passes.
-- [ ] `ote catalog verify --check-drift` passes.
+- [ ] `toolwright profile verify` passes.
+- [ ] `toolwright catalog verify` passes.
+- [ ] `toolwright catalog verify --check-drift` passes.
 - [ ] `catalog/registry.json` and `catalog/index.md` match the provenance registry.
-- [ ] `ote compat` reflects the pinned OpenCode versions.
+- [ ] `toolwright compat` reflects the pinned OpenCode versions.
 
 ## Verification and governance
 
-- [ ] `ote verify` passes with the committed `.ote/config.toml`.
+- [ ] `toolwright verify` passes with the committed `.toolwright/config.toml`.
 - [ ] Failing checks return a non-zero exit and a failure class.
-- [ ] `ote govern contracts` passes.
+- [ ] `toolwright govern contracts` passes.
 - [ ] Governance limits and risk gates match the documented defaults.
-- [ ] Ralph `code-assist` finalizer references `ote verify`.
+- [ ] Ralph `code-assist` finalizer references `toolwright verify`.
 
 ## Stats, evals, and pilots
 
-- [ ] `ote stats` and `ote eval` pass.
+- [ ] `toolwright stats` and `toolwright eval` pass.
 - [ ] Pilot dry-run works for all three repositories.
 - [ ] No pilot result is published without correctness and rework data.
 - [ ] Reporting artifacts contain no credentials.
@@ -67,8 +67,8 @@ Use this checklist before tagging a release. A checked item must have reproducib
 ## Memory and specs
 
 - [ ] Memory and spec commands are covered by tests.
-- [ ] `.ote/memory/catalog.md` matches the entries.
-- [ ] No credential-shaped text is committed under `.ote/memory/`.
+- [ ] `.toolwright/memory/catalog.md` matches the entries.
+- [ ] No credential-shaped text is committed under `.toolwright/memory/`.
 - [ ] `specs/` contains no placeholder-only spec marked complete.
 
 ## Orchestration

@@ -54,7 +54,7 @@ Every artifact records its author in three places:
 | `memory-and-specs` | glue | Memory store and spec validator; original implementation |
 | `verification-and-governance` | glue | Verification engine and governance evaluator; original implementation |
 | `catalog-and-profiles` | glue | Catalog generator and profile loader; original implementation |
-| `ote-cli` | glue | CLI wrapper over the existing scripts; original implementation |
+| `toolwright-cli` | glue | CLI wrapper over the existing scripts; original implementation |
 
 ## Artifact mapping
 
@@ -113,4 +113,4 @@ The validator checks that every registered local path exists and that every agen
 
 ## License notices
 
-See [THIRD_PARTY_NOTICES.md](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/blob/main/THIRD_PARTY_NOTICES.md).
+See [THIRD_PARTY_NOTICES.md](https://github.com/GabrielAlmeidaFlores/toolwright/blob/main/THIRD_PARTY_NOTICES.md).

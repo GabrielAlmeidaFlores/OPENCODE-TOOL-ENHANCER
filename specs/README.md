@@ -1,6 +1,6 @@
 # Specs
 
-Spec-driven development artifacts managed by `ote spec`. Each feature gets a directory with four files:
+Spec-driven development artifacts managed by `toolwright spec`. Each feature gets a directory with four files:
 
 | File | Purpose |
 |---|---|
@@ -12,10 +12,10 @@ Spec-driven development artifacts managed by `ote spec`. Each feature gets a dir
 ## Workflow
 
 ```bash
-ote spec new "Add user authentication" --criterion "A rejected password returns 401" --criterion "A valid login returns a session"
-ote spec plan user-authentication
-ote spec list
-ote spec verify user-authentication
+toolwright spec new "Add user authentication" --criterion "A rejected password returns 401" --criterion "A valid login returns a session"
+toolwright spec plan user-authentication
+toolwright spec list
+toolwright spec verify user-authentication
 ```
 
 `plan` fails until every criterion has at least one task and every task names a valid criterion. `verify` additionally requires evidence for every criterion.

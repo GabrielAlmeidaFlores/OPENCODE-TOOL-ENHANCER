@@ -2,11 +2,11 @@
 
 > **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
 
-This page records how the sourced artifacts behave in OpenCode 2.2.x. It separates static validation from runtime smoke tests so a passing check is not mistaken for a full evaluation.
+This page records how the sourced artifacts behave in OpenCode 2.2.x. It separates static validation from runtime smoke tests so a passing check is not mistaken for a full evaluation. For GitHub Copilot, Claude Code, and OpenAI GPT/Codex mappings, see [Platform Compatibility](../compatibility/README.md).
 
 ## Version matrix
 
-Run `ote compat` for the OpenCode V1/V2 feature matrix. Cells that were not verified are marked `not verified`. The matrix records supported features only; it is not a performance or benchmark result.
+Run `toolwright compat` for the OpenCode V1/V2 feature matrix. Cells that were not verified are marked `not verified`. The matrix records supported features only; it is not a performance or benchmark result.
 
 ## Agents
 

@@ -13,7 +13,7 @@ The repository exposes its functionality through shell and Python scripts under
 2. Composition: each script parses its own arguments and duplicates flag handling.
 3. Distribution: there is no versioned entry point, so upgrades are manual.
 
-Phase 2 introduces `ote` as a single command surface. The implementation language must be
+Phase 2 introduces `toolwright` as a single command surface. The implementation language must be
 chosen before the first line of CLI code is written, because the choice affects packaging,
 test strategy, and contributor requirements.
 
@@ -27,7 +27,7 @@ Candidates:
 
 ## Decision
 
-Implement `ote` in **Python 3.11+** as a package under `packages/ote_cli`, distributed
+Implement `toolwright` in **Python 3.11+** as a package under `packages/toolwright_cli`, distributed
 through `uv tool install` and `pipx`, with `pyproject.toml` as the build definition.
 
 The existing Python validator becomes a module imported by the CLI rather than a
@@ -45,7 +45,7 @@ and CI keep working unchanged.
 
 ## Consequences
 
-- `pyproject.toml` becomes required and must declare the `ote` console script.
+- `pyproject.toml` becomes required and must declare the `toolwright` console script.
 - Unit tests target the modules directly, not shell subprocesses.
 - The TypeScript ecosystem is still used for examples and optional OpenCode plugins, but
   not for the CLI.
@@ -61,12 +61,12 @@ and CI keep working unchanged.
 
 ## Verification
 
-- `packages/ote_cli/pyproject.toml` builds a wheel and installs the `ote` console script.
-- `ote doctor` runs the existing validator as a subprocess and reports its `checked:` count.
+- `packages/toolwright_cli/pyproject.toml` builds a wheel and installs the `toolwright` console script.
+- `toolwright doctor` runs the existing validator as a subprocess and reports its `checked:` count.
 - `pyproject.toml` declares no runtime dependencies; the tests assert this.
-- `ote install` wraps `scripts/installation/install.sh` instead of reimplementing it.
+- `toolwright install` wraps `scripts/installation/install.sh` instead of reimplementing it.
 - 30 unit tests and 13 integration tests cover the command surface.
-- The `cli` CI job is defined to install the wheel, run `ote doctor`, and exercise the install lifecycle; its first green run is recorded in `docs/troubleshooting/ci.md` after the next push.
+- The `cli` CI job is defined to install the wheel, run `toolwright doctor`, and exercise the install lifecycle; its first green run is recorded in `docs/troubleshooting/ci.md` after the next push.
 
 ## References
 

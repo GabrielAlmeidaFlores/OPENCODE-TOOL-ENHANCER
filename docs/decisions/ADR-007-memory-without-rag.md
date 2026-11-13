@@ -21,7 +21,7 @@ which conflicts with the repository's evidence requirements.
 
 ## Decision
 
-Adopt **Markdown-first memory** under `.ote/memory/` with three partitions:
+Adopt **Markdown-first memory** under `.toolwright/memory/` with three partitions:
 
 | Partition | Scope | Tracked in Git |
 |---|---|---|
@@ -52,7 +52,7 @@ embeddings, no vector database, and no background service.
 
 | Risk | Mitigation |
 |---|---|
-| Stale entries | 30-day TTL and `ote memory prune` |
+| Stale entries | 30-day TTL and `toolwright memory prune` |
 | Duplicate entries | Normalized-title check before write |
 | Secret leakage | Reject writes matching credential patterns |
 | Context bloat | Hard byte and token budget on the preamble |
@@ -60,10 +60,10 @@ embeddings, no vector database, and no background service.
 
 ## Verification
 
-- `ote memory preamble` enforces the token budget and orders project > user > shared.
-- `ote memory search` is lexical and deterministic.
+- `toolwright memory preamble` enforces the token budget and orders project > user > shared.
+- `toolwright memory search` is lexical and deterministic.
 - A planted credential is rejected before any file is written.
-- Expired entries are excluded from the preamble and removed by `ote memory prune --apply --yes`.
+- Expired entries are excluded from the preamble and removed by `toolwright memory prune --apply --yes`.
 - `catalog.md` is regenerated after every add and prune.
 - Unit tests cover scopes, deduplication, secrets, expiry, export, and budget enforcement.
 

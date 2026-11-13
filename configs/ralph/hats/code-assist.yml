@@ -456,7 +456,7 @@ hats:
       ### Final Verification Checklist
 
       **1. Automated tests**
-      Run `ote verify` when `.ote/config.toml` exists; a non-zero exit blocks completion. Then run the relevant test suite yourself. Do not trust earlier claims.
+      Run `toolwright verify` when `.toolwright/config.toml` exists; a non-zero exit blocks completion. Then run the relevant test suite yourself. Do not trust earlier claims.
 
       **2. Build / typecheck / lint**
       Run the strongest applicable verification commands for this repo and changed area.

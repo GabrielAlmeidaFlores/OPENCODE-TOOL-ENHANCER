@@ -93,45 +93,45 @@ jobs:
       - name: Install OpenCode V2
         run: npm install --global @opencode/cli@2.2.7
       - name: Build the wheel
-        run: python -m pip wheel ./packages/ote_cli --no-deps --wheel-dir dist
+        run: python -m pip wheel ./packages/toolwright_cli --no-deps --wheel-dir dist
       - name: Install the CLI
-        run: python -m pip install ./packages/ote_cli pyyaml
+        run: python -m pip install ./packages/toolwright_cli pyyaml
       - name: Diagnose the repository
-        run: ote doctor --json --no-mcp
+        run: toolwright doctor --json --no-mcp
       - name: Verify profiles and catalog
         run: |
-          ote profile verify
-          ote catalog verify --check-drift
+          toolwright profile verify
+          toolwright catalog verify --check-drift
       - name: Check task board and plugin
         run: |
-          ote task list > /dev/null
-          ote task status > /dev/null
-          node --check configs/opencode/plugins/ote-memory.js
-          ote install --only plugin --target "$RUNNER_TEMP/plugin-project" --dry-run > /dev/null
+          toolwright task list > /dev/null
+          toolwright task status > /dev/null
+          node --check configs/opencode/plugins/toolwright-memory.js
+          toolwright install --only plugin --target "$RUNNER_TEMP/plugin-project" --dry-run > /dev/null
       - name: Check stats, eval, and pilots
         run: |
-          ote stats --results benchmarks/results --format json > /dev/null
-          ote eval > /dev/null
-          ote pilot list > /dev/null
-          ote pilot run hono --dry-run > /dev/null
+          toolwright stats --results benchmarks/results --format json > /dev/null
+          toolwright eval > /dev/null
+          toolwright pilot list > /dev/null
+          toolwright pilot run hono --dry-run > /dev/null
       - name: Check memory and spec commands
         run: |
-          ote memory search decision > /dev/null
-          ote memory preamble --budget 500 > /dev/null
-          ote spec list > /dev/null
+          toolwright memory search decision > /dev/null
+          toolwright memory preamble --budget 500 > /dev/null
+          toolwright spec list > /dev/null
       - name: Run verification gates
         run: |
-          ote verify --only validate --only lint
-          ote govern contracts
+          toolwright verify --only validate --only lint
+          toolwright govern contracts
       - name: Exercise the install lifecycle
         run: |
-          target="$RUNNER_TEMP/ote-project"
-          ote install --profile minimal --target "$target" --dry-run
-          ote install --profile minimal --target "$target" --apply
-          ote install --profile minimal --target "$target" --apply | tee reapply.log
+          target="$RUNNER_TEMP/toolwright-project"
+          toolwright install --profile minimal --target "$target" --dry-run
+          toolwright install --profile minimal --target "$target" --apply
+          toolwright install --profile minimal --target "$target" --apply | tee reapply.log
           grep -q "already up to date" reapply.log
-          ote update --check --target "$target"
-          ote uninstall --target "$target" --apply --yes
+          toolwright update --check --target "$target"
+          toolwright uninstall --target "$target" --apply --yes
 
   docs:
     timeout-minutes: 10

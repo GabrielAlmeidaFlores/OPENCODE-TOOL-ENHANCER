@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "toolwright-cli"
+version = "0.1.2"
+description = "Command-line interface for ToolWright installation, verification, and lifecycle management."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "ToolWright contributors" }]
+keywords = ["opencode", "ai-agents", "developer-tools"]
+classifiers = [
+  "Environment :: Console",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Build Tools",
+]
+
+[project.optional-dependencies]
+catalog = ["pyyaml>=6.0"]
+
+[project.urls]
+Homepage = "https://github.com/GabrielAlmeidaFlores/toolwright"
+Documentation = "https://github.com/GabrielAlmeidaFlores/toolwright/tree/main/docs"
+
+[project.scripts]
+toolwright = "toolwright_cli.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["toolwright_cli*"]

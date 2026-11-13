@@ -15,12 +15,12 @@ The pilots validate the profile on real codebases instead of only the bundled fi
 ## Runner
 
 ```bash
-ote pilot list
-ote pilot run hono --dry-run
-OPENCODE_PILOT_MODEL=provider/model ote pilot run hono \
+toolwright pilot list
+toolwright pilot run hono --dry-run
+OPENCODE_PILOT_MODEL=provider/model toolwright pilot run hono \
   --prompt "Fix the routing regression and add a test" \
   --verify "npm test -- router" \
-  --workspace /tmp/ote-pilot-hono \
+  --workspace /tmp/toolwright-pilot-hono \
   --keep
 ```
 

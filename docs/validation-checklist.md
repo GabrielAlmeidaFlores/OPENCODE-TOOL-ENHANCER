@@ -38,56 +38,56 @@ Then complete the manual checks for your environment.
 
 ## CLI
 
-- [ ] `python3 -m pip wheel ./packages/ote_cli --no-deps` builds a wheel.
-- [ ] `ote --version` matches `VERSION`.
-- [ ] `ote doctor --json` exits 0 with no failures.
-- [ ] `ote install --dry-run` lists files and writes nothing.
-- [ ] `ote install --apply` writes a lock and state, and a second apply reports `already up to date`.
-- [ ] `ote update --check` exits 0 on a clean target and 1 after a managed file is modified.
-- [ ] `ote uninstall` without `--yes` refuses; with `--apply --yes` removes only unmodified managed files.
-- [ ] `ote rollback` lists backups without changing files.
+- [ ] `python3 -m pip wheel ./packages/toolwright_cli --no-deps` builds a wheel.
+- [ ] `toolwright --version` matches `VERSION`.
+- [ ] `toolwright doctor --json` exits 0 with no failures.
+- [ ] `toolwright install --dry-run` lists files and writes nothing.
+- [ ] `toolwright install --apply` writes a lock and state, and a second apply reports `already up to date`.
+- [ ] `toolwright update --check` exits 0 on a clean target and 1 after a managed file is modified.
+- [ ] `toolwright uninstall` without `--yes` refuses; with `--apply --yes` removes only unmodified managed files.
+- [ ] `toolwright rollback` lists backups without changing files.
 
 ## Stats, evals, and pilots
 
-- [ ] `ote stats` renders Markdown, JSON, and CSV from result artifacts.
+- [ ] `toolwright stats` renders Markdown, JSON, and CSV from result artifacts.
 - [ ] Baseline and optimized runs produce a comparison row.
-- [ ] `ote stats --budget` exits 1 when recorded cost exceeds the ceiling.
-- [ ] `ote eval` passes with no model call.
-- [ ] `ote pilot list` shows the three selected repositories.
-- [ ] `ote pilot run hono --dry-run` prints the planned commands and writes nothing.
+- [ ] `toolwright stats --budget` exits 1 when recorded cost exceeds the ceiling.
+- [ ] `toolwright eval` passes with no model call.
+- [ ] `toolwright pilot list` shows the three selected repositories.
+- [ ] `toolwright pilot run hono --dry-run` prints the planned commands and writes nothing.
 - [ ] A real pilot records verification, cost, tokens, and tool errors under `artifacts/`.
 
 ## Memory and specs
 
-- [ ] `ote memory add` writes one entry and updates `catalog.md`.
-- [ ] `ote memory search` finds title, body, source, and type.
+- [ ] `toolwright memory add` writes one entry and updates `catalog.md`.
+- [ ] `toolwright memory search` finds title, body, source, and type.
 - [ ] A credential-shaped string is rejected.
 - [ ] Expired entries are excluded from the preamble and removed by `prune --apply --yes`.
-- [ ] `ote memory preamble` stays within the configured budget.
-- [ ] `ote spec new` creates four artifacts.
-- [ ] `ote spec plan` fails until every criterion has a task.
-- [ ] `ote spec verify` fails until every criterion has evidence.
+- [ ] `toolwright memory preamble` stays within the configured budget.
+- [ ] `toolwright spec new` creates four artifacts.
+- [ ] `toolwright spec plan` fails until every criterion has a task.
+- [ ] `toolwright spec verify` fails until every criterion has evidence.
 - [ ] `user/` memory is gitignored; `project/` and `shared/` are tracked.
 
 ## Verification and governance
 
-- [ ] `ote verify --only validate` exits 0.
-- [ ] `ote verify --only lint` exits 0.
-- [ ] `ote verify --json` reports a summary and failure classes.
+- [ ] `toolwright verify --only validate` exits 0.
+- [ ] `toolwright verify --only lint` exits 0.
+- [ ] `toolwright verify --json` reports a summary and failure classes.
 - [ ] A failing check exits 1 and a missing check name exits 2.
-- [ ] `ote govern contracts` reports zero failures.
-- [ ] `ote govern gate --risk high` lists verify, review, and security.
-- [ ] `ote govern check --record` blocks a record over budget.
-- [ ] `.ote/cache/` is gitignored.
+- [ ] `toolwright govern contracts` reports zero failures.
+- [ ] `toolwright govern gate --risk high` lists verify, review, and security.
+- [ ] `toolwright govern check --record` blocks a record over budget.
+- [ ] `.toolwright/cache/` is gitignored.
 
 ## Profiles and catalog
 
-- [ ] `ote profile verify` exits 0 for every manifest.
-- [ ] `ote profile use minimal --target /tmp/check --dry-run` lists files and writes nothing.
-- [ ] `ote catalog verify` reports zero failures.
-- [ ] `ote catalog verify --check-drift` matches `docs/provenance/registry.yml`.
+- [ ] `toolwright profile verify` exits 0 for every manifest.
+- [ ] `toolwright profile use minimal --target /tmp/check --dry-run` lists files and writes nothing.
+- [ ] `toolwright catalog verify` reports zero failures.
+- [ ] `toolwright catalog verify --check-drift` matches `docs/provenance/registry.yml`.
 - [ ] `python3 scripts/catalog/build_catalog.py --check` exits 0.
-- [ ] `ote compat --json` returns the V1/V2 matrix.
+- [ ] `toolwright compat --json` returns the V1/V2 matrix.
 - [ ] Adding a provenance entry and regenerating changes both catalog files together.
 
 ## OpenCode
@@ -138,14 +138,14 @@ Then complete the manual checks for your environment.
 
 ## Task board and plugin
 
-- [ ] `ote task add` creates a task and regenerates `BOARD.md`.
+- [ ] `toolwright task add` creates a task and regenerates `BOARD.md`.
 - [ ] The WIP limit blocks a third in-progress task with the default configuration.
 - [ ] Moving to `done` requires `--approved`.
 - [ ] A worktree is created only on request and is gitignored.
 - [ ] Removing a worktree requires `--remove --yes`.
-- [ ] `node --check configs/opencode/plugins/ote-memory.js` passes.
+- [ ] `node --check configs/opencode/plugins/toolwright-memory.js` passes.
 - [ ] The plugin is absent from the minimal and standard profiles.
-- [ ] The plugin does nothing without `.ote/memory/plugin.enabled`.
+- [ ] The plugin does nothing without `.toolwright/memory/plugin.enabled`.
 
 ## Docs site and release
 

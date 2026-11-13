@@ -8,7 +8,7 @@ The catalog turns the provenance registry into a validated, searchable artifact 
 
 | Path | Purpose |
 |---|---|
-| `catalog/registry.json` | Machine-readable catalog read by `ote` |
+| `catalog/registry.json` | Machine-readable catalog read by `toolwright` |
 | `catalog/index.md` | Human-readable table |
 | `catalog/schema/entry.schema.json` | Document and entry schema |
 | `scripts/catalog/build_catalog.py` | Generator (build-time only) |
@@ -16,12 +16,12 @@ The catalog turns the provenance registry into a validated, searchable artifact 
 ## Commands
 
 ```bash
-ote catalog list
-ote catalog list --type skill
-ote catalog search security
-ote catalog verify
-ote catalog verify --check-drift
-ote catalog build
+toolwright catalog list
+toolwright catalog list --type skill
+toolwright catalog search security
+toolwright catalog verify
+toolwright catalog verify --check-drift
+toolwright catalog build
 ```
 
 `list`, `search`, and `verify` read the committed JSON and need no third-party dependency. `build` and `--check-drift` run the generator, which requires PyYAML because the source is YAML.
@@ -35,8 +35,8 @@ python3 scripts/catalog/build_catalog.py --check
 Installed CLI environments need the dependency in the same interpreter:
 
 ```bash
-uv tool install --with pyyaml ./packages/ote_cli
-pipx inject ote-cli pyyaml
+uv tool install --with pyyaml ./packages/toolwright_cli
+pipx inject toolwright-cli pyyaml
 ```
 
 ## Schema
@@ -57,13 +57,13 @@ Each artifact requires:
 | `retrieved` | Retrieval date |
 | `modified` | Minimal-diff description |
 
-`ote catalog verify` checks required fields, the allowed type set, duplicate identifiers, declared counts, and that every local path exists. `--check-drift` additionally regenerates in memory and fails when the committed files differ.
+`toolwright catalog verify` checks required fields, the allowed type set, duplicate identifiers, declared counts, and that every local path exists. `--check-drift` additionally regenerates in memory and fails when the committed files differ.
 
 ## Adding an artifact
 
 1. Add or update the entry in `docs/provenance/registry.yml`.
 2. Run `python3 scripts/catalog/build_catalog.py`.
-3. Run `ote catalog verify --check-drift`.
+3. Run `toolwright catalog verify --check-drift`.
 4. Commit the registry change and both generated files together.
 
 A pull request that edits `catalog/registry.json` or `catalog/index.md` without the registry change fails the drift check.

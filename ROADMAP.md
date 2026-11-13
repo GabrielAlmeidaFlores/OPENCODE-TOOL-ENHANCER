@@ -6,7 +6,7 @@ Status reflects the repository, not intentions. All planned phases are complete.
 |---|---|---|
 | 0 | Baseline, version, docs status, decisions | Complete |
 | 1 | Green CI, offline test suite, harness fix | Complete |
-| 2 | `ote` CLI, lock file, install lifecycle | Complete |
+| 2 | `toolwright` CLI, lock file, install lifecycle | Complete |
 | 3 | Profiles, verified catalog, compatibility matrix | Complete |
 | 4 | Verification engine, governance, risk gates | Complete |
 | 5 | Markdown memory, spec workflow | Complete |

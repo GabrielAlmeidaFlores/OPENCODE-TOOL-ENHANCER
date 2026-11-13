@@ -17,14 +17,14 @@ Tool components may install packages globally. `standard` and `full` print the t
 ## Commands
 
 ```bash
-ote profile list
-ote profile show standard
-ote profile verify
-ote profile use minimal --target ../my-project --dry-run
-ote profile use minimal --target ../my-project --apply
+toolwright profile list
+toolwright profile show standard
+toolwright profile verify
+toolwright profile use minimal --target ../my-project --dry-run
+toolwright profile use minimal --target ../my-project --apply
 ```
 
-`profile use` delegates to `ote install` with the manifest's components; all install safeguards apply.
+`profile use` delegates to `toolwright install` with the manifest's components; all install safeguards apply.
 
 ## Manifest format
 
@@ -33,18 +33,18 @@ The loader supports a restricted YAML subset: top-level scalar keys and lists of
 ```yaml
 # Name: Example profile
 # Purpose: Demonstrates the manifest format.
-# Usage: ote install --profile example
-# Validation: ote profile verify
+# Usage: toolwright install --profile example
+# Validation: toolwright profile verify
 # References: docs/profiles/README.md
 
 name: example
-description: Short description shown by ote profile list.
+description: Short description shown by toolwright profile list.
 components:
   - opencode
   - agents
 ```
 
-Rules enforced by `ote profile verify`:
+Rules enforced by `toolwright profile verify`:
 
 - the file name must equal `name`;
 - `description` is required;
@@ -56,8 +56,8 @@ Rules enforced by `ote profile verify`:
 ## Adding a profile
 
 1. Create `profiles/<name>.yml` using the format above.
-2. Run `ote profile verify`.
-3. Run `ote profile use <name> --target /tmp/check --dry-run`.
+2. Run `toolwright profile verify`.
+3. Run `toolwright profile use <name> --target /tmp/check --dry-run`.
 4. Document the profile in this table.
 
 ## Design reference

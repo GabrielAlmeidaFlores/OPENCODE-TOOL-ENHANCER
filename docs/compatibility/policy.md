@@ -4,19 +4,24 @@
 
 ## Supported targets
 
-| Target | Supported | Notes |
+| Target | Level | Notes |
 |---|---|---|
-| OpenCode `2.2.x` | Yes | Primary runtime; CI pins `@opencode/cli@2.2.7` |
+| OpenCode `2.2.x` | Native | Reference runtime; CI pins `@opencode/cli@2.2.7` |
 | OpenCode `1.x` | No | Configuration shape differs; migration only |
-| Ralph Orchestrator `2.10.x` | Yes | Auto-commit limitation documented |
+| Ralph Orchestrator `2.10.x` | Native (OpenCode backend) | Auto-commit limitation documented |
+| GitHub Copilot | Portable instructions | Documented mapping; not runtime-tested in CI |
+| Claude Code | Portable agents and instructions | Documented mapping; not runtime-tested in CI |
+| OpenAI GPT / Codex | Portable instructions and custom agents | Documented mapping; not runtime-tested in CI |
 | Python | 3.11+ | CLI and validator |
 | macOS / Linux | Yes | Windows via WSL or Git Bash |
+
+Native means ToolWright ships the runtime configuration and verifies it. Portable means the same roles and rules are mapped onto the platform's documented file formats; no runtime claim is made.
 
 ## Compatibility matrix
 
 ```bash
-ote compat
-ote compat --json
+toolwright compat
+toolwright compat --json
 ```
 
 The matrix marks unverified cells as `not verified`. It records supported features, not performance.
@@ -36,11 +41,15 @@ The matrix marks unverified cells as `not verified`. It records supported featur
 | Static validation | `make validate` |
 | Test suite | `make test` |
 | OpenCode agent discovery | CI `opencode profile` job |
-| Compatibility matrix | `ote compat` |
-| Catalog drift | `ote catalog verify --check-drift` |
+| OpenCode compatibility matrix | `toolwright compat` |
+| Catalog drift | `toolwright catalog verify --check-drift` |
 
 ## References
 
 - `../agents/compatibility.md`
+- `README.md`
+- `github-copilot.md`
+- `claude.md`
+- `openai-gpt.md`
 - `../decisions/ADR-001-opencode-v2-baseline.md`
 - `../research/compatibility-matrix.md`

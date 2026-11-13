@@ -21,8 +21,8 @@ Pilot round 1 discovery results, funded reruns, plugin live verification, releas
 - Pilot round 1 discovery suite across Hono, CleanArchitecture, and turborepo: 6/15 structural tasks passed; failures and provider quota are recorded in `docs/pilots/results/round-1.md`.
 - Six generated pilot reports under `docs/pilots/results/` with file:line references.
 
-- Optional Markdown task board (`ote task`) with a WIP limit, approval gate, and one Git worktree per task.
-- Opt-in OpenCode memory plugin that injects the bounded preamble only when `.ote/memory/plugin.enabled` exists.
+- Optional Markdown task board (`toolwright task`) with a WIP limit, approval gate, and one Git worktree per task.
+- Opt-in OpenCode memory plugin that injects the bounded preamble only when `.toolwright/memory/plugin.enabled` exists.
 - `plugin` component, included only in the explicit `full` profile.
 - Task-board and plugin documentation, CI smoke checks, and tests.
 - Memory plugin live-session verification: injected with the sentinel, inactive without it; status moved to Stable.
@@ -36,45 +36,45 @@ Pilot round 1 discovery results, funded reruns, plugin live verification, releas
 - Actionlint workflow validation and a mocked end-to-end pilot-runner test.
 - A real Hono smoke run that exposed and fixed the runner's inherited-`PWD` bug; see `docs/pilots/results/hono-smoke.md`.
 
-- `ote stats` with Markdown, JSON, and CSV reports; per-agent/model/tool aggregation; tool-error counts; baseline comparison; and a post-run budget guard.
-- `ote eval` with deterministic case definitions in `tests/evals/cases.json`; no model calls.
-- `ote pilot list|run` with a disposable clone, pinned commit, profile installation, one prompt, verification, and local artifacts.
+- `toolwright stats` with Markdown, JSON, and CSV reports; per-agent/model/tool aggregation; tool-error counts; baseline comparison; and a post-run budget guard.
+- `toolwright eval` with deterministic case definitions in `tests/evals/cases.json`; no model calls.
+- `toolwright pilot list|run` with a disposable clone, pinned commit, profile installation, one prompt, verification, and local artifacts.
 - `configs/pilots/pilots.toml` for the three selected repositories.
 - CI smoke checks for stats, eval, pilot listing, and pilot dry-run.
 - Phase 6 tests for stats parsing/rendering/comparison, eval cases, and pilot planning/validation.
 
-- `ote memory add|search|prune|export|preamble` with three scopes, TTL, deduplication, credential rejection, catalog generation, and a bounded preamble.
-- `.ote/memory/` layout with tracked project/shared scopes and a gitignored user scope.
-- `ote spec new|list|plan|verify` with requirements, design, tasks, and evidence artifacts and criterion/task/evidence validation.
+- `toolwright memory add|search|prune|export|preamble` with three scopes, TTL, deduplication, credential rejection, catalog generation, and a bounded preamble.
+- `.toolwright/memory/` layout with tracked project/shared scopes and a gitignored user scope.
+- `toolwright spec new|list|plan|verify` with requirements, design, tasks, and evidence artifacts and criterion/task/evidence validation.
 - `specs/` workflow documentation and templates.
-- ADR-007 accepted with verification; `.ote/config.toml` gains memory settings.
+- ADR-007 accepted with verification; `.toolwright/config.toml` gains memory settings.
 - CI smoke checks for memory and spec commands.
 - Phase 5 tests for memory scopes, secrets, expiry, preamble, spec creation, planning, and evidence.
 
-- `ote verify` with `.ote/config.toml`, per-check timeouts, input-hash caching for passing checks, JSON output, and failure classification.
-- `ote govern contracts|gate|check` with contracts derived from agent permissions, budget and loop/deadlock evaluation, and risk-based gate selection.
-- `.ote/config.toml` with repository checks and governance limits; `.ote/cache/` is gitignored.
-- Ralph `code-assist` finalizer now requires `ote verify` when the config exists.
-- CI runs `ote verify --only validate --only lint` and `ote govern contracts`.
+- `toolwright verify` with `.toolwright/config.toml`, per-check timeouts, input-hash caching for passing checks, JSON output, and failure classification.
+- `toolwright govern contracts|gate|check` with contracts derived from agent permissions, budget and loop/deadlock evaluation, and risk-based gate selection.
+- `.toolwright/config.toml` with repository checks and governance limits; `.toolwright/cache/` is gitignored.
+- Ralph `code-assist` finalizer now requires `toolwright verify` when the config exists.
+- CI runs `toolwright verify --only validate --only lint` and `toolwright govern contracts`.
 - ADR-008 records the TOML decision and supersedes the YAML filename in the plan.
 - Phase 4 tests for configuration, execution, classification, caching, contracts, budgets, and gates.
 
-- Declarative profiles under `profiles/` with a restricted-YAML loader and `ote profile list|show|verify|use`.
-- Generated, schema-validated artifact catalog under `catalog/` with `ote catalog list|search|verify|build`.
-- OpenCode V1/V2 compatibility matrix exposed by `ote compat`, with an explicit not-a-benchmark disclaimer.
+- Declarative profiles under `profiles/` with a restricted-YAML loader and `toolwright profile list|show|verify|use`.
+- Generated, schema-validated artifact catalog under `catalog/` with `toolwright catalog list|search|verify|build`.
+- OpenCode V1/V2 compatibility matrix exposed by `toolwright compat`, with an explicit not-a-benchmark disclaimer.
 - Catalog drift checks in the `static` and `cli` CI jobs, a tracked-files guard, and a `make catalog-check` target.
 - Optional `catalog` extra (`pyyaml`) for CLI environments that build the catalog.
 - 34 catalog entries covering agents, skills, commands, and Ralph hats.
 - Phase 3 tests for profiles, catalog validation, catalog search, and the compatibility matrix.
 
-- `ote` command line in `packages/ote_cli`: `doctor`, `install`, `uninstall`, `update --check`, and `rollback`, with deferred commands registered for later phases.
-- `ote.lock.json` records the source commit, version, source digest, profile, components, and a SHA-256 digest per installed file.
-- `ote doctor` combines repository checks, dependency checks, the validator, lock drift, and MCP connectivity.
-- `ote install` plans by default, backs up before overwrite, delegates to the shell installer, and is idempotent.
-- `ote uninstall` only removes lock-listed files inside the target and preserves modified files unless `--force` is given.
-- `ote rollback` lists and restores CLI backups through the existing restore script.
-- `Makefile` targets `ote` and `build-cli`.
-- CI job `cli` builds the wheel, installs it, runs `ote doctor`, and exercises the install lifecycle.
+- `toolwright` command line in `packages/toolwright_cli`: `doctor`, `install`, `uninstall`, `update --check`, and `rollback`, with deferred commands registered for later phases.
+- `toolwright.lock.json` records the source commit, version, source digest, profile, components, and a SHA-256 digest per installed file.
+- `toolwright doctor` combines repository checks, dependency checks, the validator, lock drift, and MCP connectivity.
+- `toolwright install` plans by default, backs up before overwrite, delegates to the shell installer, and is idempotent.
+- `toolwright uninstall` only removes lock-listed files inside the target and preserves modified files unless `--force` is given.
+- `toolwright rollback` lists and restores CLI backups through the existing restore script.
+- `Makefile` targets `toolwright` and `build-cli`.
+- CI job `cli` builds the wheel, installs it, runs `toolwright doctor`, and exercises the install lifecycle.
 - `VERSION` file for release and update checks.
 - Phase 0 baseline record with frozen environment, versions, and validation output.
 - ADR-005 for the Python CLI stack, ADR-006 for a single catalog source of truth, and ADR-007 for Markdown memory without a vector store.
@@ -104,11 +104,11 @@ Pilot round 1 discovery results, funded reruns, plugin live verification, releas
 
 ### Fixed
 
-- `ote doctor` now reports a missing OpenCode binary as a failed check instead of aborting; external command capture returns code 127 or 124 for missing executables and timeouts.
-- A no-op `ote install --apply` refreshes the recorded source commit, so `ote update --check` no longer stays non-zero after a non-artifact commit.
+- `toolwright doctor` now reports a missing OpenCode binary as a failed check instead of aborting; external command capture returns code 127 or 124 for missing executables and timeouts.
+- A no-op `toolwright install --apply` refreshes the recorded source commit, so `toolwright update --check` no longer stays non-zero after a non-artifact commit.
 - Installation backups archive only the target's `.opencode` and `.ralph`; the global `~/.config/opencode` is no longer copied into the project.
 - External command failures such as a failed backup now produce a clean error instead of a Python traceback.
-- `ote install --apply` prints the installer output and names tool components that may install globally.
+- `toolwright install --apply` prints the installer output and names tool components that may install globally.
 - Skill installation skips `__pycache__`, `.pyc`, `.DS_Store`, and `node_modules`.
 - Shell syntax and ShellCheck now cover `skills/**/*.sh`.
 - Bare `make` prints help via `.DEFAULT_GOAL`; run `make validate` for the previous behavior.

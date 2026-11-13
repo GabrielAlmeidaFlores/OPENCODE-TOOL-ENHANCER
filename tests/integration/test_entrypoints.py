@@ -103,7 +103,7 @@ class BenchmarkHarnessTests(unittest.TestCase):
 class InstallationDryRunTests(unittest.TestCase):
 
     def test_default_mode_is_check_only(self) -> None:
-        with tempfile.TemporaryDirectory(prefix="ote-install-") as directory:
+        with tempfile.TemporaryDirectory(prefix="toolwright-install-") as directory:
             target = Path(directory) / "project"
             result = subprocess.run(
                 ["bash", "scripts/installation/install.sh", "--target", str(target)],
@@ -117,7 +117,7 @@ class InstallationDryRunTests(unittest.TestCase):
             self.assertFalse(target.exists(), "default mode must not create the target")
 
     def test_dry_run_lists_planned_actions(self) -> None:
-        with tempfile.TemporaryDirectory(prefix="ote-install-") as directory:
+        with tempfile.TemporaryDirectory(prefix="toolwright-install-") as directory:
             target = Path(directory) / "project"
             result = subprocess.run(
                 ["bash", "scripts/installation/install.sh", "--dry-run", "--only", "agents", "--target", str(target)],

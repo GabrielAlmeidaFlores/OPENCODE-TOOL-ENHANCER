@@ -126,7 +126,7 @@ the binary still get a green suite.
 - example builds (TypeScript and C#);
 - OpenCode profile installation and discovery;
 - benchmark dry-run for every task;
-- the `cli` job: wheel build, `ote doctor`, verification gates, contracts, and the install/update/uninstall lifecycle;
+- the `cli` job: wheel build, `toolwright doctor`, verification gates, contracts, and the install/update/uninstall lifecycle;
 - the `docs` job: strict MkDocs build;
 - the `release` and `upstream-drift` workflows for tags and scheduled pin checks.
 

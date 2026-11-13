@@ -54,36 +54,36 @@
 
 | Symptom | Cause | Fix |
 | --- | --- | --- |
-| `ote: command not found` | `~/.local/bin` is not on `PATH` | Export it, or run `PYTHONPATH=packages/ote_cli python3 -m ote_cli` |
-| `ote install` says `already up to date` but files look old | Source digest still matches | Use `--force`, or change the artifact and re-run |
-| `ote update --check` exits 1 | Managed files were edited or the source advanced | Inspect the reported paths; reinstall with `--force` after reviewing the edits |
-| `ote uninstall` keeps a file | The file changed after installation | Review the change, then use `--force` if removal is intended |
-| `ote doctor` fails on `opencode` | Missing or V1 installation | Install `@opencode/cli` 2.2.x |
-| `ote doctor` warns about `serena` or `codegraph` | Optional tools are not installed | Install them only if the profile needs them |
-| `ote` cannot find the repository | Running outside a checkout | Run from the checkout or set `OTE_REPO` |
-| `ote verify` exits 2 | Config is missing, malformed, or names an unknown check | Inspect `.ote/config.toml`; see `docs/verification/README.md` |
-| `ote verify` runs a stale result | A passing cached result exists for unchanged inputs | Run with `--no-cache`, or change the declared inputs |
-| `ote govern contracts` fails | An agent's mode or edit permission violates its role | Fix `agents/<role>/AGENT.md`; rerun the validator |
-| `ote govern check` blocks a run | A budget, loop, or deadlock limit was exceeded | Inspect the violation kind and increase the limit only with justification |
-| `ote stats` shows no runs | The results directory has no `meta.json` runs | Run the harness or point `--results` at the right directory |
-| `ote stats --budget` exits 1 | Recorded cost exceeds the ceiling | Review the runs; the guard is post-run only |
-| `ote eval` fails | A profile, catalog, contract, or validator invariant broke | Fix the reported case; see `docs/evals/README.md` |
+| `toolwright: command not found` | `~/.local/bin` is not on `PATH` | Export it, or run `PYTHONPATH=packages/toolwright_cli python3 -m toolwright_cli` |
+| `toolwright install` says `already up to date` but files look old | Source digest still matches | Use `--force`, or change the artifact and re-run |
+| `toolwright update --check` exits 1 | Managed files were edited or the source advanced | Inspect the reported paths; reinstall with `--force` after reviewing the edits |
+| `toolwright uninstall` keeps a file | The file changed after installation | Review the change, then use `--force` if removal is intended |
+| `toolwright doctor` fails on `opencode` | Missing or V1 installation | Install `@opencode/cli` 2.2.x |
+| `toolwright doctor` warns about `serena` or `codegraph` | Optional tools are not installed | Install them only if the profile needs them |
+| `toolwright` cannot find the repository | Running outside a checkout | Run from the checkout or set `TOOLWRIGHT_REPO` |
+| `toolwright verify` exits 2 | Config is missing, malformed, or names an unknown check | Inspect `.toolwright/config.toml`; see `docs/verification/README.md` |
+| `toolwright verify` runs a stale result | A passing cached result exists for unchanged inputs | Run with `--no-cache`, or change the declared inputs |
+| `toolwright govern contracts` fails | An agent's mode or edit permission violates its role | Fix `agents/<role>/AGENT.md`; rerun the validator |
+| `toolwright govern check` blocks a run | A budget, loop, or deadlock limit was exceeded | Inspect the violation kind and increase the limit only with justification |
+| `toolwright stats` shows no runs | The results directory has no `meta.json` runs | Run the harness or point `--results` at the right directory |
+| `toolwright stats --budget` exits 1 | Recorded cost exceeds the ceiling | Review the runs; the guard is post-run only |
+| `toolwright eval` fails | A profile, catalog, contract, or validator invariant broke | Fix the reported case; see `docs/evals/README.md` |
 | A pilot clone check out fails | The pinned commit is unavailable or the network is blocked | Verify the commit and access; rerun with `--dry-run` first |
 | A pilot verification fails | The task was not completed correctly | Keep the artifacts; record rework separately |
 
-| `ote task move` hits the WIP limit | Too many in-progress tasks | Finish or move one to review |
-| `ote task move done` is refused | Completion requires explicit approval | Re-run with `--approved` |
-| `ote task worktree` fails | The project is not a Git repository or the branch exists | Initialize Git or remove the stale branch/worktree |
-| The memory plugin does nothing | `.ote/memory/plugin.enabled` is missing or `ote` is not on PATH | Create the sentinel and verify `ote` in the server environment |
+| `toolwright task move` hits the WIP limit | Too many in-progress tasks | Finish or move one to review |
+| `toolwright task move done` is refused | Completion requires explicit approval | Re-run with `--approved` |
+| `toolwright task worktree` fails | The project is not a Git repository or the branch exists | Initialize Git or remove the stale branch/worktree |
+| The memory plugin does nothing | `.toolwright/memory/plugin.enabled` is missing or `toolwright` is not on PATH | Create the sentinel and verify `toolwright` in the server environment |
 
-| `ote memory add` refuses text | The text matches a credential pattern | Remove the secret; store a reference instead |
-| `ote memory add` reports a duplicate | The same title exists in that scope | Use a distinct title or `--force` |
+| `toolwright memory add` refuses text | The text matches a credential pattern | Remove the secret; store a reference instead |
+| `toolwright memory add` reports a duplicate | The same title exists in that scope | Use a distinct title or `--force` |
 | A memory entry never appears | It expired or exceeded the preamble budget | Check `expires`; raise `memory.token_budget` |
-| `ote spec plan` fails | A criterion lacks a task or a task names an unknown criterion | Fix `tasks.md` or `requirements.md` |
-| `ote spec verify` fails | A criterion lacks evidence | Add `- AC-n: command/result` to `evidence.md` |
-| `ote profile verify` fails | A manifest has a bad name, component, or syntax | Fix `profiles/<name>.yml`; see `docs/profiles/README.md` |
-| `ote catalog verify` fails | A catalog entry is missing a field or local path | Fix `docs/provenance/registry.yml`, then rebuild the catalog |
-| `ote catalog verify --check-drift` fails | Catalog files were edited by hand | Run `python3 scripts/catalog/build_catalog.py` |
+| `toolwright spec plan` fails | A criterion lacks a task or a task names an unknown criterion | Fix `tasks.md` or `requirements.md` |
+| `toolwright spec verify` fails | A criterion lacks evidence | Add `- AC-n: command/result` to `evidence.md` |
+| `toolwright profile verify` fails | A manifest has a bad name, component, or syntax | Fix `profiles/<name>.yml`; see `docs/profiles/README.md` |
+| `toolwright catalog verify` fails | A catalog entry is missing a field or local path | Fix `docs/provenance/registry.yml`, then rebuild the catalog |
+| `toolwright catalog verify --check-drift` fails | Catalog files were edited by hand | Run `python3 scripts/catalog/build_catalog.py` |
 | `catalog build` fails on import | PyYAML is missing | `python3 -m pip install pyyaml` |
 | `validate.sh` fails on a new file | Required file list changed | Add the file and cover it with a test; see `docs/architecture/testing.md` |
 | `make test` fails only in CI | Python version, missing PyYAML, CRLF checkout, or uncommitted files | See `docs/troubleshooting/ci.md` |
@@ -98,7 +98,7 @@ OpenCode ships Windows binaries, but the scripts in this repository target POSIX
 
 ## Getting help
 
-- This repository: https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/issues
+- This repository: https://github.com/GabrielAlmeidaFlores/toolwright/issues
 - OpenCode issues: https://github.com/anomalyco/opencode/issues
 - Ralph issues: https://github.com/mikeyobrien/ralph-orchestrator/issues
 - Serena issues: https://github.com/oraios/serena/issues

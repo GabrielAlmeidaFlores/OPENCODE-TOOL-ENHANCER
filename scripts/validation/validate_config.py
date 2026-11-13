@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Static validation for the OPENCODE-TOOL-ENHANCER repository.
+Static validation for the ToolWright repository.
 
 The validator checks required files, JSONC and YAML syntax, agent and skill
 frontmatter, provenance metadata, git permission ordering, documentation
@@ -44,9 +44,9 @@ REQUIRED = [
     "docs/profiles/README.md",
     "docs/verification/README.md",
     "docs/governance/README.md",
-    ".ote/config.toml",
-    ".ote/memory/README.md",
-    ".ote/memory/catalog.md",
+    ".toolwright/config.toml",
+    ".toolwright/memory/README.md",
+    ".toolwright/memory/catalog.md",
     "specs/README.md",
     "docs/memory/README.md",
     "docs/specs/README.md",
@@ -58,7 +58,7 @@ REQUIRED = [
     "profiles/minimal.yml",
     "profiles/standard.yml",
     "profiles/full.yml",
-    "packages/ote_cli/pyproject.toml",
+    "packages/toolwright_cli/pyproject.toml",
     "benchmarks/methodology/README.md",
 ]
 
@@ -696,7 +696,7 @@ def check_links() -> None:
             urls.add(url.rstrip(".,;:`\"'"))
     for url in sorted(urls):
         checked += 1
-        request = urllib.request.Request(url, method="HEAD", headers={"User-Agent": "ote-validator"})
+        request = urllib.request.Request(url, method="HEAD", headers={"User-Agent": "toolwright-validator"})
         try:
             with urllib.request.urlopen(request, timeout=10) as response:
                 if response.status >= 400:

@@ -22,9 +22,9 @@ class VersionCheckTests(unittest.TestCase):
         self.addCleanup(directory.cleanup)
         root = Path(directory.name)
         (root / "VERSION").write_text(version + "\n", encoding="utf-8")
-        package = root / "packages/ote_cli/pyproject.toml"
+        package = root / "packages/toolwright_cli/pyproject.toml"
         package.parent.mkdir(parents=True)
-        package.write_text(f'[project]\nname = "ote-cli"\nversion = "{package_version}"\n', encoding="utf-8")
+        package.write_text(f'[project]\nname = "toolwright-cli"\nversion = "{package_version}"\n', encoding="utf-8")
         return root
 
     def _run(self, root: Path, *args: str) -> subprocess.CompletedProcess[str]:

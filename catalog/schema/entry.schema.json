@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/catalog/schema/entry.schema.json",
+  "$id": "https://github.com/GabrielAlmeidaFlores/toolwright/catalog/schema/entry.schema.json",
   "title": "Verified artifact catalog",
   "description": "Generated catalog of agents, skills, commands, and Ralph hats with provenance metadata.",
   "type": "object",

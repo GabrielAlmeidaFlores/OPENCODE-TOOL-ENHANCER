@@ -1,4 +1,4 @@
-.PHONY: help validate validate-links test lint check ci ote build-cli catalog-check verify govern stats eval docs version-check drift-check release-check install dry-run backup
+.PHONY: help validate validate-links test lint check ci toolwright build-cli catalog-check verify govern stats eval docs version-check drift-check release-check install dry-run backup
 
 .DEFAULT_GOAL := help
 
@@ -9,8 +9,8 @@ help:
 	@echo "lint           Check shell syntax and run ShellCheck when installed"
 	@echo "check          Show installer status without writing files"
 	@echo "ci             Run validate and test, matching the default CI gate"
-	@echo "ote            Run the CLI from the checkout; pass ARGS=\"...\""
-	@echo "build-cli      Build the ote-cli wheel into dist/"
+	@echo "toolwright            Run the CLI from the checkout; pass ARGS=\"...\""
+	@echo "build-cli      Build the toolwright-cli wheel into dist/"
 	@echo "catalog-check  Verify generated catalog matches the provenance registry"
 	@echo "verify         Run the configured deterministic verification checks"
 	@echo "govern         Show derived agent contracts"
@@ -48,26 +48,26 @@ check:
 
 ci: validate test
 
-ote:
-	PYTHONPATH=packages/ote_cli python3 -m ote_cli $(ARGS)
+toolwright:
+	PYTHONPATH=packages/toolwright_cli python3 -m toolwright_cli $(ARGS)
 
 build-cli:
-	python3 -m pip wheel ./packages/ote_cli --no-deps --wheel-dir dist
+	python3 -m pip wheel ./packages/toolwright_cli --no-deps --wheel-dir dist
 
 catalog-check:
 	python3 scripts/catalog/build_catalog.py --check
 
 verify:
-	PYTHONPATH=packages/ote_cli python3 -m ote_cli verify
+	PYTHONPATH=packages/toolwright_cli python3 -m toolwright_cli verify
 
 govern:
-	PYTHONPATH=packages/ote_cli python3 -m ote_cli govern contracts
+	PYTHONPATH=packages/toolwright_cli python3 -m toolwright_cli govern contracts
 
 stats:
-	PYTHONPATH=packages/ote_cli python3 -m ote_cli stats
+	PYTHONPATH=packages/toolwright_cli python3 -m toolwright_cli stats
 
 eval:
-	PYTHONPATH=packages/ote_cli python3 -m ote_cli eval
+	PYTHONPATH=packages/toolwright_cli python3 -m toolwright_cli eval
 
 docs:
 	mkdocs build --strict

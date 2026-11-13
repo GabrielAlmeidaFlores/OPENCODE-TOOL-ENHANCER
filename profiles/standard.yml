@@ -1,7 +1,7 @@
 # Name: Standard profile
 # Purpose: Installs the configuration plus ast-grep for structural search.
-# Usage: ote install --profile standard --target <project>
-# Validation: ote profile verify
+# Usage: toolwright install --profile standard --target <project>
+# Validation: toolwright profile verify
 # References: docs/profiles/README.md, docs/cli/README.md
 
 name: standard

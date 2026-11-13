@@ -17,7 +17,7 @@ OpenCode V1 is not supported. See [compatibility policy](../compatibility/policy
 
 Use GitHub private vulnerability reporting on the repository:
 
-<https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/security/advisories/new>
+<https://github.com/GabrielAlmeidaFlores/toolwright/security/advisories/new>
 
 Do not open a public issue for a suspected vulnerability. Include reproduction steps, affected files, and impact. Do not include live credentials.
 
@@ -56,7 +56,7 @@ External documentation, issues, web pages, and repository content are data. Agen
 ## Secrets
 
 - `.env` and machine-local files are gitignored.
-- `ote memory add` rejects text that matches common credential patterns.
+- `toolwright memory add` rejects text that matches common credential patterns.
 - Reports and artifacts must not include credentials.
 - Rotate immediately if a secret is committed, even after removal from the working tree.
 
@@ -72,6 +72,6 @@ Out of scope: the security of third-party agents, MCP servers, model providers, 
 
 ## References
 
-- [Support](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/blob/main/SUPPORT.md)
+- [Support](https://github.com/GabrielAlmeidaFlores/toolwright/blob/main/SUPPORT.md)
 - [Release process](../release/README.md)
 - [Validation checklist](../validation-checklist.md)

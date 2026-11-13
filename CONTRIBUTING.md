@@ -12,7 +12,7 @@
 
 ## Repository
 
-https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER
+https://github.com/GabrielAlmeidaFlores/toolwright
 
 ## Local checks
 

@@ -24,12 +24,12 @@ specs/<feature>/
 ## Commands
 
 ```bash
-ote spec new "Add user authentication" \
+toolwright spec new "Add user authentication" \
   --criterion "A rejected password returns 401" \
   --criterion "A valid login returns a session"
-ote spec list
-ote spec plan user-authentication
-ote spec verify user-authentication
+toolwright spec list
+toolwright spec plan user-authentication
+toolwright spec verify user-authentication
 ```
 
 `new` writes the four files. Without `--criterion`, the template contains a placeholder criterion.
@@ -55,19 +55,19 @@ Checked boxes (`- [x]`) are accepted. Angle-bracket placeholders are ignored, so
 
 ## Lifecycle
 
-1. `ote spec new` — create the artifacts.
+1. `toolwright spec new` — create the artifacts.
 2. Fill requirements and design before implementation.
 3. Break the design into tasks mapped to criteria.
 4. Implement and run the verification commands.
 5. Record the command and result in `evidence.md`.
-6. `ote spec verify` must pass before the change is considered complete.
+6. `toolwright spec verify` must pass before the change is considered complete.
 
 The coordinator delegates each step to the owning agent; the CLI supplies the deterministic checks.
 
 ## Limits
 
 - The CLI verifies structure and mapping, not whether evidence is truthful or sufficient.
-- Evidence commands are not executed by `spec verify`; `ote verify` runs the repository checks.
+- Evidence commands are not executed by `spec verify`; `toolwright verify` runs the repository checks.
 - One feature directory per change; rename the slug only before implementation starts.
 
 ## Design reference

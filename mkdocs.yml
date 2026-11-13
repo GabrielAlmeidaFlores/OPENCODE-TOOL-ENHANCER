@@ -4,11 +4,11 @@
 # Validation: mkdocs build --strict
 # References: docs/index.md, docs/validation-checklist.md
 
-site_name: OPENCODE-TOOL-ENHANCER
-site_description: Reproducible, evidence-driven OpenCode profile with orchestration, code intelligence, memory, and observability.
-site_author: OPENCODE-TOOL-ENHANCER contributors
-repo_url: https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER
-repo_name: GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER
+site_name: ToolWright
+site_description: Provider-neutral multi-agent development toolkit for OpenCode, GitHub Copilot, Claude, and GPT.
+site_author: ToolWright contributors
+repo_url: https://github.com/GabrielAlmeidaFlores/toolwright
+repo_name: GabrielAlmeidaFlores/toolwright
 
 theme:
   name: material
@@ -48,7 +48,7 @@ nav:
       - OpenCode: installation/opencode.md
       - Code intelligence: installation/code-intelligence.md
       - Ralph: installation/ralph.md
-      - ote CLI: installation/ote-cli.md
+      - toolwright CLI: installation/toolwright-cli.md
   - CLI:
       - Command reference: cli/README.md
       - Profiles: profiles/README.md
@@ -69,6 +69,13 @@ nav:
       - Hono smoke: pilots/results/hono-smoke.md
   - Configuration:
       - OpenCode V2: configuration/opencode-v2.md
+  - Compatibility:
+      - Overview: compatibility/README.md
+      - OpenCode: compatibility/opencode.md
+      - GitHub Copilot: compatibility/github-copilot.md
+      - Claude Code: compatibility/claude.md
+      - OpenAI GPT and Codex: compatibility/openai-gpt.md
+      - Policy: compatibility/policy.md
   - Code intelligence:
       - Overview: code-intelligence/README.md
       - ripgrep: code-intelligence/ripgrep.md
@@ -103,7 +110,6 @@ nav:
       - Architecture: architecture/overview.md
       - Testing: architecture/testing.md
       - Security: security/README.md
-      - Compatibility policy: compatibility/policy.md
       - Provenance: provenance/README.md
       - Release: release/README.md
       - Release checklist: RELEASE_CHECKLIST.md

@@ -403,56 +403,56 @@ original_artifacts:
   - id: project-logo
     local: "assets/logo.svg, assets/logo-dark.svg, assets/logo-mark.svg"
     kind: "original-artwork"
-    author: "OPENCODE-TOOL-ENHANCER contributors"
+    author: "ToolWright contributors"
     justification: "Original project logo created at the repository owner's request. Not adapted from an upstream artifact."
   - id: ralph-isolated-runner
     local: "scripts/maintenance/run-ralph-isolated.sh"
     kind: "glue"
-    author: "OPENCODE-TOOL-ENHANCER contributors"
+    author: "ToolWright contributors"
     justification: "Isolated runner required because Ralph 2.10.1 auto-commits during landing; keeps the main checkout untouched and exports an unstaged patch."
   - id: cost-report
     local: "scripts/benchmarking/report_costs.py"
     kind: "glue"
-    author: "OPENCODE-TOOL-ENHANCER contributors"
+    author: "ToolWright contributors"
     justification: "Aggregates harness session artifacts into a Markdown cost report; no upstream equivalent."
   - id: repository-tests
     local: "tests/**, VERSION, Makefile"
     kind: "fixture"
-    author: "OPENCODE-TOOL-ENHANCER contributors"
+    author: "ToolWright contributors"
     justification: "Project-specific test suite, deliberately broken fixtures, and build entry points for the repository's own tooling. Fixtures are test inputs only and must never be installed, cataloged, or presented as reusable agents, skills, or commands."
-  - id: ote-cli
-    local: "packages/ote_cli/**"
+  - id: toolwright-cli
+    local: "packages/toolwright_cli/**"
     kind: "glue"
-    author: "OPENCODE-TOOL-ENHANCER contributors"
+    author: "ToolWright contributors"
     justification: "Repository-specific Python wrapper over the existing installer, validator, backup, and restore scripts. The command surface and installer UX were informed by weisser-dev/awesome-opencode (MIT) and DVNghiem/FlowDeck (MIT); the lock file concept follows juanmanueldaza/nerv (Apache-2.0). No upstream code was copied; the implementation is original and dependency-free."
   - id: catalog-and-profiles
     local: "catalog/**, profiles/**, scripts/catalog/**"
     kind: "glue"
-    author: "OPENCODE-TOOL-ENHANCER contributors"
+    author: "ToolWright contributors"
     justification: "Schema-first catalog generator and restricted-YAML profile loader. The catalog schema shape follows awesome-opencode (CC0-1.0) and the registry structure in OpenAgentsControl (MIT); the profile concept follows weisser-dev/awesome-opencode (MIT). No upstream code was copied; the implementation is original Python."
   - id: verification-and-governance
-    local: "packages/ote_cli/ote_cli/verify.py, packages/ote_cli/ote_cli/governance.py, .ote/config.toml"
+    local: "packages/toolwright_cli/toolwright_cli/verify.py, packages/toolwright_cli/toolwright_cli/governance.py, .toolwright/config.toml"
     kind: "glue"
-    author: "OPENCODE-TOOL-ENHANCER contributors"
+    author: "ToolWright contributors"
     justification: "Deterministic verification runner and governance evaluator. The cache idea follows nerv (Apache-2.0) and the governance concepts follow FlowDeck (MIT); no upstream code was copied and the implementation is original Python."
   - id: memory-and-specs
-    local: "packages/ote_cli/ote_cli/memory.py, packages/ote_cli/ote_cli/specs.py, .ote/memory/**, specs/**"
+    local: "packages/toolwright_cli/toolwright_cli/memory.py, packages/toolwright_cli/toolwright_cli/specs.py, .toolwright/memory/**, specs/**"
     kind: "glue"
-    author: "OPENCODE-TOOL-ENHANCER contributors"
+    author: "ToolWright contributors"
     justification: "Markdown memory store and spec-workflow validator. The partition model follows operator-memory (BSD-3-Clause) and the SDD phase model follows nerv (Apache-2.0). No upstream code was copied; the implementation and templates are original."
   - id: observability-evals-pilots
-    local: "packages/ote_cli/ote_cli/stats.py, packages/ote_cli/ote_cli/eval.py, packages/ote_cli/ote_cli/pilot.py, configs/pilots/pilots.toml"
+    local: "packages/toolwright_cli/toolwright_cli/stats.py, packages/toolwright_cli/toolwright_cli/eval.py, packages/toolwright_cli/toolwright_cli/pilot.py, configs/pilots/pilots.toml"
     kind: "glue"
-    author: "OPENCODE-TOOL-ENHANCER contributors"
+    author: "ToolWright contributors"
     justification: "Local reporting, deterministic evaluation, and isolated pilot runner. Reporting categories follow agenttrace (MIT); worktree isolation follows vibe-kanban (Apache-2.0). No upstream code was copied; the implementation is original Python."
   - id: task-board-and-plugin
-    local: "packages/ote_cli/ote_cli/board.py, configs/opencode/plugins/ote-memory.js, .ote/board/**"
+    local: "packages/toolwright_cli/toolwright_cli/board.py, configs/opencode/plugins/toolwright-memory.js, .toolwright/board/**"
     kind: "glue"
-    author: "OPENCODE-TOOL-ENHANCER contributors"
+    author: "ToolWright contributors"
     justification: "Optional Markdown board with Git worktrees and an opt-in memory-injection plugin. The worktree discipline follows vibe-kanban (Apache-2.0); the plugin context hook follows operator-memory (BSD-3-Clause). No upstream code was copied; the implementation is original."
   - id: project-documentation
     local: "docs/**"
     kind: "original-documentation"
-    author: "OPENCODE-TOOL-ENHANCER contributors"
+    author: "ToolWright contributors"
     justification: "Project analysis, decision records, and operating guides written for this repository. Documentation is not an agent, skill, command, hat, prompt, or template, and no upstream document is reproduced as an artifact."
 

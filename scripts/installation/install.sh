@@ -166,7 +166,7 @@ if [[ "$CLEAN" == "1" ]]; then
   if selected plugin; then
   echo "== opencode plugin =="
   run mkdir -p "$TARGET/.opencode/plugins"
-  copy_file "$ROOT/configs/opencode/plugins/ote-memory.js" "$TARGET/.opencode/plugins/ote-memory.js"
+  copy_file "$ROOT/configs/opencode/plugins/toolwright-memory.js" "$TARGET/.opencode/plugins/toolwright-memory.js"
 fi
 
 if selected ralph; then
@@ -209,7 +209,7 @@ fi
 if selected plugin; then
   echo "== opencode plugin =="
   run mkdir -p "$TARGET/.opencode/plugins"
-  copy_file "$ROOT/configs/opencode/plugins/ote-memory.js" "$TARGET/.opencode/plugins/ote-memory.js"
+  copy_file "$ROOT/configs/opencode/plugins/toolwright-memory.js" "$TARGET/.opencode/plugins/toolwright-memory.js"
 fi
 
 if selected ralph; then

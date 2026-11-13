@@ -24,7 +24,7 @@ def main() -> int:
     args = parser.parse_args()
     root = args.root.resolve()
     version_file = root / "VERSION"
-    project_file = root / "packages/ote_cli/pyproject.toml"
+    project_file = root / "packages/toolwright_cli/pyproject.toml"
     if not version_file.is_file() or not project_file.is_file():
         print("VERSION or pyproject.toml is missing", file=sys.stderr)
         return 2

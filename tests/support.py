@@ -21,7 +21,7 @@ from typing import Iterator
 REPO_ROOT = Path(__file__).resolve().parents[1]
 VALIDATOR_PATH = REPO_ROOT / "scripts" / "validation" / "validate_config.py"
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
-CLI_PACKAGE = REPO_ROOT / "packages" / "ote_cli"
+CLI_PACKAGE = REPO_ROOT / "packages" / "toolwright_cli"
 
 if str(CLI_PACKAGE) not in sys.path:
     sys.path.insert(0, str(CLI_PACKAGE))
@@ -70,7 +70,7 @@ def load_validator() -> ModuleType:
 @contextlib.contextmanager
 def isolated_root(validator: ModuleType) -> Iterator[Path]:
     original_root = validator.ROOT
-    with tempfile.TemporaryDirectory(prefix="ote-test-") as directory:
+    with tempfile.TemporaryDirectory(prefix="toolwright-test-") as directory:
         root = Path(directory)
         validator.ROOT = root
         reset_state(validator)

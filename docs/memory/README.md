@@ -2,12 +2,12 @@
 
 > **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally and in CI run 43277080347
 
-Memory is plain Markdown under `.ote/memory/`. There are no embeddings, no vector database, and no background service.
+Memory is plain Markdown under `.toolwright/memory/`. There are no embeddings, no vector database, and no background service.
 
 ## Layout
 
 ```text
-.ote/memory/
+.toolwright/memory/
 ├── catalog.md      generated index
 ├── project/        repository decisions and constraints (tracked)
 ├── shared/         published knowledge (tracked)
@@ -38,15 +38,15 @@ Allowed types: `decision`, `constraint`, `convention`, `failure`, `question`.
 ## Commands
 
 ```bash
-ote memory add "Use expand-and-contract migrations" --type constraint --source docs/decisions/ADR-001.md
-ote memory add "Flaky auth test" --type failure --ttl-days 7
-ote memory search migrations
-ote memory search --type constraint access
-ote memory prune
-ote memory prune --apply --yes
-ote memory export
-ote memory export --format json
-ote memory preamble --budget 1500
+toolwright memory add "Use expand-and-contract migrations" --type constraint --source docs/decisions/ADR-001.md
+toolwright memory add "Flaky auth test" --type failure --ttl-days 7
+toolwright memory search migrations
+toolwright memory search --type constraint access
+toolwright memory prune
+toolwright memory prune --apply --yes
+toolwright memory export
+toolwright memory export --format json
+toolwright memory preamble --budget 1500
 ```
 
 | Command | Behavior |
@@ -76,10 +76,10 @@ ttl_days = 30
 
 ## Using memory with OpenCode
 
-Reference `.ote/memory/catalog.md` from the project `AGENTS.md`, or load the preamble on demand:
+Reference `.toolwright/memory/catalog.md` from the project `AGENTS.md`, or load the preamble on demand:
 
 ```bash
-ote memory preamble
+toolwright memory preamble
 ```
 
 Session-start injection through an OpenCode plugin is deferred to a later phase. The CLI is the stable interface.
@@ -92,4 +92,4 @@ The three-partition Markdown-first model follows `aerovato/operator-memory` (BSD
 
 - `docs/specs/README.md`
 - `docs/decisions/ADR-007-memory-without-rag.md`
-- `.ote/memory/README.md`
+- `.toolwright/memory/README.md`

@@ -135,7 +135,7 @@ HOME="$(mktemp -d)" OPENCODE_CONFIG="/abs/path/.opencode/opencode.jsonc" \
 
 ## Confirmed green
 
-Run [`43277080347`](https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER/actions/runs/43277080347)
+Run [`43277080347`](https://github.com/GabrielAlmeidaFlores/toolwright/actions/runs/43277080347)
 completed on 2026-11-12 with every job successful:
 
 | Job | Result |
@@ -171,7 +171,7 @@ discovery with a pinned version, and benchmark dry-runs. Action majors are `chec
 | `examples` | TypeScript and C# builds | Node, .NET |
 | `opencode-profile` | Install profile and verify discovery | Node, OpenCode V2 |
 | `harness` | Benchmark dry-run for every task | Python |
-| `cli` | Builds the wheel, runs `ote doctor`, exercises install, update, and uninstall | Python, Node, OpenCode V2 |
+| `cli` | Builds the wheel, runs `toolwright doctor`, exercises install, update, and uninstall | Python, Node, OpenCode V2 |
 | `docs` | Builds the MkDocs site in strict mode | Python, MkDocs Material |
 
 ## References

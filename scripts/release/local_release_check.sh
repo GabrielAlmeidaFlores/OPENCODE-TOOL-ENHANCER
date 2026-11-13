@@ -14,7 +14,7 @@ TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
 python3 "$ROOT/scripts/release/check_version.py"
-python3 -m pip wheel "$ROOT/packages/ote_cli" --no-deps --wheel-dir "$TMP" --quiet
+python3 -m pip wheel "$ROOT/packages/toolwright_cli" --no-deps --wheel-dir "$TMP" --quiet
 
 cd "$TMP"
 if command -v sha256sum >/dev/null 2>&1; then

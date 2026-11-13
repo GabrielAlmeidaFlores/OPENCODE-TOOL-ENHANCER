@@ -6,7 +6,7 @@ Read-only discovery tasks across the three selected repositories. These are **no
 
 ## Method
 
-- Runner: `ote pilot run` with the `minimal` profile in a disposable clone.
+- Runner: `toolwright pilot run` with the `minimal` profile in a disposable clone.
 - First attempt used `opencode/deepseek-v4.1-flash-free`; nine tasks failed on step limits or free-quota exhaustion.
 - Failed tasks were rerun with the funded `deepseek/deepseek-flash` and the `backend-developer` agent directly.
 - Coordinator and backend-developer step limits were raised (40 and 60) after the first attempt.

@@ -48,8 +48,8 @@ repomix-output.*
 .env.*
 !.env.example
 
-.ote/state.json
-.ote/backups/
-.ote/cache/
-.ote/memory/user/
-.ote/worktrees/
+.toolwright/state.json
+.toolwright/backups/
+.toolwright/cache/
+.toolwright/memory/user/
+.toolwright/worktrees/

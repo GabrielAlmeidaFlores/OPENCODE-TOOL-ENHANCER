@@ -1,4 +1,4 @@
-Repository: https://github.com/GabrielAlmeidaFlores/OPENCODE-TOOL-ENHANCER
+Repository: https://github.com/GabrielAlmeidaFlores/toolwright
 
 # Install OpenCode V2 and this configuration
 

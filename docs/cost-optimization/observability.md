@@ -7,11 +7,11 @@ The harness stores raw artifacts under `benchmarks/results/<run-id>/`. The cost 
 ## Generate a report
 
 ```bash
-ote stats
-ote stats --results /path/to/results
-ote stats --format json
-ote stats --format csv
-ote stats --budget 5.00
+toolwright stats
+toolwright stats --results /path/to/results
+toolwright stats --format json
+toolwright stats --format csv
+toolwright stats --budget 5.00
 ```
 
 The legacy wrapper still works:
@@ -60,6 +60,6 @@ The report intentionally excludes correctness scoring and rework, so it must not
 
 ## Budget control
 
-`ote stats --budget` reports an exceeded ceiling with exit code 1 after the artifacts exist. The
+`toolwright stats --budget` reports an exceeded ceiling with exit code 1 after the artifacts exist. The
 harness does not enforce a live budget. For paid runs, set a provider-side budget or stop after a
 fixed number of runs. Do not add a paid budget service for this repository.

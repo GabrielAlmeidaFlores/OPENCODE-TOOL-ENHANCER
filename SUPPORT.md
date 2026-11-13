@@ -3,7 +3,7 @@
 ## Before asking
 
 1. Read `docs/troubleshooting/README.md` and `docs/troubleshooting/ci.md`.
-2. Run `ote doctor` and include its output.
+2. Run `toolwright doctor` and include its output.
 3. Run `make ci` or `make validate` and include the failing check.
 4. Check `docs/RELEASE_CHECKLIST.md` and `docs/validation-checklist.md`.
 
@@ -20,7 +20,7 @@
 
 ## What to include
 
-- Commit or version (`git rev-parse HEAD`, `ote --version`, `opencode --version`)
+- Commit or version (`git rev-parse HEAD`, `toolwright --version`, `opencode --version`)
 - Operating system and shell
 - Exact command and full error output
 - Which profile was installed

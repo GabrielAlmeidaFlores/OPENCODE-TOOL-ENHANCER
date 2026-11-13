@@ -28,7 +28,7 @@ def _opencode() -> str | None:
 class AgentDiscoveryTests(unittest.TestCase):
 
     def test_all_agents_are_discovered(self) -> None:
-        with tempfile.TemporaryDirectory(prefix="ote-discovery-") as directory:
+        with tempfile.TemporaryDirectory(prefix="toolwright-discovery-") as directory:
             target = Path(directory)
             install = subprocess.run(
                 [
@@ -66,7 +66,7 @@ class AgentDiscoveryTests(unittest.TestCase):
             self.assertEqual(sorted(identifiers & set(support.AGENT_ROLES)), sorted(support.AGENT_ROLES))
 
     def test_coordinator_is_primary(self) -> None:
-        with tempfile.TemporaryDirectory(prefix="ote-discovery-") as directory:
+        with tempfile.TemporaryDirectory(prefix="toolwright-discovery-") as directory:
             target = Path(directory)
             subprocess.run(
                 [

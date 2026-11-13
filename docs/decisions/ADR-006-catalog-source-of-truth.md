@@ -38,7 +38,7 @@ Validation runs in this order:
 - One editable file keeps review small.
 - Generated files can be replaced without review conflicts.
 - The schema check catches structural mistakes; the drift check catches manual edits.
-- The same model lets future `ote catalog verify` report a single, unambiguous status.
+- The same model lets future `toolwright catalog verify` report a single, unambiguous status.
 
 ## Consequences
 
@@ -66,8 +66,8 @@ Validation runs in this order:
 ## Verification
 
 - `scripts/catalog/build_catalog.py` generates `catalog/registry.json` and `catalog/index.md` from the registry.
-- `ote catalog verify` checks required fields, allowed types, duplicate identifiers, declared counts, and local paths.
-- `ote catalog verify --check-drift` fails when the committed files differ from the registry.
+- `toolwright catalog verify` checks required fields, allowed types, duplicate identifiers, declared counts, and local paths.
+- `toolwright catalog verify --check-drift` fails when the committed files differ from the registry.
 - The `cli` CI job runs the drift check, so a hand-edited generated file fails.
 - Deleting a provenance entry makes the drift check fail.
 

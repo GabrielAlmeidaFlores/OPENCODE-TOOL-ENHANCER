@@ -6,19 +6,19 @@ This OpenCode V2 plugin injects the bounded memory preamble at the start of each
 
 ## What it does
 
-1. Checks for `.ote/memory/plugin.enabled`.
-2. Runs `ote memory preamble --budget 1200` in the project directory.
+1. Checks for `.toolwright/memory/plugin.enabled`.
+2. Runs `toolwright memory preamble --budget 1200` in the project directory.
 3. Pushes the result into the session `context` hook as a system text block.
 4. Caches the preamble per session.
 
-If `ote` is missing, the sentinel is absent, or the command fails, the plugin does nothing.
+If `toolwright` is missing, the sentinel is absent, or the command fails, the plugin does nothing.
 
 ## Install
 
 Install the plugin file explicitly:
 
 ```bash
-ote install --only plugin --target /path/to/project --apply
+toolwright install --only plugin --target /path/to/project --apply
 ```
 
 Or install the `full` profile, which includes the plugin but leaves it inactive.
@@ -26,10 +26,10 @@ Or install the `full` profile, which includes the plugin but leaves it inactive.
 Enable it in the project:
 
 ```bash
-touch /path/to/project/.ote/memory/plugin.enabled
+touch /path/to/project/.toolwright/memory/plugin.enabled
 ```
 
-The plugin is discovered from `.opencode/plugins/ote-memory.js`. Restart the OpenCode service after adding it:
+The plugin is discovered from `.opencode/plugins/toolwright-memory.js`. Restart the OpenCode service after adding it:
 
 ```bash
 opencode service restart
@@ -41,21 +41,21 @@ opencode service restart
 opencode plugin list
 ```
 
-Look for `ote.memory`. A session then receives the preamble; `/context` or the model request shows the injected block.
+Look for `toolwright.memory`. A session then receives the preamble; `/context` or the model request shows the injected block.
 
 ## Disable
 
 ```bash
-rm /path/to/project/.ote/memory/plugin.enabled
+rm /path/to/project/.toolwright/memory/plugin.enabled
 ```
 
-Remove the plugin file entirely with `ote uninstall` or by deleting `.opencode/plugins/ote-memory.js`.
+Remove the plugin file entirely with `toolwright uninstall` or by deleting `.opencode/plugins/toolwright-memory.js`.
 
 ## Requirements
 
 - OpenCode V2 plugin API (`@opencode/plugin`).
-- `ote` available on `PATH` in the OpenCode server environment.
-- Python 3.11+ and a valid `.ote/memory` directory.
+- `toolwright` available on `PATH` in the OpenCode server environment.
+- Python 3.11+ and a valid `.toolwright/memory` directory.
 
 ## Verification
 
@@ -63,8 +63,8 @@ On 2026-11-12 the plugin was loaded by a private OpenCode V2 server against a te
 
 | Case | Observation |
 |---|---|
-| Sentinel present | Setup logged `OTE_PLUGIN_ENABLED`; the context hook logged `OTE_PLUGIN_INJECTED`; the model returned the memory title `PluginSmokeMemory` |
-| Sentinel absent | Setup logged `OTE_PLUGIN_DISABLED`; no injection hook ran |
+| Sentinel present | Setup logged `TOOLWRIGHT_PLUGIN_ENABLED`; the context hook logged `TOOLWRIGHT_PLUGIN_INJECTED`; the model returned the memory title `PluginSmokeMemory` |
+| Sentinel absent | Setup logged `TOOLWRIGHT_PLUGIN_DISABLED`; no injection hook ran |
 
 This used a temporary instrumented copy of the plugin for log assertions. The shipped file has no logging.
 
