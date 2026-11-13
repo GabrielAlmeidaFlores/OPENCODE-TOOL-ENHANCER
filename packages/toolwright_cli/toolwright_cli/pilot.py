@@ -27,7 +27,7 @@ from typing import Any
 
 from . import stats
 from .installer import install
-from .paths import ToolwrightError
+from .paths import ToolWrightError
 from .process import capture_command
 from .profiles import load_profiles, resolve_components
 
@@ -38,21 +38,21 @@ REQUIRED = ("repository", "commit", "stack", "focus")
 def load_pilots(root: Path) -> dict[str, dict[str, str]]:
     path = root / CONFIG
     if not path.is_file():
-        raise ToolwrightError(f"pilot configuration not found: {path}")
+        raise ToolWrightError(f"pilot configuration not found: {path}")
     try:
         data = tomllib.loads(path.read_text(encoding="utf-8"))
     except tomllib.TOMLDecodeError as error:
-        raise ToolwrightError(f"{path}: invalid TOML: {error}") from error
+        raise ToolWrightError(f"{path}: invalid TOML: {error}") from error
     pilots = data.get("pilots")
     if not isinstance(pilots, dict) or not pilots:
-        raise ToolwrightError(f"{path}: missing [pilots.<name>] tables")
+        raise ToolWrightError(f"{path}: missing [pilots.<name>] tables")
     results: dict[str, dict[str, str]] = {}
     for name, entry in pilots.items():
         if not isinstance(entry, dict):
-            raise ToolwrightError(f"{path}: pilots.{name} must be a table")
+            raise ToolWrightError(f"{path}: pilots.{name} must be a table")
         missing = [field for field in REQUIRED if not str(entry.get(field, "")).strip()]
         if missing:
-            raise ToolwrightError(f"{path}: pilots.{name} missing {', '.join(missing)}")
+            raise ToolWrightError(f"{path}: pilots.{name} missing {', '.join(missing)}")
         results[name] = {field: str(entry[field]) for field in REQUIRED}
     return results
 
@@ -64,14 +64,14 @@ def list_pilots(root: Path) -> list[dict[str, str]]:
 
 def require_pilot_argument(value: str | None, label: str) -> str:
     if not value or not value.strip():
-        raise ToolwrightError(f"{label} is required for a real pilot run")
+        raise ToolWrightError(f"{label} is required for a real pilot run")
     return value.strip()
 
 
 def run_git(args: list[str], cwd: Path | None = None, timeout: int = 1800) -> None:
     code, stdout, stderr = capture_command(["git", *args], cwd=cwd, timeout=timeout)
     if code != 0:
-        raise ToolwrightError(f"git {' '.join(args)} failed: {stderr or stdout}")
+        raise ToolWrightError(f"git {' '.join(args)} failed: {stderr or stdout}")
 
 
 def run_pilot(
@@ -89,7 +89,7 @@ def run_pilot(
 ) -> dict[str, Any]:
     pilots = load_pilots(root)
     if name not in pilots:
-        raise ToolwrightError(f"unknown pilot: {name} (available: {', '.join(sorted(pilots))})")
+        raise ToolWrightError(f"unknown pilot: {name} (available: {', '.join(sorted(pilots))})")
     pilot = pilots[name]
     profiles = load_profiles(root)
     components = resolve_components(profiles, profile, None)
@@ -123,7 +123,7 @@ def run_pilot(
     directory.mkdir(parents=True, exist_ok=True)
     artifacts.mkdir(parents=True, exist_ok=True)
     if clone.exists():
-        raise ToolwrightError(f"workspace already contains a clone: {clone}")
+        raise ToolWrightError(f"workspace already contains a clone: {clone}")
 
     started = time.monotonic()
     started_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -139,7 +139,7 @@ def run_pilot(
                 timeout=1800,
             )
             if setup_code != 0:
-                raise ToolwrightError(f"pilot setup failed: {setup_err or setup_out}")
+                raise ToolWrightError(f"pilot setup failed: {setup_err or setup_out}")
         environment = dict(os.environ)
         environment["PWD"] = str(clone)
         environment["OPENCODE_CONFIG"] = str(clone / ".opencode/opencode.jsonc")

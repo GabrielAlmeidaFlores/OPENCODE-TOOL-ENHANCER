@@ -13,7 +13,7 @@ from pathlib import Path
 from tests import support
 
 from toolwright_cli import stats
-from toolwright_cli.paths import ToolwrightError
+from toolwright_cli.paths import ToolWrightError
 
 
 def write_run(
@@ -110,7 +110,7 @@ class ParseTests(unittest.TestCase):
             run = Path(directory) / "run"
             run.mkdir()
             (run / "meta.json").write_text("{", encoding="utf-8")
-            with self.assertRaises(ToolwrightError):
+            with self.assertRaises(ToolWrightError):
                 stats.summarize_run(run)
 
     def test_load_runs_accepts_parent_and_run_directories(self) -> None:

@@ -15,7 +15,7 @@ from typing import Any
 
 from . import catalog as catalog_module
 from . import governance as governance_module
-from .paths import ToolwrightError
+from .paths import ToolWrightError
 from .process import capture_command
 from .profiles import verify_profiles
 
@@ -26,21 +26,21 @@ KNOWN = {"profiles", "catalog", "governance", "validator"}
 def load_cases(root: Path) -> list[dict[str, Any]]:
     path = root / CASES
     if not path.is_file():
-        raise ToolwrightError(f"evaluation cases not found: {path}")
+        raise ToolWrightError(f"evaluation cases not found: {path}")
     try:
         document = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as error:
-        raise ToolwrightError(f"{path}: invalid JSON: {error}") from error
+        raise ToolWrightError(f"{path}: invalid JSON: {error}") from error
     if not isinstance(document, dict):
-        raise ToolwrightError(f"{path}: cases must be a JSON object")
+        raise ToolWrightError(f"{path}: cases must be a JSON object")
     if document.get("schema_version") != 1:
-        raise ToolwrightError(f"{path}: unsupported schema_version")
+        raise ToolWrightError(f"{path}: unsupported schema_version")
     cases = document.get("cases")
     if not isinstance(cases, list) or not cases:
-        raise ToolwrightError(f"{path}: cases must be a non-empty list")
+        raise ToolWrightError(f"{path}: cases must be a non-empty list")
     for case in cases:
         if not isinstance(case, dict) or case.get("id") not in KNOWN:
-            raise ToolwrightError(f"{path}: unknown evaluation case {case!r}")
+            raise ToolWrightError(f"{path}: unknown evaluation case {case!r}")
     return cases
 
 
@@ -92,14 +92,14 @@ def run_evaluation_cases(root: Path, only: list[str] | None = None) -> list[dict
     selected = set(only) if only else None
     unknown = selected.difference(KNOWN) if selected else set()
     if unknown:
-        raise ToolwrightError(f"unknown evaluation cases: {', '.join(sorted(unknown))}")
+        raise ToolWrightError(f"unknown evaluation cases: {', '.join(sorted(unknown))}")
     results: list[dict[str, str]] = []
     for case in cases:
         if selected and case["id"] not in selected:
             continue
         try:
             results.append(_evaluate(case, root))
-        except ToolwrightError as error:
+        except ToolWrightError as error:
             results.append(
                 build_evaluation_result(str(case["id"]), str(case.get("description", "")), "fail", str(error))
             )

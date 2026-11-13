@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Iterable
 
-from .paths import ToolwrightError
+from .paths import ToolWrightError
 
 
 @dataclass
@@ -100,7 +100,7 @@ def summarize_run(run_dir: Path) -> RunSummary | None:
     try:
         meta = json.loads(meta_path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as error:
-        raise ToolwrightError(f"{meta_path}: invalid JSON: {error}") from error
+        raise ToolWrightError(f"{meta_path}: invalid JSON: {error}") from error
     session_totals = parse_session(run_dir / "session.jsonl")
     return RunSummary(
         run_id=str(meta.get("run_id", run_dir.name)),

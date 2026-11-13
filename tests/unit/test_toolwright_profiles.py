@@ -9,7 +9,7 @@ from pathlib import Path
 
 from tests import support
 
-from toolwright_cli.paths import ToolwrightError
+from toolwright_cli.paths import ToolWrightError
 from toolwright_cli.profiles import load_profile, load_profiles, resolve_components, verify_profiles
 
 
@@ -29,7 +29,7 @@ class RepositoryProfileTests(unittest.TestCase):
 
     def test_resolve_unknown_profile_is_an_error(self) -> None:
         profiles = load_profiles(support.REPO_ROOT)
-        with self.assertRaises(ToolwrightError) as raised:
+        with self.assertRaises(ToolWrightError) as raised:
             resolve_components(profiles, "nope", None)
         self.assertIn("available", str(raised.exception))
 
@@ -55,33 +55,33 @@ class ManifestValidationTests(unittest.TestCase):
         path = self._profile(
             "name: other\ndescription: Demo.\ncomponents:\n  - agents\n"
         )
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             load_profile(path)
 
     def test_unknown_component_is_rejected(self) -> None:
         path = self._profile(
             "name: demo\ndescription: Demo.\ncomponents:\n  - agents\n  - made-up\n"
         )
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             load_profile(path)
 
     def test_duplicate_component_is_rejected(self) -> None:
         path = self._profile(
             "name: demo\ndescription: Demo.\ncomponents:\n  - agents\n  - agents\n"
         )
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             load_profile(path)
 
     def test_missing_description_is_rejected(self) -> None:
         path = self._profile("name: demo\ncomponents:\n  - agents\n")
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             load_profile(path)
 
     def test_unsupported_syntax_is_rejected(self) -> None:
         path = self._profile(
             "name: demo\ndescription: Demo.\ncomponents:\n  - agents\nmetadata:\n  owner: x\n"
         )
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             load_profile(path)
 
 

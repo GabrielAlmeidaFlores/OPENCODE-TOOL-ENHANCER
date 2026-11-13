@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from .paths import ToolwrightError
+from .paths import ToolWrightError
 from .process import capture_command
 
 CATALOG = Path("catalog/registry.json")
@@ -25,24 +25,24 @@ BUILDER = Path("scripts/catalog/build_catalog.py")
 def load_catalog(root: Path) -> dict[str, Any]:
     path = root / CATALOG
     if not path.is_file():
-        raise ToolwrightError(f"catalog not found at {path}; run 'toolwright catalog build'")
+        raise ToolWrightError(f"catalog not found at {path}; run 'toolwright catalog build'")
     try:
         document = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as error:
-        raise ToolwrightError(f"{path}: invalid JSON: {error}") from error
+        raise ToolWrightError(f"{path}: invalid JSON: {error}") from error
     if not isinstance(document, dict):
-        raise ToolwrightError(f"{path}: catalog must be a JSON object")
+        raise ToolWrightError(f"{path}: catalog must be a JSON object")
     return document
 
 
 def load_artifact_schema(root: Path) -> dict[str, Any]:
     path = root / SCHEMA
     if not path.is_file():
-        raise ToolwrightError(f"catalog schema not found at {path}")
+        raise ToolWrightError(f"catalog schema not found at {path}")
     try:
         schema = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as error:
-        raise ToolwrightError(f"{path}: invalid JSON: {error}") from error
+        raise ToolWrightError(f"{path}: invalid JSON: {error}") from error
     return schema.get("definitions", {}).get("artifact", {})
 
 
@@ -128,7 +128,7 @@ def run_catalog_builder(root: Path, check: bool) -> tuple[int, str]:
 
 def build_catalog(root: Path, check: bool = False) -> dict[str, Any]:
     if not (root / BUILDER).is_file():
-        raise ToolwrightError(f"catalog builder not found at {root / BUILDER}")
+        raise ToolWrightError(f"catalog builder not found at {root / BUILDER}")
     code, output = run_catalog_builder(root, check)
     return {"status": "ok" if code == 0 else "fail", "exit_code": code, "output": output}
 

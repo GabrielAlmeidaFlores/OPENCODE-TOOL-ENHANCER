@@ -13,7 +13,7 @@ from tests import support
 
 from toolwright_cli import pilot
 from toolwright_cli.profiles import load_profiles as real_profiles
-from toolwright_cli.paths import ToolwrightError
+from toolwright_cli.paths import ToolWrightError
 
 
 class PilotConfigTests(unittest.TestCase):
@@ -33,7 +33,7 @@ class PilotConfigTests(unittest.TestCase):
             path = root / "configs/pilots/pilots.toml"
             path.parent.mkdir(parents=True)
             path.write_text('[pilots.demo]\nrepository = "https://example.com/repo"\n', encoding="utf-8")
-            with self.assertRaises(ToolwrightError):
+            with self.assertRaises(ToolWrightError):
                 pilot.load_pilots(root)
 
 
@@ -123,7 +123,7 @@ class PilotRunTests(unittest.TestCase):
 
     def test_real_run_requires_prompt_and_model(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            with self.assertRaises(ToolwrightError):
+            with self.assertRaises(ToolWrightError):
                 pilot.run_pilot(
                     root=support.REPO_ROOT,
                     name="hono",
@@ -137,7 +137,7 @@ class PilotRunTests(unittest.TestCase):
                 )
 
     def test_unknown_pilot_is_rejected(self) -> None:
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             pilot.run_pilot(
                 root=support.REPO_ROOT,
                 name="nope",

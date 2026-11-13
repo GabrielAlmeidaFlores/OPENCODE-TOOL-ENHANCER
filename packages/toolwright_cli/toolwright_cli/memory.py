@@ -22,7 +22,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
-from .paths import ToolwrightError
+from .paths import ToolWrightError
 
 TYPES = ("decision", "constraint", "convention", "failure", "question")
 SCOPES = ("project", "user", "shared")
@@ -70,15 +70,15 @@ def settings(root: Path) -> dict[str, int]:
     try:
         data = tomllib.loads(path.read_text(encoding="utf-8"))
     except tomllib.TOMLDecodeError as error:
-        raise ToolwrightError(f"{path}: invalid TOML: {error}") from error
+        raise ToolWrightError(f"{path}: invalid TOML: {error}") from error
     section = data.get("memory", {})
     if not isinstance(section, dict):
-        raise ToolwrightError(f"{path}: memory must be a table")
+        raise ToolWrightError(f"{path}: memory must be a table")
     for key in values:
         if key in section:
             value = section[key]
             if not isinstance(value, int) or value <= 0:
-                raise ToolwrightError(f"{path}: memory.{key} must be a positive integer")
+                raise ToolWrightError(f"{path}: memory.{key} must be a positive integer")
             values[key] = value
     return values
 
@@ -121,10 +121,10 @@ def render_memory_frontmatter(entry_type: str, title: str, created: str, source:
 def parse_memory_entry(path: Path, scope: str) -> Entry:
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---"):
-        raise ToolwrightError(f"{path}: missing frontmatter")
+        raise ToolWrightError(f"{path}: missing frontmatter")
     end = text.find("\n---", 3)
     if end == -1:
-        raise ToolwrightError(f"{path}: unterminated frontmatter")
+        raise ToolWrightError(f"{path}: unterminated frontmatter")
     metadata: dict[str, str] = {}
     for line in text[3:end].splitlines():
         match = re.match(r"^([a-z_]+):\s*(.*)$", line)
@@ -133,15 +133,15 @@ def parse_memory_entry(path: Path, scope: str) -> Entry:
     required = ("type", "title", "created", "source", "confidence", "expires")
     missing = [key for key in required if not metadata.get(key)]
     if missing:
-        raise ToolwrightError(f"{path}: missing {', '.join(missing)}")
+        raise ToolWrightError(f"{path}: missing {', '.join(missing)}")
     if metadata["type"] not in TYPES:
-        raise ToolwrightError(f"{path}: unknown type {metadata['type']}")
+        raise ToolWrightError(f"{path}: unknown type {metadata['type']}")
     links_value = metadata.get("links", "[]").strip("[]").strip()
     links = [item.strip().strip('"').strip("'") for item in links_value.split(",") if item.strip()]
     try:
         confidence = float(metadata["confidence"])
     except ValueError as error:
-        raise ToolwrightError(f"{path}: confidence must be a number") from error
+        raise ToolWrightError(f"{path}: confidence must be a number") from error
     body = text[end + 4 :].lstrip("\n")
     return Entry(
         path=path,
@@ -162,7 +162,7 @@ def load_memory_entries(root: Path, scope: str | None = None) -> list[Entry]:
     directory = ensure_memory_directory(root)
     selected = (scope,) if scope else SCOPES
     if scope and scope not in SCOPES:
-        raise ToolwrightError(f"unknown scope: {scope}")
+        raise ToolWrightError(f"unknown scope: {scope}")
     results: list[Entry] = []
     for current in selected:
         for path in sorted((directory / current).glob("*.md")):
@@ -205,33 +205,33 @@ def add_memory_entry(
     force: bool = False,
 ) -> Entry:
     if entry_type not in TYPES:
-        raise ToolwrightError(f"unknown type: {entry_type}")
+        raise ToolWrightError(f"unknown type: {entry_type}")
     if scope not in SCOPES:
-        raise ToolwrightError(f"unknown scope: {scope}")
+        raise ToolWrightError(f"unknown scope: {scope}")
     if not 0 <= confidence <= 1:
-        raise ToolwrightError("confidence must be between 0 and 1")
+        raise ToolWrightError("confidence must be between 0 and 1")
     body = text.strip()
     if not body:
-        raise ToolwrightError("memory text is required")
+        raise ToolWrightError("memory text is required")
     resolved_title = (title or body.splitlines()[0]).strip()
     if not resolved_title:
-        raise ToolwrightError("memory title is required")
+        raise ToolWrightError("memory title is required")
     for label, value in (("title", resolved_title), ("source", source), *((f"link {index}", link) for index, link in enumerate(links, start=1))):
         if "\n" in value or "\r" in value or value.strip() == "---":
-            raise ToolwrightError(f"{label} must be a single line without a frontmatter separator")
+            raise ToolWrightError(f"{label} must be a single line without a frontmatter separator")
     found = scan_secrets("\n".join([resolved_title, body, source, " ".join(links)]))
     if found:
-        raise ToolwrightError("refusing to store a possible credential (matched a secret pattern)")
+        raise ToolWrightError("refusing to store a possible credential (matched a secret pattern)")
 
     existing = load_memory_entries(root, scope)
     normalized = re.sub(r"\s+", " ", resolved_title.lower())
     for entry in existing:
         if re.sub(r"\s+", " ", entry.title.lower()) == normalized and not force:
-            raise ToolwrightError(f"duplicate title in {scope}: {entry.title} (use --force to add anyway)")
+            raise ToolWrightError(f"duplicate title in {scope}: {entry.title} (use --force to add anyway)")
 
     ttl = settings(root)["ttl_days"] if ttl_days is None else ttl_days
     if ttl < 0:
-        raise ToolwrightError("ttl must not be negative")
+        raise ToolWrightError("ttl must not be negative")
     created = current_utc_date()
     expires = created + timedelta(days=ttl)
     identifier = f"{created.isoformat()}-{slugify_memory_title(resolved_title)}"
@@ -308,7 +308,7 @@ def export_memory_entries(root: Path, output: str = "markdown") -> str:
             sort_keys=True,
         )
     if output != "markdown":
-        raise ToolwrightError(f"unknown export format: {output}")
+        raise ToolWrightError(f"unknown export format: {output}")
     lines = ["# Memory Export", ""]
     for entry in items:
         lines.extend(
@@ -331,7 +331,7 @@ def export_memory_entries(root: Path, output: str = "markdown") -> str:
 def render_memory_preamble(root: Path, budget_tokens: int | None = None) -> str:
     limit = settings(root)["token_budget"] if budget_tokens is None else budget_tokens
     if limit <= 0:
-        raise ToolwrightError("budget must be a positive integer")
+        raise ToolWrightError("budget must be a positive integer")
     items = [entry for entry in load_memory_entries(root) if not entry.expired()]
     order = {scope: index for index, scope in enumerate(PRECEDENCE)}
     items.sort(key=lambda entry: (order.get(entry.scope, 99), entry.identifier))

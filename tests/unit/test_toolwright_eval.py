@@ -11,7 +11,7 @@ from pathlib import Path
 from tests import support
 
 from toolwright_cli import eval as eval_module
-from toolwright_cli.paths import ToolwrightError
+from toolwright_cli.paths import ToolWrightError
 
 
 class RepositoryEvalTests(unittest.TestCase):
@@ -28,7 +28,7 @@ class RepositoryEvalTests(unittest.TestCase):
         self.assertEqual(results[0]["status"], "ok")
 
     def test_unknown_case_is_an_error(self) -> None:
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             eval_module.run_evaluation_cases(support.REPO_ROOT, only=["nonsense"])
 
 
@@ -36,7 +36,7 @@ class EvalConfigTests(unittest.TestCase):
 
     def test_missing_cases_file_is_an_error(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            with self.assertRaises(ToolwrightError):
+            with self.assertRaises(ToolWrightError):
                 eval_module.load_cases(Path(directory))
 
     def test_unknown_case_id_is_rejected(self) -> None:
@@ -45,7 +45,7 @@ class EvalConfigTests(unittest.TestCase):
             path = root / "tests/evals/cases.json"
             path.parent.mkdir(parents=True)
             path.write_text(json.dumps({"schema_version": 1, "cases": [{"id": "nope"}]}), encoding="utf-8")
-            with self.assertRaises(ToolwrightError):
+            with self.assertRaises(ToolWrightError):
                 eval_module.load_cases(root)
 
     def test_missing_catalog_is_a_failed_case(self) -> None:

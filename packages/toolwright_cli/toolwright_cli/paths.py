@@ -1,7 +1,7 @@
 """
 Repository and target path resolution for the ``toolwright`` command line.
 
-Public API: :class:`ToolwrightError`, :func:`find_repo_root`, :func:`resolve_target`,
+Public API: :class:`ToolWrightError`, :func:`find_repo_root`, :func:`resolve_target`,
 and the path helpers for lock, state, and backup files.
 
 Side effects: none. All functions only read directory metadata.
@@ -15,7 +15,7 @@ _MARKERS = ("VERSION", "agents/coordinator/AGENT.md", "scripts/installation/inst
 _BUNDLED_ROOT = Path(__file__).resolve().parents[3]
 
 
-class ToolwrightError(Exception):
+class ToolWrightError(Exception):
 
     def __init__(self, message: str, exit_code: int = 2) -> None:
         super().__init__(message)
@@ -32,14 +32,14 @@ def find_repo_root(start: Path | None = None) -> Path:
         candidate = Path(explicit).expanduser().resolve()
         if is_repository_root(candidate):
             return candidate
-        raise ToolwrightError(f"TOOLWRIGHT_REPO does not point to a repository root: {candidate}")
+        raise ToolWrightError(f"TOOLWRIGHT_REPO does not point to a repository root: {candidate}")
     origin = (start or Path.cwd()).resolve()
     for candidate in (origin, *origin.parents):
         if is_repository_root(candidate):
             return candidate
     if is_repository_root(_BUNDLED_ROOT):
         return _BUNDLED_ROOT
-    raise ToolwrightError(
+    raise ToolWrightError(
         "cannot locate the ToolWright repository; run from a checkout or set TOOLWRIGHT_REPO"
     )
 

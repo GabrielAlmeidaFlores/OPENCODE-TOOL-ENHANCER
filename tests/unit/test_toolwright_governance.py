@@ -8,7 +8,7 @@ import unittest
 from tests import support
 
 from toolwright_cli import governance
-from toolwright_cli.paths import ToolwrightError
+from toolwright_cli.paths import ToolWrightError
 
 SETTINGS = {
     "max_iterations": 10,
@@ -65,7 +65,7 @@ class BudgetTests(unittest.TestCase):
         self.assertEqual(result["violations"][0]["kind"], "deadlock")
 
     def test_negative_record_value_is_rejected(self) -> None:
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             governance.evaluate_record({"iterations": -1}, SETTINGS)
 
     def test_defaults_apply_when_settings_are_missing(self) -> None:
@@ -84,7 +84,7 @@ class RiskGateTests(unittest.TestCase):
         )
 
     def test_unknown_risk_is_an_error(self) -> None:
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             governance.required_gates_for_risk("critical")
 
 

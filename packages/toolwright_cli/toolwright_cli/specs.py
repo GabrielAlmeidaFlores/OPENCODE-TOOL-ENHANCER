@@ -14,7 +14,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from .paths import ToolwrightError
+from .paths import ToolWrightError
 
 FILES = ("requirements.md", "design.md", "tasks.md", "evidence.md")
 CRITERION = re.compile(r"^- \[[ xX]\] (AC-\d+):\s*(.+)$")
@@ -25,7 +25,7 @@ EVIDENCE = re.compile(r"^- (AC-\d+):\s*(.+)$")
 def slugify_feature_name(feature: str) -> str:
     value = re.sub(r"[^a-z0-9]+", "-", feature.lower()).strip("-")
     if not value:
-        raise ToolwrightError("feature name must contain letters or digits")
+        raise ToolWrightError("feature name must contain letters or digits")
     return value[:60]
 
 
@@ -36,11 +36,11 @@ def contains_placeholder(text: str) -> bool:
 def create_spec_artifacts(root: Path, feature: str, criteria: list[str]) -> Path:
     directory = root / "specs" / slugify_feature_name(feature)
     if directory.exists():
-        raise ToolwrightError(f"spec already exists: {directory}")
+        raise ToolWrightError(f"spec already exists: {directory}")
     cleaned = [item.strip() for item in criteria if item.strip()]
     invalid = [item for item in cleaned if contains_placeholder(item)]
     if invalid:
-        raise ToolwrightError("criteria must not contain angle-bracket placeholders")
+        raise ToolWrightError("criteria must not contain angle-bracket placeholders")
     directory.mkdir(parents=True)
     if cleaned:
         criterion_lines = [f"- [ ] AC-{index}: {text}" for index, text in enumerate(cleaned, start=1)]
@@ -123,7 +123,7 @@ def list_specs(root: Path) -> list[dict[str, Any]]:
 
 def read_spec_artifact(path: Path) -> str:
     if not path.is_file():
-        raise ToolwrightError(f"missing spec artifact: {path}")
+        raise ToolWrightError(f"missing spec artifact: {path}")
     return path.read_text(encoding="utf-8")
 
 
@@ -137,7 +137,7 @@ def parse_acceptance_criteria(text: str) -> dict[str, str]:
         if contains_placeholder(description):
             continue
         if identifier in results:
-            raise ToolwrightError(f"duplicate criterion: {identifier}")
+            raise ToolWrightError(f"duplicate criterion: {identifier}")
         results[identifier] = description
     return results
 
@@ -165,7 +165,7 @@ def parse_spec_evidence(text: str) -> dict[str, str]:
         if contains_placeholder(value):
             continue
         if match.group(1) in results:
-            raise ToolwrightError(f"duplicate evidence for {match.group(1)}")
+            raise ToolWrightError(f"duplicate evidence for {match.group(1)}")
         results[match.group(1)] = value
     return results
 
@@ -200,7 +200,7 @@ def verify_spec_evidence(root: Path, feature: str) -> dict[str, Any]:
     directory = root / "specs" / slugify_feature_name(feature)
     missing = [name for name in FILES if not (directory / name).is_file()]
     if missing:
-        raise ToolwrightError(f"missing spec artifacts: {', '.join(missing)}")
+        raise ToolWrightError(f"missing spec artifacts: {', '.join(missing)}")
     base = validate_spec_plan(root, feature)
     evidence = parse_spec_evidence(read_spec_artifact(directory / "evidence.md"))
     issues = list(base["issues"])

@@ -11,7 +11,7 @@ from pathlib import Path
 from tests import support
 
 from toolwright_cli import memory
-from toolwright_cli.paths import ToolwrightError
+from toolwright_cli.paths import ToolWrightError
 
 
 class MemoryTestCase(unittest.TestCase):
@@ -45,7 +45,7 @@ class AddTests(MemoryTestCase):
 
     def test_duplicate_title_is_rejected(self) -> None:
         self.add("first", title="Same")
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             self.add("second", title="Same")
 
     def test_force_allows_duplicate_title(self) -> None:
@@ -54,24 +54,24 @@ class AddTests(MemoryTestCase):
         self.assertTrue(second.path.is_file())
 
     def test_secret_is_rejected(self) -> None:
-        with self.assertRaises(ToolwrightError) as raised:
+        with self.assertRaises(ToolWrightError) as raised:
             self.add("api_key=abcdefghijklmnop1234")
         self.assertIn("credential", str(raised.exception))
         self.assertFalse(list((self.root / ".toolwright/memory/project").glob("*.md")))
 
     def test_multiline_title_is_rejected(self) -> None:
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             self.add("body", title="bad\n---\ntype: failure")
         self.assertFalse(list((self.root / ".toolwright/memory/project").glob("*.md")))
 
     def test_unknown_type_and_scope_are_rejected(self) -> None:
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             self.add("text", entry_type="nonsense")
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             self.add("text", scope="nonsense")
 
     def test_confidence_must_be_between_zero_and_one(self) -> None:
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             self.add("text", confidence=1.5)
 
     def test_scopes_are_separate(self) -> None:
@@ -122,7 +122,7 @@ class PreambleTests(MemoryTestCase):
         self.assertNotIn("Long entry", rendered)
 
     def test_invalid_budget_is_rejected(self) -> None:
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             memory.render_memory_preamble(self.root, budget_tokens=0)
 
 

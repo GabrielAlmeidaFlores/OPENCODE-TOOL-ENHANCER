@@ -138,7 +138,7 @@ class UninstallTests(unittest.TestCase):
 
     def test_missing_lock_is_an_error(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            with self.assertRaises(installer.ToolwrightError):
+            with self.assertRaises(installer.ToolWrightError):
                 installer.uninstall(Path(directory), apply=False)
 
 

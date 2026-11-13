@@ -11,7 +11,7 @@ from pathlib import Path
 from tests import support
 
 from toolwright_cli import board
-from toolwright_cli.paths import ToolwrightError
+from toolwright_cli.paths import ToolWrightError
 
 
 class BoardTestCase(unittest.TestCase):
@@ -38,7 +38,7 @@ class BoardStateTests(BoardTestCase):
         self.assertIn("WIP: 0/2", board_file)
 
     def test_multiline_title_is_rejected(self) -> None:
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             board.add_task(self.root, "bad\n---\ntitle")
 
     def test_wip_limit_blocks(self) -> None:
@@ -47,12 +47,12 @@ class BoardStateTests(BoardTestCase):
         board.add_task(self.root, "Three")
         board.move_task(self.root, "T-001", "in-progress")
         board.move_task(self.root, "T-002", "in-progress")
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             board.move_task(self.root, "T-003", "in-progress")
 
     def test_done_requires_approval(self) -> None:
         board.add_task(self.root, "One")
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             board.move_task(self.root, "T-001", "done")
         task = board.move_task(self.root, "T-001", "done", approved=True)
         self.assertEqual(task.status, "done")
@@ -68,10 +68,10 @@ class BoardStateTests(BoardTestCase):
         self.assertEqual(result["wip_limit"], 2)
 
     def test_unknown_task_and_status(self) -> None:
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             board.move_task(self.root, "T-999", "ready")
         board.add_task(self.root, "One")
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             board.move_task(self.root, "T-001", "shipped")
 
 
@@ -100,7 +100,7 @@ class WorktreeTests(BoardTestCase):
         self.assertFalse(path.exists())
 
     def test_worktree_requires_git_repository(self) -> None:
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             board.add_task(self.root, "No repo", worktree=True)
 
 

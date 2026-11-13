@@ -20,7 +20,7 @@ from typing import Any
 
 from . import __version__
 from .locking import PlannedFile, build_lock, lock_drift, read_lock, sha256_file, write_json
-from .paths import ToolwrightError, backup_root, is_within, lock_path, state_path
+from .paths import ToolWrightError, backup_root, is_within, lock_path, state_path
 from .process import capture_command, git_commit, git_dirty, git_remote, run_command
 
 STATE_SCHEMA_VERSION = 1
@@ -73,7 +73,7 @@ def plan_files(root: Path, target: Path, components: list[str]) -> list[PlannedF
 
     for item in planned:
         if not item.source.is_file():
-            raise ToolwrightError(f"missing source file: {item.source}")
+            raise ToolWrightError(f"missing source file: {item.source}")
     return planned
 
 
@@ -132,7 +132,7 @@ def archive_project_config(root: Path, target: Path, stamp: str) -> Path | None:
     destination = backup_root(target) / stamp
     script = root / "scripts/maintenance/backup-config.sh"
     if not script.is_file():
-        raise ToolwrightError(f"backup script not found: {script}")
+        raise ToolWrightError(f"backup script not found: {script}")
     run_command(["bash", str(script), "--project-only", str(destination)], cwd=target)
     return destination
 
@@ -156,7 +156,7 @@ def run_shell_installer(root: Path, target: Path, components: list[str], apply: 
         command.append("--clean")
     code, stdout, stderr = capture_command(command, cwd=root)
     if code != 0:
-        raise ToolwrightError(f"installer failed with exit {code}:\n{stdout}\n{stderr}")
+        raise ToolWrightError(f"installer failed with exit {code}:\n{stdout}\n{stderr}")
     return "\n".join(part for part in (stdout, stderr) if part)
 
 
@@ -205,7 +205,7 @@ def install(
 
     missing = [item.destination for item in planned if not item.destination.is_file()]
     if missing:
-        raise ToolwrightError(f"installer did not create {len(missing)} planned file(s): {missing[0]}")
+        raise ToolWrightError(f"installer did not create {len(missing)} planned file(s): {missing[0]}")
 
     lock = build_lock(root, target, profile, components, planned, source_metadata(root))
     lock["source"]["digest"] = source_digest(planned, target)
@@ -235,7 +235,7 @@ def uninstall(
 ) -> dict[str, Any]:
     lock = read_lock(lock_path(target))
     if lock is None:
-        raise ToolwrightError(f"no lock file found at {lock_path(target)}; nothing to uninstall")
+        raise ToolWrightError(f"no lock file found at {lock_path(target)}; nothing to uninstall")
 
     removable: list[str] = []
     skipped: list[dict[str, str]] = []
@@ -243,7 +243,7 @@ def uninstall(
         relative = entry.get("path", "")
         path = target / relative
         if not is_within(path, target):
-            raise ToolwrightError(f"lock entry escapes the target: {relative}")
+            raise ToolWrightError(f"lock entry escapes the target: {relative}")
         if not path.is_file():
             continue
         if not force and sha256_file(path) != entry.get("sha256"):

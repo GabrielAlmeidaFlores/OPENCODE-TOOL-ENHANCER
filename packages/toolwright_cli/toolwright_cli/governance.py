@@ -16,7 +16,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from .paths import ToolwrightError
+from .paths import ToolWrightError
 
 READ_ONLY_ROLES = {
     "coordinator",
@@ -56,10 +56,10 @@ RISK_GATES: dict[str, tuple[str, ...]] = {
 def render_memory_frontmatter(path: Path) -> tuple[str, list[dict[str, str]]]:
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---"):
-        raise ToolwrightError(f"{path}: missing frontmatter")
+        raise ToolWrightError(f"{path}: missing frontmatter")
     end = text.find("\n---", 3)
     if end == -1:
-        raise ToolwrightError(f"{path}: unterminated frontmatter")
+        raise ToolWrightError(f"{path}: unterminated frontmatter")
     block = text[3:end].splitlines()
     mode = ""
     permissions: list[dict[str, str]] = []
@@ -97,7 +97,7 @@ def load_agent_contracts(root: Path) -> list[dict[str, Any]]:
     results: list[dict[str, Any]] = []
     agents = sorted((root / "agents").glob("*/AGENT.md"))
     if not agents:
-        raise ToolwrightError(f"no agents found under {root / 'agents'}")
+        raise ToolWrightError(f"no agents found under {root / 'agents'}")
     for path in agents:
         role = path.parent.name
         mode, permissions = render_memory_frontmatter(path)
@@ -131,7 +131,7 @@ def load_agent_contracts(root: Path) -> list[dict[str, Any]]:
 def _number(settings: dict[str, Any], key: str) -> float:
     value = settings.get(key, DEFAULTS[key])
     if not isinstance(value, (int, float)) or value < 0:
-        raise ToolwrightError(f"governance.{key} must be a non-negative number")
+        raise ToolWrightError(f"governance.{key} must be a non-negative number")
     return float(value)
 
 
@@ -140,7 +140,7 @@ def evaluate_record(record: dict[str, Any], settings: dict[str, Any]) -> dict[st
     for record_key, setting_key, label in BUDGETS:
         value = record.get(record_key, 0)
         if not isinstance(value, (int, float)) or value < 0:
-            raise ToolwrightError(f"record.{record_key} must be a non-negative number")
+            raise ToolWrightError(f"record.{record_key} must be a non-negative number")
         limit = _number(settings, setting_key)
         if value > limit:
             violations.append(
@@ -151,7 +151,7 @@ def evaluate_record(record: dict[str, Any], settings: dict[str, Any]) -> dict[st
             )
     repeats = record.get("repeats", 0)
     if not isinstance(repeats, (int, float)) or repeats < 0:
-        raise ToolwrightError("record.repeats must be a non-negative number")
+        raise ToolWrightError("record.repeats must be a non-negative number")
     if repeats > _number(settings, "max_repeats"):
         violations.append(
             {
@@ -161,7 +161,7 @@ def evaluate_record(record: dict[str, Any], settings: dict[str, Any]) -> dict[st
         )
     bounces = record.get("bounces", 0)
     if not isinstance(bounces, (int, float)) or bounces < 0:
-        raise ToolwrightError("record.bounces must be a non-negative number")
+        raise ToolWrightError("record.bounces must be a non-negative number")
     if bounces > _number(settings, "max_bounces"):
         violations.append(
             {
@@ -180,5 +180,5 @@ def evaluate_record(record: dict[str, Any], settings: dict[str, Any]) -> dict[st
 def required_gates_for_risk(risk: str) -> dict[str, Any]:
     key = risk.lower()
     if key not in RISK_GATES:
-        raise ToolwrightError(f"unknown risk level: {risk}")
+        raise ToolWrightError(f"unknown risk level: {risk}")
     return {"risk": key, "required": list(RISK_GATES[key])}

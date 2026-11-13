@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from .paths import ToolwrightError
+from .paths import ToolWrightError
 from .process import capture_command
 
 STATUSES = ("backlog", "ready", "in-progress", "review", "done")
@@ -46,13 +46,13 @@ def _board_settings(root: Path) -> dict[str, int]:
     try:
         data = tomllib.loads(config.read_text(encoding="utf-8"))
     except tomllib.TOMLDecodeError as error:
-        raise ToolwrightError(f"{config}: invalid TOML: {error}") from error
+        raise ToolWrightError(f"{config}: invalid TOML: {error}") from error
     section = data.get("board", {})
     if not isinstance(section, dict):
-        raise ToolwrightError(f"{config}: board must be a table")
+        raise ToolWrightError(f"{config}: board must be a table")
     value = section.get("wip_limit", values["wip_limit"])
     if not isinstance(value, int) or value <= 0:
-        raise ToolwrightError(f"{config}: board.wip_limit must be a positive integer")
+        raise ToolWrightError(f"{config}: board.wip_limit must be a positive integer")
     values["wip_limit"] = value
     return values
 
@@ -60,10 +60,10 @@ def _board_settings(root: Path) -> dict[str, int]:
 def _parse(path: Path) -> Task:
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---"):
-        raise ToolwrightError(f"{path}: missing frontmatter")
+        raise ToolWrightError(f"{path}: missing frontmatter")
     end = text.find("\n---", 3)
     if end == -1:
-        raise ToolwrightError(f"{path}: unterminated frontmatter")
+        raise ToolWrightError(f"{path}: unterminated frontmatter")
     metadata: dict[str, str] = {}
     for line in text[3:end].splitlines():
         key, separator, value = line.partition(":")
@@ -72,9 +72,9 @@ def _parse(path: Path) -> Task:
     required = ("id", "title", "status", "created")
     missing = [key for key in required if not metadata.get(key)]
     if missing:
-        raise ToolwrightError(f"{path}: missing {', '.join(missing)}")
+        raise ToolWrightError(f"{path}: missing {', '.join(missing)}")
     if metadata["status"] not in STATUSES:
-        raise ToolwrightError(f"{path}: unknown status {metadata['status']}")
+        raise ToolWrightError(f"{path}: unknown status {metadata['status']}")
     return Task(
         identifier=metadata["id"],
         title=metadata["title"],
@@ -146,11 +146,11 @@ def _next_identifier(root: Path) -> str:
 def add_task(root: Path, title: str, worktree: bool = False, verify: str = "") -> Task:
     value = title.strip()
     if not value:
-        raise ToolwrightError("task title is required")
+        raise ToolWrightError("task title is required")
     if "\n" in value or "\r" in value or value == "---":
-        raise ToolwrightError("task title must be a single line")
+        raise ToolWrightError("task title must be a single line")
     if "\n" in verify or "\r" in verify or verify.strip() == "---":
-        raise ToolwrightError("verification command must be a single line")
+        raise ToolWrightError("verification command must be a single line")
     directory = root / TASK_ROOT
     directory.mkdir(parents=True, exist_ok=True)
     identifier = _next_identifier(root)
@@ -173,24 +173,24 @@ def add_task(root: Path, title: str, worktree: bool = False, verify: str = "") -
 
 def list_tasks(root: Path, status: str | None = None) -> list[Task]:
     if status and status not in STATUSES:
-        raise ToolwrightError(f"unknown status: {status}")
+        raise ToolWrightError(f"unknown status: {status}")
     return [task for task in _tasks(root) if not status or task.status == status]
 
 
 def move_task(root: Path, identifier: str, status: str, approved: bool = False) -> Task:
     if status not in STATUSES:
-        raise ToolwrightError(f"unknown status: {status}")
+        raise ToolWrightError(f"unknown status: {status}")
     tasks = _tasks(root)
     task = next((item for item in tasks if item.identifier == identifier), None)
     if task is None:
-        raise ToolwrightError(f"unknown task: {identifier}")
+        raise ToolWrightError(f"unknown task: {identifier}")
     if status == "in-progress":
         limit = _board_settings(root)["wip_limit"]
         current = sum(1 for item in tasks if item.status == "in-progress" and item.identifier != identifier)
         if current >= limit:
-            raise ToolwrightError(f"WIP limit reached: {current}/{limit}")
+            raise ToolWrightError(f"WIP limit reached: {current}/{limit}")
     if status == "done" and not approved:
-        raise ToolwrightError("moving a task to done requires --approved")
+        raise ToolWrightError("moving a task to done requires --approved")
     task.status = status
     if status == "done":
         task.approved = True
@@ -212,32 +212,32 @@ def summary(root: Path) -> dict[str, Any]:
 def manage_worktree(root: Path, identifier: str, remove: bool, force: bool) -> Task:
     task = next((item for item in _tasks(root) if item.identifier == identifier), None)
     if task is None:
-        raise ToolwrightError(f"unknown task: {identifier}")
+        raise ToolWrightError(f"unknown task: {identifier}")
     relative = WORKTREES / identifier
     path = root / relative
     if remove:
         if not task.worktree:
-            raise ToolwrightError(f"task has no worktree: {identifier}")
+            raise ToolWrightError(f"task has no worktree: {identifier}")
         command = ["git", "-C", str(root), "worktree", "remove"]
         if force:
             command.append("--force")
         command.append(str(path))
         code, stdout, stderr = capture_command(command, timeout=300)
         if code != 0:
-            raise ToolwrightError(f"git worktree remove failed: {stderr or stdout}")
+            raise ToolWrightError(f"git worktree remove failed: {stderr or stdout}")
         task.worktree = ""
         _write(task)
         _write_board(root)
         return task
     if task.worktree:
-        raise ToolwrightError(f"task already has a worktree: {task.worktree}")
+        raise ToolWrightError(f"task already has a worktree: {task.worktree}")
     path.parent.mkdir(parents=True, exist_ok=True)
     code, stdout, stderr = capture_command(
         ["git", "-C", str(root), "worktree", "add", "-b", f"task/{identifier}", str(path)],
         timeout=300,
     )
     if code != 0:
-        raise ToolwrightError(f"git worktree add failed: {stderr or stdout}")
+        raise ToolWrightError(f"git worktree add failed: {stderr or stdout}")
     task.worktree = relative.as_posix()
     _write(task)
     _write_board(root)

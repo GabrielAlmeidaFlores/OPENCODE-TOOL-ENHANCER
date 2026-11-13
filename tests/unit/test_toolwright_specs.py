@@ -10,7 +10,7 @@ from pathlib import Path
 from tests import support
 
 from toolwright_cli import specs
-from toolwright_cli.paths import ToolwrightError
+from toolwright_cli.paths import ToolWrightError
 
 
 class SpecTestCase(unittest.TestCase):
@@ -34,15 +34,15 @@ class CreateTests(SpecTestCase):
 
     def test_duplicate_spec_is_rejected(self) -> None:
         specs.create_spec_artifacts(self.root, "Auth", ["One criterion"])
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             specs.create_spec_artifacts(self.root, "Auth", ["Another"])
 
     def test_placeholder_criterion_is_rejected(self) -> None:
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             specs.create_spec_artifacts(self.root, "Auth", ["<describe behavior>"])
 
     def test_blank_feature_is_rejected(self) -> None:
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             specs.create_spec_artifacts(self.root, "!!!", [])
 
     def test_list_specs_reports_missing_files(self) -> None:
@@ -112,12 +112,12 @@ class VerifyTests(SpecTestCase):
 
     def test_duplicate_evidence_fails(self) -> None:
         self._prepare("- AC-1: one\n- AC-1: two\n")
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             specs.verify_spec_evidence(self.root, "demo")
 
     def test_missing_artifact_is_an_error(self) -> None:
         (self.root / "specs/demo").mkdir(parents=True)
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             specs.verify_spec_evidence(self.root, "demo")
 
 

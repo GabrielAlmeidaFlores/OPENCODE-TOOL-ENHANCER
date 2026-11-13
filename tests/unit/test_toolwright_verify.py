@@ -10,7 +10,7 @@ from pathlib import Path
 from tests import support
 
 from toolwright_cli import verify
-from toolwright_cli.paths import ToolwrightError
+from toolwright_cli.paths import ToolWrightError
 
 
 def write_config(root: Path, body: str) -> Path:
@@ -36,28 +36,28 @@ class ConfigTests(unittest.TestCase):
 
     def test_missing_config_is_an_error(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            with self.assertRaises(ToolwrightError):
+            with self.assertRaises(ToolWrightError):
                 verify.load_verification_config(Path(directory))
 
     def test_missing_verify_table_is_an_error(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             write_config(root, "[governance]\nmax_iterations = 5\n")
-            with self.assertRaises(ToolwrightError):
+            with self.assertRaises(ToolWrightError):
                 verify.load_verification_config(root)
 
     def test_missing_command_is_an_error(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             write_config(root, '[verify.checks.ok]\ntimeout = 5\n')
-            with self.assertRaises(ToolwrightError):
+            with self.assertRaises(ToolWrightError):
                 verify.load_verification_config(root)
 
     def test_invalid_check_name_is_an_error(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             write_config(root, '[verify.checks."bad name"]\ncommand = "true"\n')
-            with self.assertRaises(ToolwrightError):
+            with self.assertRaises(ToolWrightError):
                 verify.load_verification_config(root)
 
 
@@ -99,7 +99,7 @@ class ExecutionTests(unittest.TestCase):
     def test_unknown_only_check_is_an_error(self) -> None:
         root = self._root()
         checks, _ = verify.load_verification_config(root)
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             verify.run_verification_checks(root, checks, only=["nope"], use_cache=False)
 
     def test_summary_counts(self) -> None:
@@ -188,7 +188,7 @@ class CacheTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             write_config(root, '[verify.checks.cache]\ncommand = "true"\ninputs = ["/etc/passwd"]\n')
-            with self.assertRaises(ToolwrightError):
+            with self.assertRaises(ToolWrightError):
                 verify.load_verification_config(root)
 
     def test_invalid_validator_mode_is_rejected(self) -> None:
@@ -198,7 +198,7 @@ class CacheTests(unittest.TestCase):
                 root,
                 '[verify.checks.cache]\ncommand = "true"\n\n[governance]\nvalidator_mode = "loose"\n',
             )
-            with self.assertRaises(ToolwrightError):
+            with self.assertRaises(ToolWrightError):
                 verify.load_verification_config(root)
 
     def test_missing_input_is_an_error(self) -> None:
@@ -209,7 +209,7 @@ class CacheTests(unittest.TestCase):
                 '[verify.checks.cache]\ncommand = "true"\ninputs = ["missing.txt"]\n',
             )
             checks, _ = verify.load_verification_config(root)
-            with self.assertRaises(ToolwrightError):
+            with self.assertRaises(ToolWrightError):
                 verify.run_verification_checks(root, checks)
 
 

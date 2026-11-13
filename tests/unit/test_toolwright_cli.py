@@ -19,7 +19,7 @@ from tests import support
 import toolwright_cli
 from toolwright_cli import cli, installer, locking
 from toolwright_cli.process import capture_command
-from toolwright_cli.paths import ToolwrightError
+from toolwright_cli.paths import ToolWrightError
 
 
 class VersionTests(unittest.TestCase):
@@ -127,7 +127,7 @@ class ComponentTests(unittest.TestCase):
         from toolwright_cli.profiles import load_profiles, resolve_components
 
         profiles = load_profiles(support.REPO_ROOT)
-        with self.assertRaises(ToolwrightError):
+        with self.assertRaises(ToolWrightError):
             resolve_components(profiles, "minimal", "agents,nonsense")
 
     def test_explicit_only_overrides_profile(self) -> None:

@@ -12,7 +12,7 @@ from pathlib import Path
 from tests import support
 
 from toolwright_cli import catalog
-from toolwright_cli.paths import ToolwrightError
+from toolwright_cli.paths import ToolWrightError
 
 
 class CatalogRepositoryTests(unittest.TestCase):
@@ -37,7 +37,7 @@ class CatalogRepositoryTests(unittest.TestCase):
         self.assertEqual(catalog.search_catalog(document, "   "), [])
 
     def test_missing_catalog_is_an_error(self) -> None:
-        with self.assertRaises(ToolwrightError) as raised:
+        with self.assertRaises(ToolWrightError) as raised:
             catalog.load_catalog(Path("/tmp/definitely-not-a-repo"))
         self.assertIn("catalog build", str(raised.exception))
 

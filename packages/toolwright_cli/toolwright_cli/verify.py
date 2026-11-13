@@ -24,7 +24,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from .paths import ToolwrightError
+from .paths import ToolWrightError
 
 DEFAULT_TIMEOUT = 900
 MAX_OUTPUT = 8000
@@ -56,57 +56,57 @@ class Result:
 
 def validate_check_name(name: str) -> None:
     if not re.match(NAME_PATTERN, name):
-        raise ToolwrightError(f"invalid check name: {name}")
+        raise ToolWrightError(f"invalid check name: {name}")
 
 
 def load_verification_config(root: Path, path: Path | None = None) -> tuple[dict[str, Check], dict[str, Any]]:
     config_path = path or root / ".toolwright/config.toml"
     if not config_path.is_file():
-        raise ToolwrightError(f"missing verification config: {config_path}")
+        raise ToolWrightError(f"missing verification config: {config_path}")
     try:
         data = tomllib.loads(config_path.read_text(encoding="utf-8"))
     except tomllib.TOMLDecodeError as error:
-        raise ToolwrightError(f"{config_path}: invalid TOML: {error}") from error
+        raise ToolWrightError(f"{config_path}: invalid TOML: {error}") from error
     if not isinstance(data, dict):
-        raise ToolwrightError(f"{config_path}: configuration must be a table")
+        raise ToolWrightError(f"{config_path}: configuration must be a table")
 
     verify_section = data.get("verify")
     if not isinstance(verify_section, dict):
-        raise ToolwrightError(f"{config_path}: missing [verify] table")
+        raise ToolWrightError(f"{config_path}: missing [verify] table")
     default_timeout = verify_section.get("timeout", DEFAULT_TIMEOUT)
     if not isinstance(default_timeout, (int, float)) or default_timeout <= 0:
-        raise ToolwrightError(f"{config_path}: verify.timeout must be a positive number")
+        raise ToolWrightError(f"{config_path}: verify.timeout must be a positive number")
 
     checks_section = verify_section.get("checks")
     if not isinstance(checks_section, dict) or not checks_section:
-        raise ToolwrightError(f"{config_path}: missing [verify.checks.<name>] tables")
+        raise ToolWrightError(f"{config_path}: missing [verify.checks.<name>] tables")
 
     checks: dict[str, Check] = {}
     for name, entry in checks_section.items():
         validate_check_name(name)
         if not isinstance(entry, dict):
-            raise ToolwrightError(f"{config_path}: verify.checks.{name} must be a table")
+            raise ToolWrightError(f"{config_path}: verify.checks.{name} must be a table")
         command = entry.get("command")
         if not isinstance(command, str) or not command.strip():
-            raise ToolwrightError(f"{config_path}: verify.checks.{name}.command is required")
+            raise ToolWrightError(f"{config_path}: verify.checks.{name}.command is required")
         timeout = entry.get("timeout", default_timeout)
         if not isinstance(timeout, (int, float)) or timeout <= 0:
-            raise ToolwrightError(f"{config_path}: verify.checks.{name}.timeout must be positive")
+            raise ToolWrightError(f"{config_path}: verify.checks.{name}.timeout must be positive")
         inputs = entry.get("inputs", [])
         if not isinstance(inputs, list) or not all(isinstance(item, str) for item in inputs):
-            raise ToolwrightError(f"{config_path}: verify.checks.{name}.inputs must be a list of paths")
+            raise ToolWrightError(f"{config_path}: verify.checks.{name}.inputs must be a list of paths")
         for item in inputs:
             candidate = Path(item)
             if candidate.is_absolute() or ".." in candidate.parts:
-                raise ToolwrightError(f"{config_path}: verify.checks.{name}.inputs must stay inside the repository")
+                raise ToolWrightError(f"{config_path}: verify.checks.{name}.inputs must stay inside the repository")
         checks[name] = Check(name=name, command=command, timeout=float(timeout), inputs=tuple(inputs))
 
     governance = data.get("governance", {})
     if not isinstance(governance, dict):
-        raise ToolwrightError(f"{config_path}: governance must be a table")
+        raise ToolWrightError(f"{config_path}: governance must be a table")
     mode = governance.get("validator_mode", "advisory")
     if mode not in {"off", "advisory", "strict"}:
-        raise ToolwrightError(f"{config_path}: governance.validator_mode must be off, advisory, or strict")
+        raise ToolWrightError(f"{config_path}: governance.validator_mode must be off, advisory, or strict")
     return checks, governance
 
 
@@ -135,7 +135,7 @@ def digest_input_paths(root: Path, inputs: tuple[str, ...]) -> str:
     for relative in sorted(inputs):
         path = root / relative
         if not path.exists():
-            raise ToolwrightError(f"cache input does not exist: {relative}")
+            raise ToolWrightError(f"cache input does not exist: {relative}")
         files = [path] if path.is_file() else sorted(item for item in path.rglob("*") if is_cache_input_file(item))
         for file in files:
             digest.update(file.relative_to(root).as_posix().encode("utf-8"))
@@ -264,7 +264,7 @@ def run_verification_checks(
     selected = list(only) if only else list(checks)
     unknown = [name for name in selected if name not in checks]
     if unknown:
-        raise ToolwrightError(f"unknown checks: {', '.join(unknown)}")
+        raise ToolWrightError(f"unknown checks: {', '.join(unknown)}")
     directory = cache_dir or root / ".toolwright/cache/verify"
     results: list[Result] = []
     for name in selected:

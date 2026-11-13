@@ -31,7 +31,7 @@ from . import specs as specs_module
 from . import stats as stats_module
 from . import verify as verify_module
 from .installer import install, list_backups, uninstall
-from .paths import ToolwrightError, find_repo_root, resolve_target
+from .paths import ToolWrightError, find_repo_root, resolve_target
 from .process import run_command
 from .profiles import DEFAULT_PROFILE, load_profiles, resolve_components, verify_profiles
 from .updater import check_for_updates
@@ -305,7 +305,7 @@ def _command_install(args: argparse.Namespace) -> int:
 def _command_uninstall(args: argparse.Namespace) -> int:
     target = resolve_target(args.target)
     if args.apply and not args.yes:
-        raise ToolwrightError("refusing to remove files without --yes")
+        raise ToolWrightError("refusing to remove files without --yes")
     result = uninstall(target=target, apply=args.apply, force=args.force, purge=args.purge)
     if args.json:
         emit_payload(result, True)
@@ -359,12 +359,12 @@ def _command_rollback(args: argparse.Namespace) -> int:
                 print(f"  {name}")
         return 0
     if not args.backup:
-        raise ToolwrightError("--apply requires --backup DIR")
+        raise ToolWrightError("--apply requires --backup DIR")
     if not args.yes:
-        raise ToolwrightError("refusing to restore without --yes")
+        raise ToolWrightError("refusing to restore without --yes")
     backup = Path(args.backup).expanduser().resolve()
     if not backup.is_dir():
-        raise ToolwrightError(f"backup directory not found: {backup}")
+        raise ToolWrightError(f"backup directory not found: {backup}")
     script = resolve_repository_root(args) / "scripts/maintenance/restore-config.sh"
     run_command(["bash", str(script), str(backup), "project"], cwd=target)
     print(f"restored {backup} into {target}")
@@ -389,7 +389,7 @@ def _command_profile(args: argparse.Namespace) -> int:
     if action == "show":
         profiles = load_profiles(root)
         if args.name not in profiles:
-            raise ToolwrightError(f"unknown profile: {args.name}")
+            raise ToolWrightError(f"unknown profile: {args.name}")
         profile = profiles[args.name]
         payload = {
             "name": profile.name,
@@ -564,13 +564,13 @@ def _command_govern(args: argparse.Namespace) -> int:
         return 0
     record_path = Path(args.record).expanduser()
     if not record_path.is_file():
-        raise ToolwrightError(f"record not found: {record_path}")
+        raise ToolWrightError(f"record not found: {record_path}")
     try:
         record = json.loads(record_path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as error:
-        raise ToolwrightError(f"{record_path}: invalid JSON: {error}") from error
+        raise ToolWrightError(f"{record_path}: invalid JSON: {error}") from error
     if not isinstance(record, dict):
-        raise ToolwrightError(f"{record_path}: run record must be a JSON object")
+        raise ToolWrightError(f"{record_path}: run record must be a JSON object")
     _, governance = verify_module.load_verification_config(root)
     evaluation = governance_module.evaluate_record(record, governance)
     if args.json:
@@ -638,7 +638,7 @@ def _command_task(args: argparse.Namespace) -> int:
             print(f"WIP limit: {result['wip_limit']}")
         return 0
     if args.remove and not args.yes:
-        raise ToolwrightError("refusing to remove a worktree without --yes")
+        raise ToolWrightError("refusing to remove a worktree without --yes")
     task = board_module.manage_worktree(root, args.identifier, remove=args.remove, force=args.force)
     if args.json:
         emit_payload({"id": task.identifier, "worktree": task.worktree}, True)
@@ -680,7 +680,7 @@ def _command_memory(args: argparse.Namespace) -> int:
         return 0
     if action == "prune":
         if args.apply and not args.yes:
-            raise ToolwrightError("refusing to delete memory without --yes")
+            raise ToolWrightError("refusing to delete memory without --yes")
         expired = memory_module.prune_expired_entries(root, apply=args.apply)
         if args.json:
             emit_payload({"expired": [item.identifier for item in expired], "applied": args.apply}, True)
@@ -832,7 +832,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     }
     try:
         return handlers[args.command](args)
-    except ToolwrightError as error:
+    except ToolWrightError as error:
         print(f"toolwright: {error}", file=sys.stderr)
         return error.exit_code
     except subprocess.CalledProcessError as error:
