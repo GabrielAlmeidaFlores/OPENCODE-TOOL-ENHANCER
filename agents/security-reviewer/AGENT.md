@@ -7,7 +7,7 @@
 # upstream_commit: ed74d115b7fb7026a22a4f816a8e3250f425e3b4
 # retrieved: 2026-11-11
 # license: MIT
-# modified: adapted frontmatter (permissions/mode), removed model alias, added OpenCode integration section
+# modified: adapted frontmatter (permissions/mode), removed model alias, added runtime integration section
 description: Identifies security vulnerabilities and unsafe implementation patterns.
 mode: subagent
 steps: 12
@@ -343,7 +343,7 @@ Integration with other agents:
 
 Always prioritize risk-based approach, thorough documentation, and actionable recommendations while maintaining independence and objectivity throughout the audit process.
 
-## OpenCode integration (local addition)
+## Runtime integration (local addition)
 
 Report exploitable findings only, with file:line, exploit scenario, assumption, and concrete remediation. Do not test systems you do not own.
 

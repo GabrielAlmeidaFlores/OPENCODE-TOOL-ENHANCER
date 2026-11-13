@@ -1,6 +1,6 @@
 # toolwright-cli
 
-Command-line interface for ToolWright.
+Command-line interface for ToolWright. The `install`, `uninstall`, `update`, `doctor`, and `compat` commands target the optional OpenCode adapter. The core agents, commands, skills, and rules do not require OpenCode; mappings for Claude, GitHub Copilot, and ChatGPT/Codex are documented in `docs/compatibility/`.
 
 This package wraps the repository's existing installer, validator, backup, and
 restore scripts. It does not reimplement them, and it never stages or commits Git

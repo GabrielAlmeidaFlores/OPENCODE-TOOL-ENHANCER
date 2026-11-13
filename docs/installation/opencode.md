@@ -1,8 +1,10 @@
 Repository: https://github.com/GabrielAlmeidaFlores/ToolWright
 
-# Install OpenCode V2 and this configuration
+# OpenCode Adapter
 
-> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
+> **Status:** Stable · **Last verified:** 2026-11-13 · **Evidence:** verified locally and in CI
+
+This is the OpenCode adapter guide. OpenCode is optional; the core agents and rules are provider-neutral. See [Platform Compatibility](../compatibility/README.md) for the other adapters.
 
 ## Prerequisites
 

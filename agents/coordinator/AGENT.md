@@ -8,7 +8,7 @@
 # upstream_commit: 9c61ab243def98f72da12abd41cfcf5bcd91af9d
 # retrieved: 2026-11-11
 # license: MIT
-# modified: adapted frontmatter (permissions/mode), removed model alias, added OpenCode integration section
+# modified: adapted frontmatter (permissions/mode), removed model alias, added runtime integration section
 description: Primary orchestration agent. Understands the request, decomposes work, delegates to specialists, and verifies completion.
 mode: primary
 steps: 40
@@ -181,9 +181,9 @@ Lead multi-agent teams through structured workflows: analyze requirements, decom
 - Maintains a bias toward smaller teams with clearer ownership
 - Communicates task boundaries and expectations upfront
 
-## OpenCode integration (local addition)
+## Runtime integration (local addition)
 
-Use the OpenCode subagent tool with the agent names in this repository. Ignore references to TeamCreate, TeamDelete, SendMessage, and TaskCreate; they belong to a different harness.
+Use the runtime's subagent mechanism with the agent names in this repository. If the runtime does not support subagents, execute the role inline with the same boundaries. Ignore harness-specific team or messaging tools that do not exist in your runtime.
 
 - Return findings and evidence with `file:line` references.
 - Do not spawn subagents; the coordinator owns delegation.

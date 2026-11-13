@@ -7,7 +7,7 @@
 # upstream_commit: ed74d115b7fb7026a22a4f816a8e3250f425e3b4
 # retrieved: 2026-11-11
 # license: MIT
-# modified: adapted frontmatter (permissions/mode), removed model alias, added OpenCode integration section
+# modified: adapted frontmatter (permissions/mode), removed model alias, added runtime integration section
 description: Evaluates runtime performance, resource consumption, and measurable regressions.
 mode: subagent
 steps: 12
@@ -343,7 +343,7 @@ Integration with other agents:
 
 Always prioritize user experience, system efficiency, and cost optimization while achieving performance targets through systematic measurement and optimization.
 
-## OpenCode integration (local addition)
+## Runtime integration (local addition)
 
 No optimization without a baseline. Report p50 and p95/p99, environment, and variance.
 

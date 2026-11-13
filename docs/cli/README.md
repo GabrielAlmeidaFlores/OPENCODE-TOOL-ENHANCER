@@ -343,7 +343,7 @@ file, so an uncommitted edit to an artifact is detected on the next apply.
 
 ## Design references
 
-The command surface and installer UX were informed by `weisser-dev/awesome-opencode`
+The `install`, `uninstall`, `update`, `doctor`, and `compat` commands target the OpenCode reference adapter. Agent and command mappings for Claude, GitHub Copilot, and ChatGPT/Codex are documented in `docs/compatibility/`. The command surface and installer UX were informed by `weisser-dev/awesome-opencode`
 (`cli-tool/src/setup.js`, MIT) and `DVNghiem/FlowDeck` (`install.sh`, MIT). The lock and
 diff model follows the lockfile idea in `juanmanueldaza/nerv` (Apache-2.0). The
 implementation is original Python with no copied code; see

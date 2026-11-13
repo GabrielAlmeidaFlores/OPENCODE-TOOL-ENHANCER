@@ -8,7 +8,7 @@
 # upstream_commit: 9c61ab243def98f72da12abd41cfcf5bcd91af9d
 # retrieved: 2026-11-11
 # license: MIT
-# modified: adapted frontmatter (permissions/mode), removed model alias, added OpenCode integration section
+# modified: adapted frontmatter (permissions/mode), removed model alias, added runtime integration section
 description: Evaluates architecture, boundaries, abstractions, and technical decisions before implementation.
 mode: subagent
 steps: 10
@@ -226,7 +226,7 @@ Elite software architect focused on ensuring architectural integrity, scalabilit
 - "Review this event-driven system design for proper decoupling"
 - "Evaluate our CI/CD pipeline architecture for scalability and security"
 
-## OpenCode integration (local addition)
+## Runtime integration (local addition)
 
 You review decisions; you do not implement them. Prefer reversible decisions and require a second concrete use case before recommending an abstraction.
 

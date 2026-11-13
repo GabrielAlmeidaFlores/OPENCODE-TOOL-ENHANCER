@@ -33,26 +33,27 @@
 
 ## Compatibility at a glance
 
-ToolWright is **native on OpenCode** and provides portable agent, command, skill, and instruction content, with mapping guides for the other major coding assistants. Only OpenCode is runtime-verified in CI; the other integrations are documented mappings.
+ToolWright includes a **fully verified OpenCode adapter** and provides portable agent, command, skill, and instruction content, with mapping guides for the other major coding assistants. OpenCode is optional. Only the OpenCode adapter is runtime-verified in CI; the other integrations are documented mappings.
 
 | Platform | Integration | What is portable | What is not portable |
 |---|---|---|---|
-| OpenCode 2.2.x | Native configuration, agents, commands, skills, MCP, Ralph | Everything | Nothing in the default profile |
+| OpenCode 2.2.x | Native adapter (optional), fully verified | Agents, commands, skills, MCP, Ralph | Nothing in the OpenCode adapter |
 | GitHub Copilot | Repository and path-specific instructions, `AGENTS.md`, prompt files | Agent roles, project rules, command prompts | OpenCode permissions, subagent spawning, Ralph |
 | Claude Code | `CLAUDE.md`, `.claude/agents/`, skills, commands | Agent roles, project rules, commands, skills | OpenCode permissions, Ralph backend assumptions |
 | OpenAI GPT / Codex | `AGENTS.md`, `.codex/agents/*.toml`, `~/.codex/AGENTS.md` | Agent roles, project rules, subagent definitions | OpenCode permissions, Ralph backend assumptions |
 
-Start with the [compatibility guide](docs/compatibility/README.md). The OpenCode integration remains the reference implementation; the other guides map the same roles and rules onto each platform's native files.
+Start with the [compatibility guide](docs/compatibility/README.md). The OpenCode adapter is the reference implementation; the other guides map the same roles and rules onto each platform's native files.
 
 ## Why this exists
 
-OpenCode is a strong coding agent, but a default installation is still a single general-purpose agent with an open-ended toolset. That works for small tasks and becomes expensive, inconsistent, and hard to audit on real repositories.
+A default coding agent is still a single general-purpose agent with an open-ended toolset. That works for small tasks and becomes expensive, inconsistent, and hard to audit on real repositories.
 
-This repository provides a **complete, reproducible profile** that changes the default operating model:
+ToolWright provides a **provider-neutral core with platform adapters** that changes the default operating model:
 
 - a custom primary agent that plans and delegates instead of editing everything itself;
 - eleven specialized subagents with least-privilege permissions;
-- Ralph Orchestrator for multi-step work, review gates, and persistent state;
+- optional Ralph Orchestrator for multi-step work, review gates, and persistent state;
+- adapter guides for OpenCode, Claude, ChatGPT/Codex, and GitHub Copilot;
 - a code-intelligence stack that retrieves symbols and structure instead of whole files;
 - explicit rules for provenance, Git safety, and documentation comments.
 
@@ -62,7 +63,8 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 
 | Area | Contents | Entry point |
 | --- | --- | --- |
-| OpenCode profile | Full and minimal V2 configurations | [`configs/opencode/`](configs/opencode) |
+| Platform adapters | OpenCode reference adapter plus Claude, Copilot, and Codex mappings | [`docs/compatibility/`](docs/compatibility) |
+| OpenCode adapter | Full and minimal V2 configurations | [`configs/opencode/`](configs/opencode) |
 | Agents | 1 primary coordinator + 11 specialists | [`agents/`](agents) |
 | Skills | 10 sourced skills with supporting files | [`skills/`](skills) |
 | Commands | 8 slash commands | [`commands/`](commands) |
@@ -79,7 +81,7 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 | Observability | Cost, tokens, tool failures, arm comparison | [`docs/cost-optimization/observability.md`](docs/cost-optimization/observability.md) |
 | Evals and pilots | Deterministic checks and isolated real-repository runs | [`docs/evals/`](docs/evals), [`docs/pilots/`](docs/pilots) |
 | Task board | Optional Markdown board with worktrees | [`.toolwright/board/README.md`](.toolwright/board/README.md) |
-| Plugin | Opt-in memory injection for OpenCode | [`docs/plugin/README.md`](docs/plugin/README.md) |
+| Plugin | Opt-in memory injection for the OpenCode adapter | [`docs/plugin/README.md`](docs/plugin/README.md) |
 | Examples | TypeScript, C#, multi-agent workflows | [`examples/`](examples) |
 | Benchmarks | Methodology, tasks, harness, results | [`benchmarks/`](benchmarks) |
 | Documentation | Research, decisions, guides, provenance | [`docs/`](docs) |
@@ -89,10 +91,10 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 | Area | Current status |
 | --- | --- |
 | Static validation | Verified, including links and provenance |
-| Agent discovery | Verified with OpenCode 2.2.7 |
+| Agent discovery | Verified with the OpenCode 2.2.7 reference adapter; other adapters are documented mappings |
 | TypeScript and C# examples | Verified |
 | Harness smoke execution | Verified on one TypeScript task; not a benchmark result |
-| Command runtime | All eight commands verified on the TypeScript fixture |
+| Command runtime | All eight commands verified on the TypeScript fixture through the reference adapter |
 | Skill runtime | All ten skills verified through the `skill` tool |
 | MCP startup overhead | Narrow `debug agents` measurement recorded |
 | Benchmarks | Deferred by decision; no published results |
@@ -110,18 +112,18 @@ The goal is not the smallest prompt. The goal is the **lowest total cost for a c
 
 ```mermaid
 flowchart LR
-    H[Human] --> R[Ralph Orchestrator]
-    R --> O[OpenCode 2.2.x]
-    O --> C[Coordinator]
-    C --> S[Specialist subagents]
-    O --> T[Tests · lint · typecheck]
-    O --> I[Code intelligence]
+    H[Human] --> R[Ralph Orchestrator optional]
+    R --> P[Platform adapter]
+    P --> C[Coordinator]
+    C --> S[Specialist agents]
+    P --> T[Tests · lint · typecheck]
+    P --> I[Code intelligence]
     I --> SR[Serena MCP]
     I --> CG[CodeGraph MCP]
     I --> AG[ast-grep · ripgrep]
 ```
 
-Ralph owns the loop and quality gates. OpenCode owns agent behavior, permissions, tools, and context. Deterministic tools provide evidence without spending model tokens.
+The platform adapter maps the provider-neutral core to OpenCode, Claude, ChatGPT/Codex, or GitHub Copilot. Ralph owns the loop and quality gates when enabled. Deterministic tools provide evidence without spending model tokens.
 
 ## Quick start
 
@@ -129,9 +131,9 @@ Ralph owns the loop and quality gates. OpenCode owns agent behavior, permissions
 
 - macOS or Linux. Windows is best-effort; use WSL or Git Bash.
 - `git`, Node.js 20 or newer, `python3`, and `ripgrep`.
-- An OpenCode provider credential, configured with `opencode auth login`.
+- A credential for the platform you choose. OpenCode is one adapter, not a requirement.
 
-See [OpenCode installation](docs/installation/opencode.md) for platform details.
+See [Platform compatibility](docs/compatibility/README.md) for adapter details.
 
 ### 2. Inspect the installer
 
@@ -145,7 +147,9 @@ cd ToolWright
 
 The installer defaults to check-only, prints every action, and never edits `~/.config/opencode`.
 
-### 3. Install the OpenCode profile
+### 3. Choose a platform adapter
+
+**OpenCode — reference adapter, fully verified**
 
 ```bash
 ./scripts/installation/install.sh --apply --only opencode,agents,commands,skills,ralph
@@ -162,6 +166,14 @@ toolwright install --profile minimal --target /path/to/project --apply
 This writes `.opencode/` and `.ralph/` in the target project. To replace an existing
 managed configuration without leaving removed files behind, add `--clean`.
 
+**Claude Code, GitHub Copilot, or ChatGPT/Codex**
+
+Use the mapping guides. They cover `CLAUDE.md`, `.claude/agents/`, `.github/copilot-instructions.md`, `AGENTS.md`, and `.codex/agents/*.toml`. These adapters are documented mappings, not runtime-verified installers.
+
+- [Claude Code](docs/compatibility/claude.md)
+- [GitHub Copilot](docs/compatibility/github-copilot.md)
+- [OpenAI GPT and Codex](docs/compatibility/openai-gpt.md)
+
 ### 4. Install the code-intelligence tools
 
 ```bash
@@ -172,21 +184,33 @@ Serena and ast-grep are installed by the script. CodeGraph uses its upstream ins
 
 ### 5. Verify
 
+OpenCode reference adapter:
+
 ```bash
 opencode --version
 opencode debug agents
 opencode mcp list
-./scripts/validation/validate.sh
-make test
 ```
 
-Expected: OpenCode 2.2.x and `coordinator` plus eleven subagents. After Serena and CodeGraph are installed, `opencode mcp list` should show both connected.
+All adapters:
+
+```bash
+./scripts/validation/validate.sh
+make test
+toolwright doctor
+```
+
+Expected for OpenCode: version 2.2.x and `coordinator` plus eleven subagents. After Serena and CodeGraph are installed, `opencode mcp list` should show both connected. For Claude, Copilot, or Codex, confirm that the mapped instruction and agent files are present; those adapters are not runtime-verified in CI.
 
 ### 6. Run your first task
+
+With the OpenCode adapter:
 
 ```bash
 opencode run --agent coordinator "Summarize this repository and propose the next task"
 ```
+
+With another adapter, start that platform in the repository and reference the mapped coordinator role from `docs/compatibility/`.
 
 For a multi-step feature with review gates, use Ralph through the isolated runner. Ralph 2.10.1 auto-commits during landing and has no switch to disable it, so do not run it directly in a repository that must remain uncommitted.
 
@@ -203,7 +227,10 @@ The runner keeps Ralph's commits inside a separate clone and exports the result 
 
 | Component | Guide | Notes |
 | --- | --- | --- |
-| OpenCode 2.2.x | [docs/installation/opencode.md](docs/installation/opencode.md) | Install, configure providers, verify |
+| OpenCode 2.2.x | [docs/installation/opencode.md](docs/installation/opencode.md) | Optional reference adapter; install, configure providers, verify |
+| Claude Code | [docs/compatibility/claude.md](docs/compatibility/claude.md) | `CLAUDE.md`, `.claude/agents/`, skills |
+| GitHub Copilot | [docs/compatibility/github-copilot.md](docs/compatibility/github-copilot.md) | Instructions, path rules, prompt files |
+| OpenAI GPT / Codex | [docs/compatibility/openai-gpt.md](docs/compatibility/openai-gpt.md) | `AGENTS.md`, `.codex/agents/*.toml` |
 | Code intelligence | [docs/installation/code-intelligence.md](docs/installation/code-intelligence.md) | ripgrep, ast-grep, Serena, CodeGraph |
 | Ralph Orchestrator | [docs/installation/ralph.md](docs/installation/ralph.md) | Install, preflight, auto-commit warning |
 | Validation | [docs/validation-checklist.md](docs/validation-checklist.md) | Automated and manual checks |

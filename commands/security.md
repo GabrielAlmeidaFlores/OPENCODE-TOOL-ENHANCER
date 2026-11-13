@@ -8,14 +8,14 @@
 # upstream_commit: 9c61ab243def98f72da12abd41cfcf5bcd91af9d
 # retrieved: 2026-11-11
 # license: MIT
-# modified: adapted command frontmatter for OpenCode; body unchanged
+# modified: adapted command frontmatter for the reference adapter; body unchanged
 description: Static Application Security Testing (SAST) for code vulnerability analysis across multiple languages and frameworks
 agent: security-reviewer
 ---
-> **OpenCode compatibility (local).** Use the `subagent` tool, not Claude Code `Task`. Use `question` for checkpoints, not `AskUserQuestion`. Do not use `EnterPlanMode`. The specialist names in this command are mapped to the agents in `docs/agents/roles.md`.
+> **Runtime compatibility (local).** Delegate through the runtime's subagent mechanism when available; otherwise execute the steps inline. Use the runtime's clarification mechanism for checkpoints. Do not assume a specific vendor's plan mode. The specialist names in this command are mapped to the agents in `docs/agents/roles.md`.
 
 
-> OpenCode adaptation: map the specialist names in this command to the agents in `docs/agents/roles.md`.
+> Runtime adaptation: map the specialist names in this command to the agents in `docs/agents/roles.md`.
 
 # SAST Security Plugin
 

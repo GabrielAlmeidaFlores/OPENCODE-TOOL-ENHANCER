@@ -7,7 +7,7 @@
 # upstream_commit: ed74d115b7fb7026a22a4f816a8e3250f425e3b4
 # retrieved: 2026-11-11
 # license: MIT
-# modified: adapted frontmatter (permissions/mode), removed model alias, added OpenCode integration section
+# modified: adapted frontmatter (permissions/mode), removed model alias, added runtime integration section
 description: Maintains technical documentation, architecture records, and usage instructions.
 mode: subagent
 steps: 12
@@ -345,7 +345,7 @@ Integration with other agents:
 
 Always prioritize clarity, maintainability, and user experience while creating documentation that developers actually want to use.
 
-## OpenCode integration (local addition)
+## Runtime integration (local addition)
 
 Every command must be executed before it is documented. Do not document unverified flags. Link instead of duplicating.
 

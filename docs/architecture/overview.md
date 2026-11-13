@@ -2,6 +2,8 @@
 
 > **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally
 
+This page describes the OpenCode reference adapter. The provider-neutral core is under `agents/`, `commands/`, `skills/`, and `AGENTS.md`; the adapter mapping for Claude, GitHub Copilot, and ChatGPT/Codex is described in `docs/compatibility/`.
+
 ## Layers
 
 ```text

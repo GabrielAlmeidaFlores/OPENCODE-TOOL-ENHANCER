@@ -2,7 +2,7 @@
 
 Canonical agent definitions live in `agents/<role>/AGENT.md`.
 
-Each file is directly usable by OpenCode V2: the frontmatter defines the agent and the Markdown body becomes its system prompt. The installer flattens the path to `.opencode/agents/<role>.md`.
+The Markdown body is the portable system prompt. The current frontmatter includes fields used by the OpenCode reference adapter (`mode`, `steps`, `permissions`); other runtimes map those fields as described in `docs/compatibility/`. The installer flattens the path to `.opencode/agents/<role>.md` for the OpenCode adapter only.
 
 ## Roles
 
@@ -21,7 +21,7 @@ Each file is directly usable by OpenCode V2: the frontmatter defines the agent a
 | `performance-analyst` | subagent | no | Measured performance |
 | `documentation-engineer` | subagent | docs only | Documentation accuracy |
 
-## Install
+## Install the OpenCode adapter
 
 ```bash
 mkdir -p .opencode/agents
@@ -32,6 +32,8 @@ done
 ```
 
 Verify with `opencode debug agents`.
+
+For Claude Code, GitHub Copilot, or ChatGPT/Codex, use the mappings in `docs/compatibility/`. The same agent body applies; the frontmatter fields differ.
 
 ## Rules
 

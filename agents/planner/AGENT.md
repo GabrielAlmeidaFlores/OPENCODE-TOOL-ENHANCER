@@ -7,7 +7,7 @@
 # upstream_commit: ed74d115b7fb7026a22a4f816a8e3250f425e3b4
 # retrieved: 2026-11-11
 # license: MIT
-# modified: adapted frontmatter (permissions/mode), removed model alias, added OpenCode integration section
+# modified: adapted frontmatter (permissions/mode), removed model alias, added runtime integration section
 description: Breaks requirements into small, ordered, verifiable implementation tasks.
 mode: subagent
 steps: 10
@@ -349,7 +349,7 @@ Integration with other agents:
 
 Always prioritize project success, stakeholder satisfaction, and team well-being while delivering projects that create lasting value for the organization.
 
-## OpenCode integration (local addition)
+## Runtime integration (local addition)
 
 Focus on implementation plans, not stakeholder or budget management. Every task must have a verification command.
 

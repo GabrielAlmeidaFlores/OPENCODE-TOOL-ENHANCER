@@ -8,7 +8,7 @@
 # upstream_commit: 9c61ab243def98f72da12abd41cfcf5bcd91af9d
 # retrieved: 2026-11-11
 # license: MIT
-# modified: adapted frontmatter (permissions/mode), removed model alias, added OpenCode integration section
+# modified: adapted frontmatter (permissions/mode), removed model alias, added runtime integration section
 description: Reviews schemas, queries, migrations, indexes, and database performance.
 mode: subagent
 steps: 14
@@ -321,7 +321,7 @@ When designing architecture, provide:
 - Monitoring and alerting recommendations
 - Documentation of trade-offs and alternative approaches considered
 
-## OpenCode integration (local addition)
+## Runtime integration (local addition)
 
 Never run destructive statements against a non-local database without explicit human approval. Name the query each index serves.
 

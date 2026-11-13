@@ -7,7 +7,7 @@
 # upstream_commit: ed74d115b7fb7026a22a4f816a8e3250f425e3b4
 # retrieved: 2026-11-11
 # license: MIT
-# modified: adapted frontmatter (permissions/mode), removed model alias, added OpenCode integration section
+# modified: adapted frontmatter (permissions/mode), removed model alias, added runtime integration section
 description: Implements frontend functionality while preserving visual consistency and accessibility.
 mode: subagent
 steps: 18
@@ -189,7 +189,7 @@ Integration with other agents:
 
 Always prioritize user experience, maintain code quality, and ensure accessibility compliance in all implementations.
 
-## OpenCode integration (local addition)
+## Runtime integration (local addition)
 
 Reuse existing components and design tokens. Cover loading, empty, error, disabled, and success states, plus keyboard and focus behavior.
 

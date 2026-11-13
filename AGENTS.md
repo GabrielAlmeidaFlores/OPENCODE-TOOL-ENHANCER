@@ -6,7 +6,7 @@ Your task is to research, design, document, and build a comprehensive repository
 
 **ToolWright**
 
-The repository must provide a practical, reproducible, and cost-efficient configuration for OpenCode, enhanced with specialized AI agents, orchestration frameworks, code intelligence tools, MCP servers, and development automation.
+The repository must provide a practical, reproducible, and cost-efficient provider-neutral configuration, with adapters for OpenCode, Claude, ChatGPT/Codex, and GitHub Copilot, enhanced with specialized AI agents, orchestration frameworks, code intelligence tools, MCP servers, and development automation.
 
 This is not a theoretical documentation project. Every recommendation must be supported by technical research, official documentation, reproducible commands, configuration examples, and clear implementation instructions.
 
@@ -32,7 +32,7 @@ Before creating configurations or recommending tools, investigate their current 
 
 Use official documentation, GitHub repositories, release notes, technical benchmarks, and independent experiments.
 
-Prioritize documentation updated in 2026 and verify that each recommended tool is still maintained and compatible with the current OpenCode version.
+Prioritize documentation updated in 2026 and verify that each recommended tool is still maintained and compatible with the current supported platform versions.
 
 Do not assume that tools mentioned in this prompt are necessarily the best options.
 
@@ -250,9 +250,9 @@ make lint       # shell syntax and ShellCheck when installed
 - `docs/troubleshooting/ci.md`
 - `docs/validation-checklist.md`
 
-# 3. OpenCode Configuration
+# 3. Agent Runtime Configuration
 
-OpenCode must be the primary coding environment.
+The core agents, commands, skills, and rules must remain provider-neutral. OpenCode is the reference adapter and must stay fully verified; Claude, ChatGPT/Codex, and GitHub Copilot adapters are also required.
 
 Research and document its complete configuration, including:
 
@@ -275,11 +275,11 @@ Research and document its complete configuration, including:
 - Environment variables.
 - Model configuration and model routing.
 
-Use official OpenCode configuration formats and validate every configuration example against the current version.
+Use official configuration formats for each platform and validate every adapter example against the current version.
 
 Create reusable configuration examples that can be copied into other projects.
 
-IMPORTANT: Do not rely on OpenCode's default Build agent as the primary development workflow.
+IMPORTANT: Do not rely on any platform's default general-purpose agent as the primary development workflow.
 
 Create a custom primary agent configuration and specialized agents.
 
@@ -371,7 +371,7 @@ Use specialized models when appropriate, with model names configurable rather th
 
 Prefer a stronger reasoning model for planning and architectural decisions and more economical models for routine implementation, documentation and mechanical tasks.
 
-Create reusable agent instructions and clearly document which roles are implemented through OpenCode, which are implemented through Ralph, and how they communicate.
+Create reusable agent instructions and clearly document which roles are implemented through each platform adapter, which are implemented through Ralph, and how they communicate.
 
 # 6. Code Intelligence and Token Optimization Tools
 
@@ -657,7 +657,7 @@ Do not start by installing every tool.
 - Create research references.
 - Define the initial configuration strategy.
 
-## Phase 3 — OpenCode configuration
+## Phase 3 — Platform adapters
 
 - Implement the custom primary agent.
 - Create specialized subagents.
@@ -727,7 +727,7 @@ Do not start by installing every tool.
 
 At the end of the project, the repository must contain:
 
-- A complete OpenCode configuration guide.
+- Complete platform adapter guides for OpenCode, Claude, ChatGPT/Codex, and GitHub Copilot.
 - A reusable custom primary agent configuration.
 - A collection of specialized agents.
 - A documented multi-agent orchestration setup.
@@ -765,4 +765,4 @@ Clearly identify assumptions, unresolved questions, risks and decisions that req
 
 After presenting the plan, proceed with implementation in small, verifiable stages.
 
-**Success criterion:** A developer should be able to clone ToolWright, follow its documentation, configure OpenCode with specialized agents and orchestration, install the recommended code-intelligence tools, and reproduce a cost-efficient AI-assisted development workflow without relying on OpenCode's default general-purpose agent.
+**Success criterion:** A developer should be able to clone ToolWright, choose a supported platform adapter (OpenCode, Claude, ChatGPT/Codex, or GitHub Copilot), install the specialized agents and optional orchestration, add the recommended code-intelligence tools, and reproduce a cost-efficient AI-assisted development workflow without relying on that platform's default general-purpose agent.

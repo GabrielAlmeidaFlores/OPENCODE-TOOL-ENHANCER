@@ -2,7 +2,7 @@
 
 > **Status:** Stable · **Last verified:** 2026-11-13 · **Evidence:** verified locally; CI green on run 43402329992
 
-A provider-neutral multi-agent development toolkit, native on OpenCode and documented for GitHub Copilot, Claude Code, and OpenAI GPT/Codex. It is built around four pillars:
+A provider-neutral multi-agent development toolkit with a fully verified OpenCode adapter and documented mappings for GitHub Copilot, Claude Code, and OpenAI GPT/Codex. OpenCode is optional. It is built around four pillars:
 
 | Pillar | What it provides |
 |---|---|
@@ -12,6 +12,8 @@ A provider-neutral multi-agent development toolkit, native on OpenCode and docum
 | Optimization | Deterministic verification, governance budgets, cost/token reporting, evals |
 
 ## Start here
+
+The core agents, commands, skills, and rules are provider-neutral. The commands below install the OpenCode reference adapter; choose Claude, GitHub Copilot, or ChatGPT/Codex from the compatibility pages if you use a different platform.
 
 ```bash
 git clone https://github.com/GabrielAlmeidaFlores/ToolWright.git

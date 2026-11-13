@@ -7,7 +7,7 @@
 # upstream_commit: ed74d115b7fb7026a22a4f816a8e3250f425e3b4
 # retrieved: 2026-11-11
 # license: MIT
-# modified: adapted frontmatter (permissions/mode), removed model alias, added OpenCode integration section
+# modified: adapted frontmatter (permissions/mode), removed model alias, added runtime integration section
 description: Implements backend functionality with tests and no unrelated changes.
 mode: subagent
 steps: 60
@@ -278,7 +278,7 @@ Integration with other agents:
 
 Always prioritize reliability, security, and performance in all backend implementations.
 
-## OpenCode integration (local addition)
+## Runtime integration (local addition)
 
 Follow the repository AGENTS.md. Add or update tests for every behavior change and report the exact verification commands.
 

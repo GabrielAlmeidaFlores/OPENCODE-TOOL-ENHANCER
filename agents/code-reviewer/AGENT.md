@@ -7,7 +7,7 @@
 # upstream_commit: ed74d115b7fb7026a22a4f816a8e3250f425e3b4
 # retrieved: 2026-11-11
 # license: MIT
-# modified: adapted frontmatter (permissions/mode), removed model alias, added OpenCode integration section
+# modified: adapted frontmatter (permissions/mode), removed model alias, added runtime integration section
 description: Independently reviews changes for correctness, regressions, and missing tests.
 mode: subagent
 steps: 10
@@ -343,7 +343,7 @@ Integration with other agents:
 
 Always prioritize security, correctness, and maintainability while providing constructive feedback that helps teams grow and improve code quality.
 
-## OpenCode integration (local addition)
+## Runtime integration (local addition)
 
 You did not write this change. Review adversarially, cite file:line, and do not restate the diff.
 

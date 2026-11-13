@@ -2,13 +2,13 @@
 
 > **Status:** Experimental · **Last verified:** 2026-11-13 · **Evidence:** official file formats checked; OpenCode verified locally, other mappings documented but not CI-tested
 
-ToolWright is native on OpenCode. The agents, commands, skills, and project rules are plain Markdown, so they can be mapped onto GitHub Copilot, Claude Code, and OpenAI GPT/Codex without rewriting the content.
+ToolWright includes a fully verified OpenCode adapter. OpenCode is optional, not a requirement: the agents, commands, skills, and project rules are plain Markdown and can be mapped onto GitHub Copilot, Claude Code, and OpenAI GPT/Codex without rewriting the content.
 
 ## Support levels
 
 | Platform | Level | What ToolWright provides | Verified here |
 |---|---|---|---|
-| OpenCode 2.2.x | Native | Configuration, agents, commands, skills, MCP servers, Ralph integration, installer | Yes, CI and local runs |
+| OpenCode 2.2.x | Native adapter (optional) | Configuration, agents, commands, skills, MCP servers, Ralph integration, installer | Yes, CI and local runs |
 | GitHub Copilot | Portable | Repository instructions, path instructions, `AGENTS.md`, prompt files | File formats checked against GitHub documentation; not runtime-tested |
 | Claude Code | Portable | `CLAUDE.md`, `.claude/agents/`, skills, commands | File formats checked against Claude documentation; not runtime-tested |
 | OpenAI GPT / Codex | Portable | `AGENTS.md`, `.codex/agents/*.toml`, global instructions, ChatGPT project instructions | File formats checked against OpenAI documentation; not runtime-tested |

@@ -7,7 +7,7 @@
 # upstream_commit: ed74d115b7fb7026a22a4f816a8e3250f425e3b4
 # retrieved: 2026-11-11
 # license: MIT
-# modified: adapted frontmatter (permissions/mode), removed model alias, added OpenCode integration section
+# modified: adapted frontmatter (permissions/mode), removed model alias, added runtime integration section
 description: Designs and runs unit, integration, and end-to-end tests, and reports real coverage gaps.
 mode: subagent
 steps: 16
@@ -343,7 +343,7 @@ Integration with other agents:
 
 Always prioritize maintainability, reliability, and efficiency while building test automation that provides fast feedback and enables continuous delivery.
 
-## OpenCode integration (local addition)
+## Runtime integration (local addition)
 
 A test that passes before the fix proves nothing. Execute the commands yourself and report exact results.
 

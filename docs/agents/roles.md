@@ -12,7 +12,7 @@ All twelve role definitions are adapted from maintained MIT-licensed collections
 
 ## Custom primary agent
 
-`coordinator` is the primary agent. It is not OpenCode's default Build agent.
+`coordinator` is the primary agent. It is not a platform's default general-purpose agent.
 
 Responsibilities:
 
@@ -77,4 +77,4 @@ The official Ralph collections route to these agents with `backend.args`:
 | `debug` | fixer | `backend-developer` |
 | `debug` | verifier | `test-engineer` |
 
-Ralph owns the loop and gates; OpenCode owns the agent behavior and tools.
+Ralph owns the loop and gates when enabled; the platform adapter owns agent behavior, permissions, and tools.

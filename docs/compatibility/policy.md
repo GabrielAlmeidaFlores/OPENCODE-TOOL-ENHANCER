@@ -6,7 +6,7 @@
 
 | Target | Level | Notes |
 |---|---|---|
-| OpenCode `2.2.x` | Native | Reference runtime; CI pins `@opencode/cli@2.2.7` |
+| OpenCode `2.2.x` | Native adapter (optional) | Reference adapter; CI pins `@opencode/cli@2.2.7` |
 | OpenCode `1.x` | No | Configuration shape differs; migration only |
 | Ralph Orchestrator `2.10.x` | Native (OpenCode backend) | Auto-commit limitation documented |
 | GitHub Copilot | Portable instructions | Documented mapping; not runtime-tested in CI |
