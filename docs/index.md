@@ -2,11 +2,11 @@
 
 > **Status:** Stable · **Last verified:** 2026-11-13 · **Evidence:** verified locally; CI green on run 43402329992
 
-A provider-neutral multi-agent development toolkit with a fully verified OpenCode adapter and documented mappings for GitHub Copilot, Claude Code, and OpenAI GPT/Codex. OpenCode is optional. It is built around four pillars:
+A provider-neutral multi-agent development toolkit with a fully verified OpenCode adapter and installer-generated adapters for GitHub Copilot, Claude Code, and OpenAI GPT/Codex. OpenCode is optional. It is built around four pillars:
 
 | Pillar | What it provides |
 |---|---|
-| Environment | OpenCode V2 configuration, agents, commands, skills, Ralph hats, installer, `toolwright` CLI, and compatibility mappings for Copilot, Claude, and GPT |
+| Environment | OpenCode V2 configuration, agents, commands, skills, Ralph hats, installer, `toolwright` CLI, and installer-generated adapters for Copilot, Claude, and GPT |
 | Orchestration | Ralph as the loop owner, coordinator delegation, risk-based gates |
 | Intelligence | ripgrep, ast-grep, Serena, CodeGraph, Markdown memory, spec artifacts |
 | Optimization | Deterministic verification, governance budgets, cost/token reporting, evals |

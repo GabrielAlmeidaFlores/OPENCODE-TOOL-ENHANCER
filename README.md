@@ -137,25 +137,25 @@ Every diagram uses the same glass-neon pattern: a light translucent fill, a brig
 | **Green** | Resources, verification, and a ready result |
 | **Magenta** | Decisions and quality gates |
 
-1. **Choose an adapter.** The same roles are installed or mapped onto your platform.
+1. **Choose an adapter.** The same roles install as native files for your platform.
 2. **The coordinator takes the request.** It clarifies the outcome, picks the smallest capable specialist, and never edits files itself.
 3. **Specialists do focused work.** They follow the repository rules, use targeted retrieval, and return evidence.
 4. **Quality gates decide when work is done.** Tests, review, and security checks run before you see a change.
 5. **You commit.** Agents leave changes unstaged; the human makes the final decision.
 
 > [!NOTE]
-> The OpenCode adapter is fully verified in CI. Claude Code, GitHub Copilot, and ChatGPT/Codex adapters are documented mappings — useful and copy-paste ready, but not runtime-tested here. See [Platform compatibility](docs/compatibility/README.md).
+> The OpenCode adapter is fully verified in CI. Claude Code, GitHub Copilot, and ChatGPT/Codex adapters are installer-generated. Their install, update, and uninstall paths are validated on a real repository; Copilot CLI and Codex CLI discovery checks passed, while Claude Code runtime discovery remains unverified. See [Platform compatibility](docs/compatibility/README.md) and the [adapter validation record](docs/installation/adapter-validation.md).
 
 ## Platform compatibility
 
-The table below shows what is verified, what is a documented mapping, and where to start on each platform.
+The table below shows what is verified, what is installer-generated, and where to start on each platform.
 
-| Platform | Support level | What ToolWright maps | Best entry point |
+| Platform | Support level | What ToolWright installs | Best entry point |
 |---|---|---|---|
 | **OpenCode 2.2.x** | Native adapter, CI-verified | Agents, commands, skills, MCP, Ralph | [OpenCode adapter](docs/compatibility/opencode.md) |
-| **GitHub Copilot** | Documented mapping | Repository instructions, path instructions, `AGENTS.md`, prompt files | [Copilot guide](docs/compatibility/github-copilot.md) |
-| **Claude Code** | Documented mapping | `CLAUDE.md`, `.claude/agents/`, skills, commands | [Claude guide](docs/compatibility/claude.md) |
-| **ChatGPT / Codex** | Documented mapping | `AGENTS.md`, `.codex/agents/*.toml`, ChatGPT instructions | [GPT/Codex guide](docs/compatibility/openai-gpt.md) |
+| **GitHub Copilot** | Installer-generated adapter | Repository instructions, path instructions, skills, prompts, `AGENTS.md` | [Copilot guide](docs/compatibility/github-copilot.md) |
+| **Claude Code** | Installer-generated adapter | `CLAUDE.md`, `.claude/agents/`, commands, skills | [Claude guide](docs/compatibility/claude.md) |
+| **ChatGPT / Codex** | Installer-generated adapter | `AGENTS.md`, `.codex/agents/*.toml`, ChatGPT instructions | [GPT/Codex guide](docs/compatibility/openai-gpt.md) |
 
 The reusable content is the same everywhere. Only the adapter files and permission model change.
 
@@ -234,14 +234,24 @@ This writes `.opencode/`, `.ralph/`, and `toolwright.lock.json` into the target 
 
 **Claude Code, GitHub Copilot, or ChatGPT / Codex**
 
-Follow the mapping guide for your platform:
+Select the platform adapter explicitly:
+
+```bash
+toolwright install --platform claude  --profile minimal --target /path/to/project --apply
+toolwright install --platform copilot --profile minimal --target /path/to/project --apply
+toolwright install --platform codex   --profile minimal --target /path/to/project --apply
+```
+
+These adapters write native files and track them in `toolwright.lock.json`. Update with the same
+command and remove with `toolwright uninstall --target /path/to/project --apply --yes`.
 
 - [Claude Code](docs/compatibility/claude.md)
 - [GitHub Copilot](docs/compatibility/github-copilot.md)
 - [OpenAI GPT and Codex](docs/compatibility/openai-gpt.md)
+- [Adapter validation record](docs/installation/adapter-validation.md)
 
 > [!IMPORTANT]
-> The CLI installs the OpenCode adapter. Claude, Copilot, and Codex adapters are documented mappings today, not installer commands. Do not claim runtime support that you have not tested.
+> Installation is verified for every adapter. Runtime discovery is verified for Copilot CLI and Codex `AGENTS.md`; Claude Code runtime discovery is unverified. Do not claim support beyond the checks recorded in the validation document.
 
 ### 3. Add code intelligence
 
@@ -281,7 +291,7 @@ The following command starts the OpenCode adapter with the coordinator and asks 
 opencode run --agent coordinator "Summarize this repository and propose the next task"
 ```
 
-With another adapter, open the repository in that platform and invoke the mapped coordinator role. See the platform guide for the exact file names.
+With another adapter, open the repository in that platform and invoke the generated coordinator instructions. See the platform guide for the exact file names.
 
 > [!WARNING]
 > Ralph 2.10.1 commits its own changes during landing and has no switch to disable it. Run it only in a separate disposable clone. A linked worktree shares `.git` and is not sufficient.
@@ -702,7 +712,7 @@ This repository distinguishes **verified**, **documented**, and **not yet measur
 | Area | Status |
 |---|---|
 | Static validation | Verified, including links and provenance |
-| Agent discovery | Verified with the OpenCode 2.2.7 reference adapter; other adapters are documented mappings |
+| Agent discovery | Verified with the OpenCode 2.2.7 reference adapter; Copilot CLI discovers generated instructions and skills; Codex loads `AGENTS.md`; Claude Code discovery unverified |
 | TypeScript and C# examples | Verified |
 | Harness smoke execution | Verified on one TypeScript task; not a benchmark result |
 | Command runtime | All eight commands verified on the TypeScript fixture through the reference adapter |
@@ -776,7 +786,7 @@ The table below covers the most common symptoms. The full guide has the detailed
 | Ralph created a commit | Expected in 2.10.1; use a separate disposable clone |
 | Context overflows | Lower `tool_output`, keep compaction enabled |
 | Benchmark command fails | Check the task's `working_directory` and verification command |
-| Non-OpenCode adapter seems missing | Confirm the mapped files exist; these adapters are documented mappings, not installers |
+| Non-OpenCode adapter seems missing | Reinstall with `--platform claude`, `copilot`, or `codex`, then confirm the generated paths in `docs/installation/toolwright-cli.md` |
 
 Full guide: [docs/troubleshooting/README.md](docs/troubleshooting/README.md).
 
@@ -786,7 +796,7 @@ Full guide: [docs/troubleshooting/README.md](docs/troubleshooting/README.md).
 No. The OpenCode adapter targets V2.2.x. V2 does not run language servers, so Serena replaces native LSP.
 
 **Do I need OpenCode?**  
-No. OpenCode is the reference adapter and the only one runtime-verified in CI. Claude Code, GitHub Copilot, and ChatGPT/Codex use documented mappings.
+No. OpenCode is the reference adapter and the only one verified end-to-end in CI. Claude Code, GitHub Copilot, and ChatGPT/Codex install generated native files and are validated at the installer level. Copilot and Codex have additional CLI discovery evidence; Claude Code runtime discovery is still unverified.
 
 **Do I need every MCP server?**  
 No. The default OpenCode profile enables Serena and CodeGraph. The minimal profile disables MCP entirely.

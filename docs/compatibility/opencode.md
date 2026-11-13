@@ -2,7 +2,7 @@
 
 > **Status:** Stable · **Last verified:** 2026-11-13 · **Evidence:** verified locally and in CI
 
-OpenCode is the fully verified reference adapter and remains optional. ToolWright installs an OpenCode configuration, a custom primary agent, specialized subagents, commands, skills, and optional MCP servers. The same core artifacts can be mapped to Claude, GitHub Copilot, or ChatGPT/Codex.
+OpenCode is the fully verified reference adapter and remains optional. ToolWright installs an OpenCode configuration, a custom primary agent, specialized subagents, commands, skills, and optional MCP servers. The same core artifacts install as native files for Claude, GitHub Copilot, and ChatGPT/Codex.
 
 ## Install
 

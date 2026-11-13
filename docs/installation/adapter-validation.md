@@ -1,8 +1,8 @@
 # Real-Repository Adapter Validation: Hono
 
-> **Status:** Experimental · **Last verified:** 2026-11-13 · **Evidence:** deterministic install, update, and uninstall on a pinned clone; no model calls
+> **Status:** Experimental · **Last verified:** 2026-11-13 · **Evidence:** deterministic install, update, and uninstall on a pinned clone; Copilot and Codex CLI discovery checks; no model calls
 
-This record validates installation mechanics on a real repository. It does not measure AI task quality, and it makes no cost or token claim.
+This record validates installation mechanics on a real repository and documents which native clients were checked. It does not measure AI task quality, and it makes no cost or token claim.
 
 ## Scope
 
@@ -53,6 +53,23 @@ The fix:
 - drops adapter entries that no longer own files.
 
 Regression coverage: `PlatformAdapterInstallTests.test_uninstall_removes_shared_files_across_adapters` and `PlatformAdapterInstallTests.test_uninstall_prunes_entries_for_missing_files`.
+
+## Native discovery checks
+
+The generated files were inspected with the available platform CLIs. No model call was needed.
+
+| Client | Version | Command | Result |
+|---|---|---|---|
+| GitHub Copilot CLI | `1.0.105` | `copilot instruction list` | Found `.github/copilot-instructions.md` and all 12 `.github/instructions/*.instructions.md` files |
+| GitHub Copilot CLI | `1.0.105` | `copilot skill list` | Found all 10 generated project skills |
+| OpenAI Codex CLI | `0.146.0` | `codex debug prompt-input "Summarize the repository instructions."` | Resolved prompt input contained the generated `AGENTS.md` rules |
+| Claude Code CLI | unavailable | — | Not checked |
+
+Observed limits:
+
+- Copilot did not list `AGENTS.md` while `.github/copilot-instructions.md` was present, although the adapter writes both.
+- Copilot CLI has no command that lists `.github/prompts/`; prompt-file discovery remains unverified.
+- Codex has no non-interactive command that lists custom agents. The TOML files define the required `name`, `description`, and `developer_instructions` fields, but discovery needs an interactive `/agent` session or a model call.
 
 ## Not measured
 

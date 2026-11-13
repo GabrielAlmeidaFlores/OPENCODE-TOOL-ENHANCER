@@ -1,10 +1,10 @@
 # `toolwright` Command Line
 
-> **Status:** Stable · **Last verified:** 2026-11-12 · **Evidence:** verified locally on macOS; CI job `cli` defined
+> **Status:** Stable · **Last verified:** 2026-11-13 · **Evidence:** verified locally on macOS and in CI; adapter install, update, and uninstall validated on a real repository
 
-`toolwright` is the single entry point for installing and maintaining the profile. It is a thin
-Python layer over the repository's existing shell scripts: it does not reimplement the
-installer, the validator, or the backup scripts.
+`toolwright` is the single entry point for installing and maintaining the profile. The OpenCode
+adapter delegates to the repository's shell installer. Claude, Copilot, and Codex generate native
+files directly, then record them in the same lock and backup lifecycle.
 
 ## Install
 
@@ -56,10 +56,11 @@ toolwright profile list
 toolwright profile show standard
 toolwright profile verify
 toolwright profile use minimal --target ../my-project --apply
+toolwright profile use minimal --platform claude --target ../my-project --apply
 ```
 
 Profiles are loaded from `profiles/*.yml`. `profile use` delegates to `toolwright install` and keeps the same
-plan/apply, backup, and lock behavior. See `docs/profiles/README.md`.
+plan/apply, backup, lock, and `--platform` behavior. See `docs/profiles/README.md`.
 
 ## `toolwright catalog`
 
@@ -212,14 +213,15 @@ Exit code is 0 when no check fails, 1 otherwise. Warnings do not fail the run.
 ## `toolwright install`
 
 ```bash
-toolwright install --profile standard --target ../my-project --dry-run
-toolwright install --profile standard --target ../my-project --apply
+toolwright install --profile standard --platform opencode --target ../my-project --dry-run
+toolwright install --profile standard --platform claude   --target ../my-project --apply
 ```
 
 Default behavior is a **plan**: it prints every destination path and writes nothing.
 
 | Flag | Effect |
 |---|---|
+| `--platform NAME` | Target adapter: `opencode` (default), `claude`, `copilot`, or `codex` |
 | `--profile minimal` | Config only: opencode, agents, commands, skills, Ralph |
 | `--profile standard` | Minimal plus ast-grep |
 | `--profile full` | Standard plus Serena and CodeGraph |
@@ -230,15 +232,33 @@ Default behavior is a **plan**: it prints every destination path and writes noth
 | `--clean` | Back up and replace managed directories before copying |
 | `--json` | Machine-readable result |
 
+Component selection is shared, but each adapter supports a subset:
+
+| Adapter | Selectable components | Always written |
+|---|---|---|
+| `opencode` | `opencode`, `agents`, `commands`, `skills`, `ralph`, tool components | — |
+| `claude` | `agents`, `commands`, `skills` | `CLAUDE.md` |
+| `copilot` | `agents`, `commands`, `skills` | `.github/copilot-instructions.md`, `AGENTS.md` |
+| `codex` | `agents` | `AGENTS.md` |
+
 Apply performs these steps in order:
 
-1. Resolve components and build the file plan.
+1. Resolve components and build the file plan for the selected adapter.
 2. Stop when the lock already matches the source contents, profile, components, and file
    digests (unless `--force`).
-3. Archive the target's existing `.opencode` and `.ralph` into `.toolwright/backups/<timestamp>/`. The global `~/.config/opencode` is never archived.
-4. Invoke `scripts/installation/install.sh --apply --only ... --target ...` and print its output.
+3. Back up existing destinations:
+   - OpenCode archives the target's `.opencode` and `.ralph` into `.toolwright/backups/<timestamp>/`.
+   - Claude, Copilot, and Codex copy each destination they overwrite.
+   The global `~/.config/opencode` is never archived.
+4. Write the files:
+   - OpenCode invokes `scripts/installation/install.sh --apply --only ... --target ...`.
+   - Claude, Copilot, and Codex write the generated files directly.
 5. Verify that every planned destination exists.
 6. Write `toolwright.lock.json` and `.toolwright/state.json`.
+
+The lock records the adapter, generator, and digest for every file. Uninstall removes files from
+any adapter recorded in the lock. See `docs/installation/adapter-validation.md` for real-repository
+evidence.
 
 Re-running `--apply` without source or target changes reports `already up to date`,
 refreshes the recorded source commit, and leaves the managed file digests unchanged.
@@ -352,7 +372,7 @@ lock is upgraded in memory on read and written as schema 2 on the next successfu
 
 ## Design references
 
-The `install`, `uninstall`, `update`, `doctor`, and `compat` commands target the OpenCode reference adapter. Agent and command mappings for Claude, GitHub Copilot, and ChatGPT/Codex are documented in `docs/compatibility/`. The command surface and installer UX were informed by `weisser-dev/awesome-opencode`
+The `install` and `profile use` commands accept `--platform`; `uninstall`, `update`, `doctor`, and `compat` operate on the lock and the OpenCode runtime. Claude, GitHub Copilot, and ChatGPT/Codex use the generated adapters documented in `docs/compatibility/`. The command surface and installer UX were informed by `weisser-dev/awesome-opencode`
 (`cli-tool/src/setup.js`, MIT) and `DVNghiem/FlowDeck` (`install.sh`, MIT). The lock and
 diff model follows the lockfile idea in `juanmanueldaza/nerv` (Apache-2.0). The
 implementation is original Python with no copied code; see

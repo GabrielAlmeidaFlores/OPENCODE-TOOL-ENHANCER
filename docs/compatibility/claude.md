@@ -1,8 +1,33 @@
 # Claude Code
 
-> **Status:** Experimental · **Last verified:** 2026-11-13 · **Evidence:** file formats checked against Claude documentation; not runtime-tested
+> **Status:** Experimental · **Last verified:** 2026-11-13 · **Evidence:** generated file formats checked against Claude documentation; runtime discovery unverified because the Claude CLI was unavailable
 
-Claude Code reads project memory from `CLAUDE.md` and discovers project subagents in `.claude/agents/`. ToolWright agent roles map cleanly because both use Markdown with YAML frontmatter and a system-prompt body.
+Claude Code reads project memory from `CLAUDE.md` and discovers project subagents in `.claude/agents/`. ToolWright generates those files directly from the shared agent, command, and skill sources.
+
+## Install with ToolWright
+
+```bash
+toolwright install --platform claude --profile minimal --target /path/to/project --apply
+```
+
+The Claude adapter always writes `CLAUDE.md` and writes agents, commands, and skills only when those components are selected.
+
+## Generated files
+
+| Path | Purpose | Source |
+|---|---|---|
+| `CLAUDE.md` | Project memory and working agreements | `AGENTS.md` |
+| `.claude/agents/<role>.md` | Project-scoped subagent with `name`, `description`, and `tools` frontmatter | `agents/<role>/AGENT.md` |
+| `.claude/commands/<name>.md` | Project command | `commands/<name>.md` |
+| `.claude/skills/<name>/` | Project skill files | `skills/<name>/` |
+
+Update the files with another `toolwright install --platform claude --apply`. Remove them with:
+
+```bash
+toolwright uninstall --target /path/to/project --apply --yes
+```
+
+The lock records each generated path, its generator, and its digest. Existing destination files are backed up before the adapter overwrites them.
 
 ## Files
 
@@ -16,7 +41,9 @@ Claude Code reads project memory from `CLAUDE.md` and discovers project subagent
 
 ## Convert an agent
 
-ToolWright agents use OpenCode fields such as `mode`, `permissions`, and `steps`. Claude Code expects `name`, `description`, and optionally `tools` and `model`.
+The adapter performs this conversion automatically. ToolWright agents use OpenCode fields such as `mode`, `permissions`, and `steps`. Claude Code expects `name`, `description`, and optionally `tools` and `model`. The generated files set `name`, `description`, and `tools`, and omit `model` so Claude uses its configured default.
+
+The example below shows the generated shape. Edit the installed file only when you need to customize it.
 
 ```markdown
 ---
@@ -35,17 +62,22 @@ Use the body of `agents/code-reviewer/AGENT.md` as the system prompt after remov
 
 ## Role mapping
 
-| ToolWright agent | Claude representation | Suggested tools |
+| ToolWright agent | Claude representation | Generated tools |
 |---|---|---|
-| `coordinator` | Main session agent or `Agent(...)` allowlist | `Agent`, `Read`, `Grep`, `Glob`, `Bash` |
-| `planner` | Read-only subagent | `Read`, `Grep`, `Glob` |
-| `code-reviewer` | Read-only subagent | `Read`, `Grep`, `Glob` |
-| `security-reviewer` | Read-only subagent | `Read`, `Grep`, `Glob` |
-| `backend-developer` | Write-capable subagent | `Read`, `Edit`, `Write`, `Bash` |
-| `test-engineer` | Write-capable subagent | `Read`, `Edit`, `Write`, `Bash` |
-| `documentation-engineer` | Docs-only subagent | `Read`, `Edit`, `Write` on `docs/**` |
+| `coordinator` | Project subagent | `Read`, `Grep`, `Glob` |
+| `planner` | Project subagent | `Read`, `Grep`, `Glob` |
+| `researcher` | Project subagent | `Read`, `Grep`, `Glob` |
+| `architect` | Project subagent | `Read`, `Grep`, `Glob` |
+| `code-reviewer` | Project subagent | `Read`, `Grep`, `Glob` |
+| `security-reviewer` | Project subagent | `Read`, `Grep`, `Glob` |
+| `performance-analyst` | Project subagent | `Read`, `Grep`, `Glob` |
+| `backend-developer` | Project subagent | `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Bash` |
+| `frontend-developer` | Project subagent | `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Bash` |
+| `database-specialist` | Project subagent | `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Bash` |
+| `test-engineer` | Project subagent | `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Bash` |
+| `documentation-engineer` | Project subagent | `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Bash` |
 
-Claude's `tools` field is an allowlist. It does not reproduce OpenCode's ordered permission rules exactly; review the resulting tool surface.
+Claude's `tools` field is an allowlist. It does not reproduce OpenCode's ordered permission rules exactly; review the resulting tool surface. The generated `documentation-engineer` receives write tools for the whole workspace, not only `docs/**`.
 
 ## Project memory
 
@@ -63,10 +95,12 @@ Keep the Git-safety and verification rules from `AGENTS.md` in `CLAUDE.md`:
 
 - OpenCode permission expressions do not map one-to-one to Claude tool lists.
 - Ralph's OpenCode backend is not used by Claude Code.
-- The mapping was checked against the documented format, not executed in ToolWright CI.
+- The generated file layout matches the documented format, but the Claude CLI was not installed during validation. Runtime discovery of `CLAUDE.md`, agents, commands, and skills remains unverified.
+- The adapter does not set a Claude model name; model routing stays under Claude configuration.
 
 ## References
 
 - [Claude Docs: Create custom subagents](https://code.claude.com/docs/en/sub-agents)
 - [Claude Docs: Memory](https://code.claude.com/docs/en/memory)
 - [Claude Docs: Skills](https://code.claude.com/docs/en/skills)
+- `../installation/adapter-validation.md`
