@@ -74,6 +74,7 @@ from ..constants import TEXT_EXPIRED
 from ..constants import TEXT_OPENCODE_PILOT_MODEL
 
 from ..constants import (
+    FLAG_PLATFORM,
     KEY_FAILED,
     KEY_FAILURE_CLASS,
     BASH as KEY_BASH,
@@ -593,3 +594,4 @@ TEMPLATE_WORKSPACE = 'workspace: {}'
 TEMPLATE_WORKTREE = '{} worktree: {}'
 TEMPLATE_WORKTREE_2 = 'worktree: {}'
 TEMPLATE_CHECK_LINE = '{:<4} {:<{}} {}'
+TEXT_TARGET_PLATFORM_ADAPTER = 'target platform adapter'

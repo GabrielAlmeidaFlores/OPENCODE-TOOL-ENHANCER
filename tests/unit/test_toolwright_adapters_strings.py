@@ -23,3 +23,6 @@ KEY_UNKNOWN = 'unknown'
 TEXT_CLAUDE_AGENT = 'claude.agent'
 TEXT_SOURCE_MD = 'source.md'
 TEXT_TARGET_MD = 'target.md'
+
+KEY_COPILOT = 'copilot'
+KEY_CODEX = 'codex'

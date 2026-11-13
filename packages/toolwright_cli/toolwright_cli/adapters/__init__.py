@@ -14,7 +14,7 @@ from pathlib import Path
 
 from ..locking import PlannedFile
 from ..paths import ToolWrightError
-from . import opencode
+from . import claude, codex, copilot, opencode
 from .base import Adapter, is_generated_file
 
 MESSAGE_UNKNOWN_ADAPTER = "unknown adapter: "
@@ -25,7 +25,10 @@ _ADAPTERS: dict[str, Adapter] = {
         name=opencode.ADAPTER_NAME,
         supported_components=opencode.COMPONENTS,
         plan=opencode.plan,
-    )
+    ),
+    claude.ADAPTER: Adapter(name=claude.ADAPTER, supported_components=claude.COMPONENTS, plan=claude.plan),
+    copilot.ADAPTER: Adapter(name=copilot.ADAPTER, supported_components=copilot.COMPONENTS, plan=copilot.plan),
+    codex.ADAPTER: Adapter(name=codex.ADAPTER, supported_components=codex.COMPONENTS, plan=codex.plan),
 }
 
 

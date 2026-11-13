@@ -88,3 +88,17 @@ Place results in `benchmarks/results/<run-id>/` with:
 - `notes.md`
 
 No results exist yet.
+
+## Correctness and rework rubric
+
+Every run is scored against the same rubric. Token and cost savings are only valid when the optimized arm meets or exceeds the baseline.
+
+| Score | Correctness | Rework |
+|---:|---|---|
+| 4 | Verification command passes; behavior matches acceptance criteria; no unrelated changes | No follow-up required |
+| 3 | Verification passes; minor non-blocking issue accepted by review | One small follow-up |
+| 2 | Verification passes after one fix cycle | One failed gate or human correction |
+| 1 | Verification still fails or behavior is incomplete | Multiple fix cycles |
+| 0 | Incorrect, unsafe, or destructive result | Unbounded rework |
+
+A run with a lower correctness score than the baseline is not a cost saving, even when it uses fewer tokens. Report the score and rework count beside every cost figure.

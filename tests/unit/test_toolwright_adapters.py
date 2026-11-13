@@ -5,6 +5,8 @@ from __future__ import annotations
 from tests.unit.test_toolwright_adapters_strings import (
     KEY_AGENTS,
     KEY_CLAUDE,
+    KEY_CODEX,
+    KEY_COPILOT,
     KEY_COMMANDS,
     KEY_GENERATED,
     KEY_OPENCODE,
@@ -56,6 +58,24 @@ class RegistryTests(unittest.TestCase):
         self.assertEqual(len(planned), 12)
         self.assertTrue(all(item.adapter == KEY_OPENCODE for item in planned))
         self.assertTrue(all(item.generator == TEXT_OPENCODE_COPY for item in planned))
+
+
+class PlatformAdapterTests(unittest.TestCase):
+
+    def test_claude_plan_generates_agents_and_claude_md(self) -> None:
+        planned = adapters.plan(KEY_CLAUDE, support.REPO_ROOT, support.REPO_ROOT / KEY_TARGET, [KEY_AGENTS])
+        self.assertEqual(len(planned), 13)
+        self.assertTrue(all(item.adapter == KEY_CLAUDE for item in planned))
+
+    def test_copilot_plan_generates_instructions_and_agents_md(self) -> None:
+        planned = adapters.plan(KEY_COPILOT, support.REPO_ROOT, support.REPO_ROOT / KEY_TARGET, [KEY_AGENTS])
+        self.assertEqual(len(planned), 14)
+        self.assertTrue(all(item.adapter == KEY_COPILOT for item in planned))
+
+    def test_codex_plan_generates_toml_agents_and_agents_md(self) -> None:
+        planned = adapters.plan(KEY_CODEX, support.REPO_ROOT, support.REPO_ROOT / KEY_TARGET, [KEY_AGENTS])
+        self.assertEqual(len(planned), 13)
+        self.assertTrue(all(item.adapter == KEY_CODEX for item in planned))
 
 
 class PlannedHashTests(unittest.TestCase):

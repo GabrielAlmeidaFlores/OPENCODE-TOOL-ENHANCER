@@ -76,6 +76,7 @@ def _command_install(args: argparse.Namespace) -> int:
         apply=args.apply,
         force=args.force,
         clean=args.clean,
+        adapter=args.platform,
     )
     if args.json:
         emit_payload(result, True)

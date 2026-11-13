@@ -18,6 +18,17 @@ from tests.integration.test_toolwright_commands_strings import (
     FLAG_NO_MCP,
     FLAG_ONLY,
     FLAG_PROFILE,
+    FLAG_PLATFORM,
+    KEY_CLAUDE,
+    KEY_CODEX,
+    KEY_COPILOT,
+    TEXT_AGENTS_MD,
+    TEXT_CLAUDE_AGENTS_COORDINATOR_MD,
+    TEXT_CLAUDE_MD,
+    TEXT_CODEX_AGENTS_COORDINATOR,
+    TEXT_COPILOT_AGENTS_COORDINATOR,
+    TEXT_COPILOT_INSTRUCTIONS,
+    TEXT_OPENCODE_DIR,
     FLAG_RECORD,
     FLAG_RESULTS,
     FLAG_RISK,
@@ -500,6 +511,39 @@ class MemoryAndSpecReadTests(unittest.TestCase):
         result = run_ote(KEY_SPEC, KEY_LIST)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn(TEXT_SPEC_S, result.stdout)
+
+
+class PlatformAdapterInstallTests(unittest.TestCase):
+
+    def setUp(self) -> None:
+        self.directory = tempfile.TemporaryDirectory(prefix=TEXT_TOOLWRIGHT_CLI)
+        self.addCleanup(self.directory.cleanup)
+        self.target = Path(self.directory.name) / KEY_PROJECT
+
+    def _install(self, platform: str) -> subprocess.CompletedProcess[str]:
+        return run_ote(KEY_INSTALL, FLAG_PLATFORM, platform, FLAG_PROFILE, KEY_MINIMAL, FLAG_TARGET, str(self.target), FLAG_APPLY)
+
+    def test_claude_adapter_installs_without_opencode(self) -> None:
+        result = self._install(KEY_CLAUDE)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertTrue((self.target / TEXT_CLAUDE_AGENTS_COORDINATOR_MD).is_file())
+        self.assertTrue((self.target / TEXT_CLAUDE_MD).is_file())
+        self.assertFalse((self.target / TEXT_OPENCODE_DIR).exists())
+
+    def test_copilot_adapter_installs_without_opencode(self) -> None:
+        result = self._install(KEY_COPILOT)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertTrue((self.target / TEXT_COPILOT_INSTRUCTIONS).is_file())
+        self.assertTrue((self.target / TEXT_COPILOT_AGENTS_COORDINATOR).is_file())
+        self.assertTrue((self.target / TEXT_AGENTS_MD).is_file())
+        self.assertFalse((self.target / TEXT_OPENCODE_DIR).exists())
+
+    def test_codex_adapter_installs_without_opencode(self) -> None:
+        result = self._install(KEY_CODEX)
+        self.assertEqual(result.returncode, 0, stdout := result.stdout + result.stderr)
+        self.assertTrue((self.target / TEXT_CODEX_AGENTS_COORDINATOR).is_file())
+        self.assertTrue((self.target / TEXT_AGENTS_MD).is_file())
+        self.assertFalse((self.target / TEXT_OPENCODE_DIR).exists())
 
 
 class CommandSurfaceTests(unittest.TestCase):

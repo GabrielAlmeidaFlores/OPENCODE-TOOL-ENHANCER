@@ -44,7 +44,7 @@ The workflow never stages or commits. It only publishes artifacts for the tag.
 | `v0.1.0` | 2026-11-12 | `ote_cli-0.1.0-py3-none-any.whl`, `SHA256SUMS` | Checksum verified; wheel installed in a clean venv and reports `0.1.0` |
 | `v0.1.1` | 2026-11-12 | `ote_cli-0.1.1-py3-none-any.whl`, `SHA256SUMS` | Checksum verified |
 | `v0.1.2` | 2026-11-12 | `ote_cli-0.1.2-py3-none-any.whl`, `SHA256SUMS` | Checksum verified |
-| `v0.2.0` | Unreleased | `toolwright_cli-0.2.0-py3-none-any.whl`, `SHA256SUMS` | Pending tag |
+| `v0.2.0` | 2026-11-13 | `toolwright_cli-0.2.0-py3-none-any.whl`, `SHA256SUMS` | Checksum verified; released from commit `f978b46` |
 
 Releases up to `v0.1.2` used the historical `ote-cli` package and `ote` command. `v0.2.0` is the first ToolWright-named release.
 

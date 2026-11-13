@@ -233,6 +233,28 @@ def write_operation_state(target: Path, payload: dict[str, Any]) -> None:
     write_json(state_path(target), payload)
 
 
+def apply_planned(planned: list[PlannedFile]) -> None:
+    for item in planned:
+        item.destination.parent.mkdir(parents=True, exist_ok=True)
+        if item.content is not None:
+            item.destination.write_text(item.content, encoding=ENCODING_UTF8)
+        else:
+            shutil.copy2(item.source, item.destination)
+
+
+def backup_planned(planned: list[PlannedFile], target: Path, stamp: str) -> Path | None:
+    existing = [item for item in planned if item.destination.is_file()]
+    if not existing:
+        return None
+    destination = backup_root(target) / stamp / "files"
+    for item in existing:
+        relative = item.destination.relative_to(target)
+        copy = destination / relative
+        copy.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(item.destination, copy)
+    return destination
+
+
 def run_shell_installer(root: Path, target: Path, components: list[str], apply: bool, clean: bool) -> str:
     script = root / INSTALL_SCRIPT
     command = [
@@ -279,7 +301,11 @@ def install(
     }
 
     if not apply:
-        result[KEY_OUTPUT] = run_shell_installer(root, target, components, apply=False, clean=clean)
+        result[KEY_OUTPUT] = (
+            run_shell_installer(root, target, components, apply=False, clean=clean)
+            if adapter == "opencode"
+            else "generated adapter plan"
+        )
         return result
 
     if current and not force:
@@ -294,10 +320,14 @@ def install(
 
     target.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now(timezone.utc).strftime(TIMESTAMP_FORMAT)
-    backup = archive_project_config(root, target, stamp)
+    backup = archive_project_config(root, target, stamp) if adapter == "opencode" else backup_planned(planned, target, stamp)
     result[KEY_BACKUP] = str(backup) if backup else None
 
-    result[KEY_OUTPUT] = run_shell_installer(root, target, components, apply=True, clean=clean)
+    if adapter == "opencode":
+        result[KEY_OUTPUT] = run_shell_installer(root, target, components, apply=True, clean=clean)
+    else:
+        apply_planned(planned)
+        result[KEY_OUTPUT] = "generated adapter files"
 
     missing = [item.destination for item in planned if not item.destination.is_file()]
     if missing:

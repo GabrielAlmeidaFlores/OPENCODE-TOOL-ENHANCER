@@ -6,6 +6,7 @@ Public API: :func:`build_argument_parser`.
 Side effects: none.
 """
 from __future__ import annotations
+from .cli_strings import TEXT_TARGET_PLATFORM_ADAPTER
 from .cli_strings import TEMPLATE_TOOLWRIGHT_2
 from .cli_strings import (
     FLAG_AGENT,
@@ -20,6 +21,7 @@ from .cli_strings import (
     FLAG_FORMAT,
     FLAG_JSON,
     FLAG_KEEP,
+    FLAG_PLATFORM,
     FLAG_LINK,
     FLAG_LIST,
     FLAG_NO_CACHE,
@@ -184,7 +186,7 @@ from ..cli_constants import (
     FLAG_ONLY, FLAG_PROFILE, FLAG_TYPE, FLAG_YES, FORMAT_JSON, FORMAT_MARKDOWN, KEY_PROFILE,
     KEY_STATUS, KEY_TYPE,
 )
-from ..constants import EMPTY_STRING, KEY_FEATURE, KEY_NAME, KEY_TITLE
+from ..constants import EMPTY_STRING, KEY_FEATURE, KEY_NAME, KEY_TITLE, PLATFORM_CHOICES
 from .. import board as board_module
 from .. import memory as memory_module
 from ..profiles import DEFAULT_PROFILE
@@ -215,6 +217,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
     mode.add_argument(FLAG_DRY_RUN, action=ARG_STORE_TRUE, help=TEXT_PRINT_THE_PLAN_WITHOUT_WRITING_DEFAULT)
     install_parser.add_argument(FLAG_FORCE, action=ARG_STORE_TRUE, help=TEXT_APPLY_EVEN_WHEN_ALREADY_CURRENT)
     install_parser.add_argument(FLAG_CLEAN, action=ARG_STORE_TRUE, help=TEXT_BACK_UP_AND_REPLACE_MANAGED_DIRECTORIES)
+    install_parser.add_argument(FLAG_PLATFORM, default=PLATFORM_CHOICES[0], choices=PLATFORM_CHOICES, help=TEXT_TARGET_PLATFORM_ADAPTER)
 
     uninstall_parser = subparsers.add_parser(
         COMMAND_UNINSTALL, parents=[common], help=TEXT_PLAN_OR_REMOVE_FILES_RECORDED_IN_TOOLWRIGHT_LOCK_JSON
@@ -255,6 +258,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
     use_mode.add_argument(FLAG_DRY_RUN, action=ARG_STORE_TRUE, help=TEXT_PRINT_THE_PLAN_WITHOUT_WRITING_DEFAULT)
     profile_use.add_argument(FLAG_FORCE, action=ARG_STORE_TRUE, help=TEXT_APPLY_EVEN_WHEN_ALREADY_CURRENT)
     profile_use.add_argument(FLAG_CLEAN, action=ARG_STORE_TRUE, help=TEXT_BACK_UP_AND_REPLACE_MANAGED_DIRECTORIES)
+    profile_use.add_argument(FLAG_PLATFORM, default=PLATFORM_CHOICES[0], choices=PLATFORM_CHOICES, help=TEXT_TARGET_PLATFORM_ADAPTER)
 
     catalog_parser = subparsers.add_parser(
         KEY_CATALOG, parents=[common], help=TEXT_LIST_SEARCH_VERIFY_OR_BUILD_THE_ARTIFACT_CATALOG
