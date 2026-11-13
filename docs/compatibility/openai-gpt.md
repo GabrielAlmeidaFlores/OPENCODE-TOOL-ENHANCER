@@ -27,6 +27,14 @@ The lock records each generated path, its generator, and its digest. Existing de
 
 Each custom agent file defines `name`, `description`, and `developer_instructions`, the three required fields in the Codex custom agent schema. Names use underscores, for example `code_reviewer`.
 
+Read-only roles (`coordinator`, `planner`, `researcher`, `architect`, `code-reviewer`, `security-reviewer`, and `performance-analyst`) also set:
+
+```toml
+sandbox_mode = "read-only"
+```
+
+Write-capable roles omit `sandbox_mode` and inherit the parent session's setting.
+
 ## Files
 
 | Path | Purpose |
@@ -43,6 +51,7 @@ Each custom agent file defines `name`, `description`, and `developer_instruction
 ```toml
 name = "code_reviewer"
 description = "Reviews changes for correctness, regressions, security, and missing tests."
+sandbox_mode = "read-only"
 developer_instructions = """
 You are an independent code reviewer. Do not edit files.
 Report findings in severity order with file and line references.
@@ -65,11 +74,19 @@ Place the file at `.codex/agents/code_reviewer.toml`. Codex identifies the agent
 | `test-engineer` | Execution-focused custom agent with test commands |
 | `documentation-engineer` | Documentation-only custom agent |
 
-Codex custom agents inherit the parent session's sandbox, approvals, provider, and MCP servers. They cannot override those settings. The adapter does not set `sandbox_mode`; read-only intent lives in the instructions and is not a sandbox guarantee.
+Codex custom agents inherit the parent session's approvals, provider, and MCP servers. The adapter sets `sandbox_mode = "read-only"` for read-only roles; write-capable roles inherit the parent sandbox. Sandbox behavior still depends on the parent session and Codex configuration.
 
 ## Verify
 
-Run this inside the generated target:
+Run the optional adapter discovery script from the repository checkout:
+
+```bash
+./scripts/validation/check_adapter_discovery.sh
+```
+
+It installs the adapter into a temporary target and skips cleanly when Codex is absent.
+
+Inside a generated target, run:
 
 ```bash
 codex debug prompt-input "Summarize the repository instructions."

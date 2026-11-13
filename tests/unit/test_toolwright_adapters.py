@@ -16,6 +16,9 @@ from tests.unit.test_toolwright_adapters_strings import (
     KEY_TARGET,
     KEY_UNKNOWN,
     TEXT_CLAUDE_AGENT,
+    TEXT_CODEX_BACKEND_TOML,
+    TEXT_CODEX_PLANNER_TOML,
+    TEXT_SANDBOX_READ_ONLY,
     TEXT_MAIN,
     TEXT_OPENCODE_COPY,
     TEXT_SOURCE_MD,
@@ -76,6 +79,14 @@ class PlatformAdapterTests(unittest.TestCase):
         planned = adapters.plan(KEY_CODEX, support.REPO_ROOT, support.REPO_ROOT / KEY_TARGET, [KEY_AGENTS])
         self.assertEqual(len(planned), 13)
         self.assertTrue(all(item.adapter == KEY_CODEX for item in planned))
+
+    def test_codex_read_only_roles_get_a_read_only_sandbox(self) -> None:
+        planned = adapters.plan(
+            KEY_CODEX, support.REPO_ROOT, support.REPO_ROOT / KEY_TARGET, [KEY_AGENTS]
+        )
+        contents = {item.destination.name: item.content for item in planned}
+        self.assertIn(TEXT_SANDBOX_READ_ONLY, contents[TEXT_CODEX_PLANNER_TOML])
+        self.assertNotIn(TEXT_SANDBOX_READ_ONLY, contents[TEXT_CODEX_BACKEND_TOML])
 
 
 class PlannedHashTests(unittest.TestCase):

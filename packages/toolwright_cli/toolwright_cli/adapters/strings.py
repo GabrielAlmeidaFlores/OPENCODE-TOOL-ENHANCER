@@ -54,5 +54,6 @@ READ_ONLY_TOOLS = "Read, Grep, Glob"
 ROLE_AGENT_SUFFIX = " agent"
 ROLE_UNDERSCORE = "_"
 CLAUDE_AGENT_TEMPLATE = "---\nname: {role}\ndescription: {description}\ntools: {tools}\n---\n\n{body}"
-CODEX_AGENT_TEMPLATE = "name = {name}\ndescription = {description}\ndeveloper_instructions = {instructions}\n"
+CODEX_AGENT_TEMPLATE = "name = {name}\ndescription = {description}\n{sandbox}developer_instructions = {instructions}\n"
+CODEX_READ_ONLY_SANDBOX = 'sandbox_mode = "read-only"\n'
 

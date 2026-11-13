@@ -22,5 +22,8 @@ from tests.constants import (
 KEY_GENERATED = 'generated'
 KEY_UNKNOWN = 'unknown'
 TEXT_CLAUDE_AGENT = 'claude.agent'
+TEXT_CODEX_BACKEND_TOML = 'backend-developer.toml'
+TEXT_CODEX_PLANNER_TOML = 'planner.toml'
+TEXT_SANDBOX_READ_ONLY = 'sandbox_mode = "read-only"'
 TEXT_SOURCE_MD = 'source.md'
 TEXT_TARGET_MD = 'target.md'

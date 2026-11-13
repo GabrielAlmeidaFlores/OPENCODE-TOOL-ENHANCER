@@ -56,7 +56,11 @@ Regression coverage: `PlatformAdapterInstallTests.test_uninstall_removes_shared_
 
 ## Native discovery checks
 
-The generated files were inspected with the available platform CLIs. No model call was needed.
+The generated files were inspected with the available platform CLIs. No model call was needed. The optional script reproduces the Copilot and Codex checks and skips cleanly when a CLI is absent:
+
+```bash
+./scripts/validation/check_adapter_discovery.sh
+```
 
 | Client | Version | Command | Result |
 |---|---|---|---|
@@ -70,6 +74,7 @@ Observed limits:
 - Copilot did not list `AGENTS.md` while `.github/copilot-instructions.md` was present, although the adapter writes both.
 - Copilot CLI has no command that lists `.github/prompts/`; prompt-file discovery remains unverified.
 - Codex has no non-interactive command that lists custom agents. The TOML files define the required `name`, `description`, and `developer_instructions` fields, but discovery needs an interactive `/agent` session or a model call.
+- Codex read-only roles include `sandbox_mode = "read-only"`; write-capable roles omit it and inherit the parent sandbox.
 - Claude Code has no non-interactive command that lists project agents, commands, or skills. `claude doctor` verifies the installation but not discovery, which needs an interactive session or a model call.
 
 ## Not measured

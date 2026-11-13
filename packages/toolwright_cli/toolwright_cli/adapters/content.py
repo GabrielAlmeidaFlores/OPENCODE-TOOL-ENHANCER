@@ -18,6 +18,7 @@ from .strings import (
     AGENTS_GLOB,
     CLAUDE_AGENT_TEMPLATE,
     CODEX_AGENT_TEMPLATE,
+    CODEX_READ_ONLY_SANDBOX,
     COMMAND_TEMPLATE,
     COMPONENT_SKILLS,
     COPILOT_INSTRUCTION_TEMPLATE,
@@ -95,9 +96,11 @@ def claude_agent(role: str, text: str) -> str:
 def codex_agent(role: str, text: str) -> str:
     metadata = frontmatter(text)
     name = role.replace(ROLE_HYPHEN, ROLE_UNDERSCORE)
+    sandbox = CODEX_READ_ONLY_SANDBOX if role in READ_ONLY_ROLES else EMPTY
     return CODEX_AGENT_TEMPLATE.format(
         name=json.dumps(name),
         description=json.dumps(metadata.get(DESCRIPTION_KEY, f"{role}{ROLE_AGENT_SUFFIX}")),
+        sandbox=sandbox,
         instructions=json.dumps(body(text)),
     )
 
