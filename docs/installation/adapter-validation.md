@@ -63,13 +63,14 @@ The generated files were inspected with the available platform CLIs. No model ca
 | GitHub Copilot CLI | `1.0.105` | `copilot instruction list` | Found `.github/copilot-instructions.md` and all 12 `.github/instructions/*.instructions.md` files |
 | GitHub Copilot CLI | `1.0.105` | `copilot skill list` | Found all 10 generated project skills |
 | OpenAI Codex CLI | `0.146.0` | `codex debug prompt-input "Summarize the repository instructions."` | Resolved prompt input contained the generated `AGENTS.md` rules |
-| Claude Code CLI | unavailable | — | Not checked |
+| Claude Code CLI | `2.1.323` | `claude doctor` | Exit 0, no installation issues; the CLI has no non-interactive command that lists project agents, commands, or skills, so discovery is unverified |
 
 Observed limits:
 
 - Copilot did not list `AGENTS.md` while `.github/copilot-instructions.md` was present, although the adapter writes both.
 - Copilot CLI has no command that lists `.github/prompts/`; prompt-file discovery remains unverified.
 - Codex has no non-interactive command that lists custom agents. The TOML files define the required `name`, `description`, and `developer_instructions` fields, but discovery needs an interactive `/agent` session or a model call.
+- Claude Code has no non-interactive command that lists project agents, commands, or skills. `claude doctor` verifies the installation but not discovery, which needs an interactive session or a model call.
 
 ## Not measured
 

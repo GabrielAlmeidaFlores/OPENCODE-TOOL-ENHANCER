@@ -10,7 +10,7 @@
 | OpenCode `1.x` | No | Configuration shape differs; migration only |
 | Ralph Orchestrator `2.10.x` | Native (OpenCode backend) | Auto-commit limitation documented |
 | GitHub Copilot | Installer-generated adapter | Instructions and skills discovered by Copilot CLI `1.0.105`; prompt files not inspected |
-| Claude Code | Installer-generated adapter | File formats validated; runtime discovery unverified because the CLI was unavailable |
+| Claude Code | Installer-generated adapter | `claude doctor` passed on CLI `2.1.323`; no non-interactive discovery command, so runtime discovery unverified |
 | OpenAI GPT / Codex | Installer-generated adapter | `AGENTS.md` loaded by Codex CLI `0.146.0`; custom agent discovery not runtime-tested |
 | Python | 3.11+ | CLI and validator |
 | macOS / Linux | Yes | Windows via WSL or Git Bash |
