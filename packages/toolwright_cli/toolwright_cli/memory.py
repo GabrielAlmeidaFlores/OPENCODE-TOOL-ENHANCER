@@ -13,6 +13,100 @@ and ``user`` (local preference). Precedence for the preamble is
 project > user > shared.
 """
 from __future__ import annotations
+from .constants import KEY_FAILURE
+from .memory_strings import (
+    EMPTY_STRING,
+    ENCODING_UTF8,
+    FLAG_BEGIN_A_Z_PRIVATE_KEY,
+    FLAG_TEXT,
+    FLAG_TYPE_TITLE_CREATED_SOURCE_CONFIDENCE_EXPIRES_LINKS,
+    KEY_BODY,
+    KEY_CONFIDENCE,
+    KEY_CONSTRAINT,
+    KEY_CONVENTION,
+    KEY_CREATED,
+    KEY_DECISION,
+    KEY_ENTRIES,
+    KEY_ENTRY,
+    KEY_EXPIRED,
+    KEY_EXPIRES,
+    KEY_ID,
+    KEY_JSON,
+    KEY_LINKS,
+    KEY_MARKDOWN,
+    KEY_MEMORY,
+    KEY_PROJECT,
+    KEY_QUESTION,
+    KEY_SCOPE,
+    KEY_SHARED,
+    KEY_SOURCE,
+    KEY_TITLE,
+    KEY_TOKEN_BUDGET,
+    KEY_TTL_DAYS,
+    KEY_TYPE,
+    KEY_USER,
+    NEWLINE,
+    SEPARATOR_COMMA_SPACE,
+    SEPARATOR_SPACE,
+    TEXT_AKIA_0_9A_Z_16,
+    TEXT_A_Z0_9,
+    TEXT_A_Z_S,
+    TEXT_BUDGET_MUST_BE_A_POSITIVE_INTEGER,
+    TEXT_CATALOG_MD,
+    TEXT_CONFIDENCE_MUST_BE_A_NUMBER,
+    TEXT_CONFIDENCE_MUST_BE_BETWEEN_0_AND_1,
+    TEXT_CREATED,
+    TEXT_DUPLICATE_TITLE_IN_USE_FORCE_TO_ADD_ANYWAY,
+    TEXT_EXPIRED,
+    TEXT_EXPIRES,
+    TEXT_GENERATED_BY_TOOLWRIGHT_MEMORY_DO_NOT_EDIT_BY_HAND,
+    TEXT_GH_POUSR_A_ZA_Z0_9_36,
+    TEXT_INVALID_TOML,
+    TEXT_I_API_KEY_SECRET_TOKEN_PASSWORD_S_S_A_ZA_Z0_9_16,
+    TEXT_LINK,
+    TEXT_MD,
+    TEXT_MD_2,
+    TEXT_MD_3,
+    TEXT_MEMORY_CATALOG,
+    TEXT_MEMORY_EXPORT,
+    TEXT_MEMORY_MUST_BE_A_POSITIVE_INTEGER,
+    TEXT_MEMORY_MUST_BE_A_TABLE,
+    TEXT_MEMORY_TEXT_IS_REQUIRED,
+    TEXT_MEMORY_TITLE_IS_REQUIRED,
+    TEXT_MISSING,
+    TEXT_MISSING_FRONTMATTER,
+    TEXT_MUST_BE_A_SINGLE_LINE_WITHOUT_A_FRONTMATTER_SEPARATOR,
+    TEXT_PROJECT_MEMORY,
+    TEXT_REFUSING_TO_STORE_A_POSSIBLE_CREDENTIAL_MATCHED_A_SECRET_PAT,
+    TEXT_S,
+    TEXT_SCOPE,
+    TEXT_SCOPE_TYPE_TITLE_CREATED_EXPIRES_SOURCE,
+    TEXT_SK_A_ZA_Z0_9_20,
+    TEXT_SOURCE,
+    TEXT_TEXT,
+    TEXT_TEXT_10,
+    TEXT_TEXT_11,
+    TEXT_TEXT_12,
+    TEXT_TEXT_13,
+    TEXT_TEXT_14,
+    TEXT_TEXT_2,
+    TEXT_TEXT_3,
+    TEXT_TEXT_4,
+    TEXT_TEXT_5,
+    TEXT_TEXT_6,
+    TEXT_TEXT_7,
+    TEXT_TEXT_8,
+    TEXT_TEXT_9,
+    TEXT_TOOLWRIGHT_CONFIG_TOML,
+    TEXT_TOOLWRIGHT_MEMORY,
+    TEXT_TTL_MUST_NOT_BE_NEGATIVE,
+    TEXT_TYPE,
+    TEXT_UNKNOWN_EXPORT_FORMAT,
+    TEXT_UNKNOWN_SCOPE,
+    TEXT_UNKNOWN_TYPE,
+    TEXT_UNKNOWN_TYPE_2,
+    TEXT_UNTERMINATED_FRONTMATTER,
+)
 
 import json
 import re
@@ -24,18 +118,18 @@ from typing import Any
 
 from .paths import ToolWrightError
 
-TYPES = ("decision", "constraint", "convention", "failure", "question")
-SCOPES = ("project", "user", "shared")
-PRECEDENCE = ("project", "user", "shared")
+TYPES = (KEY_DECISION, KEY_CONSTRAINT, KEY_CONVENTION, KEY_FAILURE, KEY_QUESTION)
+SCOPES = (KEY_PROJECT, KEY_USER, KEY_SHARED)
+PRECEDENCE = (KEY_PROJECT, KEY_USER, KEY_SHARED)
 DEFAULT_TTL_DAYS = 30
 DEFAULT_TOKEN_BUDGET = 2000
 
 SECRET_PATTERNS = (
-    re.compile(r"AKIA[0-9A-Z]{16}"),
-    re.compile(r"gh[pousr]_[A-Za-z0-9]{36,}"),
-    re.compile(r"sk-[A-Za-z0-9]{20,}"),
-    re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"),
-    re.compile(r"(?i)(api[_-]?key|secret|token|password)\s*[:=]\s*['\"]?[A-Za-z0-9/_-]{16,}"),
+    re.compile(TEXT_AKIA_0_9A_Z_16),
+    re.compile(TEXT_GH_POUSR_A_ZA_Z0_9_36),
+    re.compile(TEXT_SK_A_ZA_Z0_9_20),
+    re.compile(FLAG_BEGIN_A_Z_PRIVATE_KEY),
+    re.compile(TEXT_I_API_KEY_SECRET_TOKEN_PASSWORD_S_S_A_ZA_Z0_9_16),
 )
 
 
@@ -52,7 +146,7 @@ class Entry:
     confidence: float
     expires: str
     links: list[str] = field(default_factory=list)
-    body: str = ""
+    body: str = EMPTY_STRING
 
     def expired(self, today: date | None = None) -> bool:
         current = today or datetime.now(timezone.utc).date()
@@ -63,36 +157,36 @@ class Entry:
 
 
 def settings(root: Path) -> dict[str, int]:
-    values = {"token_budget": DEFAULT_TOKEN_BUDGET, "ttl_days": DEFAULT_TTL_DAYS}
-    path = root / ".toolwright/config.toml"
+    values = {KEY_TOKEN_BUDGET: DEFAULT_TOKEN_BUDGET, KEY_TTL_DAYS: DEFAULT_TTL_DAYS}
+    path = root / TEXT_TOOLWRIGHT_CONFIG_TOML
     if not path.is_file():
         return values
     try:
-        data = tomllib.loads(path.read_text(encoding="utf-8"))
+        data = tomllib.loads(path.read_text(encoding=ENCODING_UTF8))
     except tomllib.TOMLDecodeError as error:
-        raise ToolWrightError(f"{path}: invalid TOML: {error}") from error
-    section = data.get("memory", {})
+        raise ToolWrightError(TEXT_INVALID_TOML.format(path, error)) from error
+    section = data.get(KEY_MEMORY, {})
     if not isinstance(section, dict):
-        raise ToolWrightError(f"{path}: memory must be a table")
+        raise ToolWrightError(TEXT_MEMORY_MUST_BE_A_TABLE.format(path))
     for key in values:
         if key in section:
             value = section[key]
             if not isinstance(value, int) or value <= 0:
-                raise ToolWrightError(f"{path}: memory.{key} must be a positive integer")
+                raise ToolWrightError(TEXT_MEMORY_MUST_BE_A_POSITIVE_INTEGER.format(path, key))
             values[key] = value
     return values
 
 
 def ensure_memory_directory(root: Path) -> Path:
-    directory = root / ".toolwright/memory"
+    directory = root / TEXT_TOOLWRIGHT_MEMORY
     for scope in SCOPES:
         (directory / scope).mkdir(parents=True, exist_ok=True)
     return directory
 
 
 def slugify_memory_title(value: str) -> str:
-    slug = re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
-    return slug[:60] or "entry"
+    slug = re.sub(TEXT_A_Z0_9, TEXT_TEXT_6, value.lower()).strip(TEXT_TEXT_6)
+    return slug[:60] or KEY_ENTRY
 
 
 def current_utc_date() -> date:
@@ -104,55 +198,47 @@ def scan_secrets(text: str) -> list[str]:
 
 
 def render_memory_frontmatter(entry_type: str, title: str, created: str, source: str, confidence: float, expires: str, links: list[str]) -> str:
-    link_value = ", ".join(links)
+    link_value = SEPARATOR_COMMA_SPACE.join(links)
     return (
-        "---\n"
-        f"type: {entry_type}\n"
-        f"title: {title}\n"
-        f"created: {created}\n"
-        f"source: {source}\n"
-        f"confidence: {confidence}\n"
-        f"expires: {expires}\n"
-        f"links: [{link_value}]\n"
-        "---\n\n"
+        FLAG_TYPE_TITLE_CREATED_SOURCE_CONFIDENCE_EXPIRES_LINKS.format(entry_type, title, created, source, confidence, expires, link_value)
     )
 
 
 def parse_memory_entry(path: Path, scope: str) -> Entry:
-    text = path.read_text(encoding="utf-8")
-    if not text.startswith("---"):
-        raise ToolWrightError(f"{path}: missing frontmatter")
-    end = text.find("\n---", 3)
+    text = path.read_text(encoding=ENCODING_UTF8)
+    if not text.startswith(FLAG_TEXT):
+        raise ToolWrightError(TEXT_MISSING_FRONTMATTER.format(path))
+    end = text.find(TEXT_TEXT_7, 3)
     if end == -1:
-        raise ToolWrightError(f"{path}: unterminated frontmatter")
+        raise ToolWrightError(TEXT_UNTERMINATED_FRONTMATTER.format(path))
     metadata: dict[str, str] = {}
     for line in text[3:end].splitlines():
-        match = re.match(r"^([a-z_]+):\s*(.*)$", line)
+        match = re.match(TEXT_A_Z_S, line)
         if match:
             metadata[match.group(1)] = match.group(2).strip()
-    required = ("type", "title", "created", "source", "confidence", "expires")
+    required = (KEY_TYPE, KEY_TITLE, KEY_CREATED, KEY_SOURCE, KEY_CONFIDENCE, KEY_EXPIRES)
     missing = [key for key in required if not metadata.get(key)]
     if missing:
-        raise ToolWrightError(f"{path}: missing {', '.join(missing)}")
-    if metadata["type"] not in TYPES:
-        raise ToolWrightError(f"{path}: unknown type {metadata['type']}")
-    links_value = metadata.get("links", "[]").strip("[]").strip()
-    links = [item.strip().strip('"').strip("'") for item in links_value.split(",") if item.strip()]
+        raise ToolWrightError(TEXT_MISSING.format(path, SEPARATOR_COMMA_SPACE.join(missing)))
+    if metadata[KEY_TYPE] not in TYPES:
+        raise ToolWrightError(TEXT_UNKNOWN_TYPE.format(path, metadata[KEY_TYPE]))
+    links_value = metadata.get(KEY_LINKS, TEXT_TEXT_8).strip(TEXT_TEXT_8).strip()
+    links = [item.strip().strip(TEXT_TEXT_9).strip(TEXT_TEXT_10) for item in links_value.split(TEXT_TEXT_11) if item.strip()]
     try:
-        confidence = float(metadata["confidence"])
+        confidence = float(metadata[KEY_CONFIDENCE])
     except ValueError as error:
-        raise ToolWrightError(f"{path}: confidence must be a number") from error
-    body = text[end + 4 :].lstrip("\n")
+        raise ToolWrightError(TEXT_CONFIDENCE_MUST_BE_A_NUMBER.format(path)) from error
+    body = text[end + 4 :].lstrip(NEWLINE)
     return Entry(
         path=path,
         scope=scope,
         identifier=path.stem,
-        entry_type=metadata["type"],
-        title=metadata["title"],
-        created=metadata["created"],
-        source=metadata["source"],
+        entry_type=metadata[KEY_TYPE],
+        title=metadata[KEY_TITLE],
+        created=metadata[KEY_CREATED],
+        source=metadata[KEY_SOURCE],
         confidence=confidence,
-        expires=metadata["expires"],
+        expires=metadata[KEY_EXPIRES],
         links=links,
         body=body.strip(),
     )
@@ -162,34 +248,33 @@ def load_memory_entries(root: Path, scope: str | None = None) -> list[Entry]:
     directory = ensure_memory_directory(root)
     selected = (scope,) if scope else SCOPES
     if scope and scope not in SCOPES:
-        raise ToolWrightError(f"unknown scope: {scope}")
+        raise ToolWrightError(TEXT_UNKNOWN_SCOPE.format(scope))
     results: list[Entry] = []
     for current in selected:
-        for path in sorted((directory / current).glob("*.md")):
+        for path in sorted((directory / current).glob(TEXT_MD_3)):
             results.append(parse_memory_entry(path, current))
     return results
 
 
 def write_memory_catalog(root: Path, items: list[Entry]) -> None:
-    directory = root / ".toolwright/memory"
+    directory = root / TEXT_TOOLWRIGHT_MEMORY
     lines = [
-        "# Memory Catalog",
-        "",
-        "Generated by `toolwright memory`; do not edit by hand.",
-        "",
-        "| Scope | Type | Title | Created | Expires | Source |",
-        "| --- | --- | --- | --- | --- | --- |",
+        TEXT_MEMORY_CATALOG,
+        EMPTY_STRING,
+        TEXT_GENERATED_BY_TOOLWRIGHT_MEMORY_DO_NOT_EDIT_BY_HAND,
+        EMPTY_STRING,
+        TEXT_SCOPE_TYPE_TITLE_CREATED_EXPIRES_SOURCE,
+        TEXT_TEXT_12,
     ]
     for entry in items:
-        marker = " (expired)" if entry.expired() else ""
+        marker = TEXT_EXPIRED if entry.expired() else EMPTY_STRING
         lines.append(
-            f"| {entry.scope} | {entry.entry_type} | {entry.title}{marker} | "
-            f"{entry.created} | {entry.expires} | {entry.source} |"
+            TEXT_TEXT_3.format(entry.scope, entry.entry_type, entry.title, marker, entry.created, entry.expires, entry.source)
         )
-    lines.append("")
-    target = directory / "catalog.md"
+    lines.append(EMPTY_STRING)
+    target = directory / TEXT_CATALOG_MD
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text("\n".join(lines), encoding="utf-8")
+    target.write_text(NEWLINE.join(lines), encoding=ENCODING_UTF8)
 
 
 def add_memory_entry(
@@ -205,40 +290,40 @@ def add_memory_entry(
     force: bool = False,
 ) -> Entry:
     if entry_type not in TYPES:
-        raise ToolWrightError(f"unknown type: {entry_type}")
+        raise ToolWrightError(TEXT_UNKNOWN_TYPE_2.format(entry_type))
     if scope not in SCOPES:
-        raise ToolWrightError(f"unknown scope: {scope}")
+        raise ToolWrightError(TEXT_UNKNOWN_SCOPE.format(scope))
     if not 0 <= confidence <= 1:
-        raise ToolWrightError("confidence must be between 0 and 1")
+        raise ToolWrightError(TEXT_CONFIDENCE_MUST_BE_BETWEEN_0_AND_1)
     body = text.strip()
     if not body:
-        raise ToolWrightError("memory text is required")
+        raise ToolWrightError(TEXT_MEMORY_TEXT_IS_REQUIRED)
     resolved_title = (title or body.splitlines()[0]).strip()
     if not resolved_title:
-        raise ToolWrightError("memory title is required")
-    for label, value in (("title", resolved_title), ("source", source), *((f"link {index}", link) for index, link in enumerate(links, start=1))):
-        if "\n" in value or "\r" in value or value.strip() == "---":
-            raise ToolWrightError(f"{label} must be a single line without a frontmatter separator")
-    found = scan_secrets("\n".join([resolved_title, body, source, " ".join(links)]))
+        raise ToolWrightError(TEXT_MEMORY_TITLE_IS_REQUIRED)
+    for label, value in ((KEY_TITLE, resolved_title), (KEY_SOURCE, source), *((TEXT_LINK.format(index), link) for index, link in enumerate(links, start=1))):
+        if NEWLINE in value or TEXT_TEXT_13 in value or value.strip() == FLAG_TEXT:
+            raise ToolWrightError(TEXT_MUST_BE_A_SINGLE_LINE_WITHOUT_A_FRONTMATTER_SEPARATOR.format(label))
+    found = scan_secrets(NEWLINE.join([resolved_title, body, source, SEPARATOR_SPACE.join(links)]))
     if found:
-        raise ToolWrightError("refusing to store a possible credential (matched a secret pattern)")
+        raise ToolWrightError(TEXT_REFUSING_TO_STORE_A_POSSIBLE_CREDENTIAL_MATCHED_A_SECRET_PAT)
 
     existing = load_memory_entries(root, scope)
-    normalized = re.sub(r"\s+", " ", resolved_title.lower())
+    normalized = re.sub(TEXT_S, SEPARATOR_SPACE, resolved_title.lower())
     for entry in existing:
-        if re.sub(r"\s+", " ", entry.title.lower()) == normalized and not force:
-            raise ToolWrightError(f"duplicate title in {scope}: {entry.title} (use --force to add anyway)")
+        if re.sub(TEXT_S, SEPARATOR_SPACE, entry.title.lower()) == normalized and not force:
+            raise ToolWrightError(TEXT_DUPLICATE_TITLE_IN_USE_FORCE_TO_ADD_ANYWAY.format(scope, entry.title))
 
-    ttl = settings(root)["ttl_days"] if ttl_days is None else ttl_days
+    ttl = settings(root)[KEY_TTL_DAYS] if ttl_days is None else ttl_days
     if ttl < 0:
-        raise ToolWrightError("ttl must not be negative")
+        raise ToolWrightError(TEXT_TTL_MUST_NOT_BE_NEGATIVE)
     created = current_utc_date()
     expires = created + timedelta(days=ttl)
-    identifier = f"{created.isoformat()}-{slugify_memory_title(resolved_title)}"
-    target = root / ".toolwright/memory" / scope / f"{identifier}.md"
+    identifier = TEXT_TEXT.format(created.isoformat(), slugify_memory_title(resolved_title))
+    target = root / TEXT_TOOLWRIGHT_MEMORY / scope / TEXT_MD.format(identifier)
     suffix = 2
     while target.exists():
-        target = root / ".toolwright/memory" / scope / f"{identifier}-{suffix}.md"
+        target = root / TEXT_TOOLWRIGHT_MEMORY / scope / TEXT_MD_2.format(identifier, suffix)
         suffix += 1
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(
@@ -251,8 +336,8 @@ def add_memory_entry(
             expires.isoformat(),
             links,
         )
-        + f"{body}\n",
-        encoding="utf-8",
+        + TEXT_TEXT_4.format(body),
+        encoding=ENCODING_UTF8,
     )
     result = parse_memory_entry(target, scope)
     write_memory_catalog(root, load_memory_entries(root))
@@ -267,7 +352,7 @@ def search_memory_entries(root: Path, query: str, entry_type: str | None = None,
     for entry in load_memory_entries(root, scope):
         if entry_type and entry.entry_type != entry_type:
             continue
-        haystack = " ".join([entry.title, entry.body, entry.source, entry.entry_type]).lower()
+        haystack = SEPARATOR_SPACE.join([entry.title, entry.body, entry.source, entry.entry_type]).lower()
         if needle in haystack:
             results.append(entry)
     return results
@@ -282,24 +367,24 @@ def prune_expired_entries(root: Path, apply: bool) -> list[Entry]:
     return expired
 
 
-def export_memory_entries(root: Path, output: str = "markdown") -> str:
+def export_memory_entries(root: Path, output: str = KEY_MARKDOWN) -> str:
     items = load_memory_entries(root)
-    if output == "json":
+    if output == KEY_JSON:
         return json.dumps(
             {
-                "entries": [
+                KEY_ENTRIES: [
                     {
-                        "scope": entry.scope,
-                        "id": entry.identifier,
-                        "type": entry.entry_type,
-                        "title": entry.title,
-                        "created": entry.created,
-                        "source": entry.source,
-                        "confidence": entry.confidence,
-                        "expires": entry.expires,
-                        "links": entry.links,
-                        "body": entry.body,
-                        "expired": entry.expired(),
+                        KEY_SCOPE: entry.scope,
+                        KEY_ID: entry.identifier,
+                        KEY_TYPE: entry.entry_type,
+                        KEY_TITLE: entry.title,
+                        KEY_CREATED: entry.created,
+                        KEY_SOURCE: entry.source,
+                        KEY_CONFIDENCE: entry.confidence,
+                        KEY_EXPIRES: entry.expires,
+                        KEY_LINKS: entry.links,
+                        KEY_BODY: entry.body,
+                        KEY_EXPIRED: entry.expired(),
                     }
                     for entry in items
                 ]
@@ -307,45 +392,45 @@ def export_memory_entries(root: Path, output: str = "markdown") -> str:
             indent=2,
             sort_keys=True,
         )
-    if output != "markdown":
-        raise ToolWrightError(f"unknown export format: {output}")
-    lines = ["# Memory Export", ""]
+    if output != KEY_MARKDOWN:
+        raise ToolWrightError(TEXT_UNKNOWN_EXPORT_FORMAT.format(output))
+    lines = [TEXT_MEMORY_EXPORT, EMPTY_STRING]
     for entry in items:
         lines.extend(
             [
-                f"## {entry.title}",
-                "",
-                f"- scope: {entry.scope}",
-                f"- type: {entry.entry_type}",
-                f"- created: {entry.created}",
-                f"- expires: {entry.expires}",
-                f"- source: {entry.source}",
-                "",
+                TEXT_TEXT_5.format(entry.title),
+                EMPTY_STRING,
+                TEXT_SCOPE.format(entry.scope),
+                TEXT_TYPE.format(entry.entry_type),
+                TEXT_CREATED.format(entry.created),
+                TEXT_EXPIRES.format(entry.expires),
+                TEXT_SOURCE.format(entry.source),
+                EMPTY_STRING,
                 entry.body,
-                "",
+                EMPTY_STRING,
             ]
         )
-    return "\n".join(lines).rstrip() + "\n"
+    return NEWLINE.join(lines).rstrip() + NEWLINE
 
 
 def render_memory_preamble(root: Path, budget_tokens: int | None = None) -> str:
-    limit = settings(root)["token_budget"] if budget_tokens is None else budget_tokens
+    limit = settings(root)[KEY_TOKEN_BUDGET] if budget_tokens is None else budget_tokens
     if limit <= 0:
-        raise ToolWrightError("budget must be a positive integer")
+        raise ToolWrightError(TEXT_BUDGET_MUST_BE_A_POSITIVE_INTEGER)
     items = [entry for entry in load_memory_entries(root) if not entry.expired()]
     order = {scope: index for index, scope in enumerate(PRECEDENCE)}
     items.sort(key=lambda entry: (order.get(entry.scope, 99), entry.identifier))
-    lines = ["# Project Memory", ""]
-    used = len("\n".join(lines))
+    lines = [TEXT_PROJECT_MEMORY, EMPTY_STRING]
+    used = len(NEWLINE.join(lines))
     for entry in items:
         summary = next(
-            (line.strip()[:200] for line in entry.body.splitlines() if line.strip() and not line.lstrip().startswith("#")),
-            "",
+            (line.strip()[:200] for line in entry.body.splitlines() if line.strip() and not line.lstrip().startswith(TEXT_TEXT_14)),
+            EMPTY_STRING,
         )
-        line = f"- [{entry.entry_type}] {entry.title} ({entry.source}, {entry.created}): {summary}"
+        line = TEXT_TEXT_2.format(entry.entry_type, entry.title, entry.source, entry.created, summary)
         cost = len(line) + 1
         if (used + cost) // 4 > limit:
             continue
         lines.append(line)
         used += cost
-    return "\n".join(lines) + "\n"
+    return NEWLINE.join(lines) + NEWLINE

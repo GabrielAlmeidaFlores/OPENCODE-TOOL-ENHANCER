@@ -300,14 +300,20 @@ project.
 
 ```json
 {
-  "schema_version": 1,
-  "created": "2026-11-12T13:00:00+00:00",
-  "profile": "minimal",
-  "components": ["opencode", "agents", "commands", "skills", "ralph"],
+  "schema_version": 2,
+  "created": "2026-11-13T13:00:00+00:00",
+  "adapters": [
+    {
+      "name": "opencode",
+      "profile": "minimal",
+      "components": ["opencode", "agents", "commands", "skills", "ralph"],
+      "digest": "…"
+    }
+  ],
   "source": {
     "repository": "https://github.com/GabrielAlmeidaFlores/ToolWright",
     "commit": "1753ad5",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "digest": "…",
     "dirty": "false"
   },
@@ -316,14 +322,17 @@ project.
       "path": ".opencode/agents/coordinator.md",
       "source": "agents/coordinator/AGENT.md",
       "component": "agents",
+      "adapter": "opencode",
+      "generator": "opencode.copy",
       "sha256": "…"
     }
   ]
 }
 ```
 
-`source.digest` covers the destination path and the source file digest for every planned
-file, so an uncommitted edit to an artifact is detected on the next apply.
+Schema 2 records one entry per adapter and a per-adapter digest. The top-level `source.digest`
+is retained for compatibility; the adapter digest is authoritative when present. A schema 1
+lock is upgraded in memory on read and written as schema 2 on the next successful apply.
 
 ## Safety
 

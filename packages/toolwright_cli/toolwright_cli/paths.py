@@ -7,11 +7,23 @@ and the path helpers for lock, state, and backup files.
 Side effects: none. All functions only read directory metadata.
 """
 from __future__ import annotations
+from .paths_strings import (
+    KEY_BACKUPS,
+    STATE_DIR_NAME,
+    TEXT_AGENTS_COORDINATOR_AGENT_MD,
+    TEXT_CANNOT_LOCATE_THE_TOOLWRIGHT_REPOSITORY_RUN_FROM_A_CHECKOUT_,
+    TEXT_SCRIPTS_INSTALLATION_INSTALL_SH,
+    TEXT_STATE_JSON,
+    TEXT_TOOLWRIGHT_LOCK_JSON,
+    TEXT_TOOLWRIGHT_REPO,
+    TEXT_TOOLWRIGHT_REPO_DOES_NOT_POINT_TO_A_REPOSITORY_ROOT,
+    TEXT_VERSION,
+)
 
 import os
 from pathlib import Path
 
-_MARKERS = ("VERSION", "agents/coordinator/AGENT.md", "scripts/installation/install.sh")
+_MARKERS = (TEXT_VERSION, TEXT_AGENTS_COORDINATOR_AGENT_MD, TEXT_SCRIPTS_INSTALLATION_INSTALL_SH)
 _BUNDLED_ROOT = Path(__file__).resolve().parents[3]
 
 
@@ -27,12 +39,12 @@ def is_repository_root(path: Path) -> bool:
 
 
 def find_repo_root(start: Path | None = None) -> Path:
-    explicit = os.environ.get("TOOLWRIGHT_REPO")
+    explicit = os.environ.get(TEXT_TOOLWRIGHT_REPO)
     if explicit:
         candidate = Path(explicit).expanduser().resolve()
         if is_repository_root(candidate):
             return candidate
-        raise ToolWrightError(f"TOOLWRIGHT_REPO does not point to a repository root: {candidate}")
+        raise ToolWrightError(TEXT_TOOLWRIGHT_REPO_DOES_NOT_POINT_TO_A_REPOSITORY_ROOT.format(candidate))
     origin = (start or Path.cwd()).resolve()
     for candidate in (origin, *origin.parents):
         if is_repository_root(candidate):
@@ -40,7 +52,7 @@ def find_repo_root(start: Path | None = None) -> Path:
     if is_repository_root(_BUNDLED_ROOT):
         return _BUNDLED_ROOT
     raise ToolWrightError(
-        "cannot locate the ToolWright repository; run from a checkout or set TOOLWRIGHT_REPO"
+        TEXT_CANNOT_LOCATE_THE_TOOLWRIGHT_REPOSITORY_RUN_FROM_A_CHECKOUT_
     )
 
 
@@ -50,15 +62,15 @@ def resolve_target(explicit: str | None) -> Path:
 
 
 def lock_path(target: Path) -> Path:
-    return target / "toolwright.lock.json"
+    return target / TEXT_TOOLWRIGHT_LOCK_JSON
 
 
 def state_path(target: Path) -> Path:
-    return target / ".toolwright" / "state.json"
+    return target / STATE_DIR_NAME / TEXT_STATE_JSON
 
 
 def backup_root(target: Path) -> Path:
-    return target / ".toolwright" / "backups"
+    return target / STATE_DIR_NAME / KEY_BACKUPS
 
 
 def is_within(path: Path, parent: Path) -> bool:

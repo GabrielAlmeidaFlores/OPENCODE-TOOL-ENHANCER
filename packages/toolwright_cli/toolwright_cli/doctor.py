@@ -9,6 +9,76 @@ repository validator. It never writes files.
 Module constants: ``MIN_PYTHON`` is the oldest supported interpreter.
 """
 from __future__ import annotations
+from .constants import KEY_FILES, STATUS_FAIL
+from .doctor_strings import (
+    DEFAULT_ADAPTER,
+    FLAG_STANDALONE,
+    FLAG_VERSION,
+    KEY_AGENTS,
+    KEY_ARTIFACTS,
+    KEY_CHECKS,
+    KEY_COMMANDS,
+    KEY_DETAIL,
+    KEY_GIT,
+    KEY_ID,
+    KEY_LIST,
+    KEY_LOCK,
+    KEY_MCP,
+    KEY_NODE,
+    KEY_PATH,
+    KEY_PYTHON,
+    KEY_RALPH,
+    KEY_REPOSITORY,
+    KEY_RG,
+    KEY_SKILLS,
+    KEY_STATE,
+    KEY_STATUS,
+    KEY_SUMMARY,
+    KEY_VALIDATOR,
+    NEWLINE,
+    SEPARATOR_COMMA_SPACE,
+    STATUS_OK,
+    STATUS_WARN,
+    TEXT_AGENTS_COMMANDS_SKILLS_HATS,
+    TEXT_AGENTS_COMMANDS_SKILLS_HATS_2,
+    TEXT_AGENTS_COORDINATOR_AGENT_MD,
+    TEXT_AGENT_MD,
+    TEXT_CHECKED,
+    TEXT_CHECKED_D,
+    TEXT_CONFIGS_OPENCODE_OPENCODE_JSONC,
+    TEXT_CONFIGS_RALPH_HATS,
+    TEXT_DOCS_PROVENANCE_REGISTRY_YML,
+    TEXT_D_D_D,
+    TEXT_ERROR,
+    TEXT_FILE_S_DIFFER_E_G,
+    TEXT_IS_NOT_A_DIRECTORY,
+    TEXT_IS_OLDER_THAN_3_11,
+    TEXT_IS_V1_THIS_PROFILE_REQUIRES_V2,
+    TEXT_LINE_S_REPORTED,
+    TEXT_MANAGED_FILE_S_MATCH,
+    TEXT_MCP_LIST_FAILED,
+    TEXT_MD,
+    TEXT_MISSING,
+    TEXT_MISSING_2,
+    TEXT_NOT_FOUND_ON_PATH,
+    TEXT_NO_OPENCODE_OPENCODE_JSONC_IN_THE_TARGET_SKIPPING,
+    TEXT_NO_TOOLWRIGHT_LOCK_JSON_IN_THE_TARGET_NOTHING_INSTALLED_BY_T,
+    TEXT_NO_TOOLWRIGHT_STATE_JSON_YET,
+    TEXT_OPENCODE_CONFIG,
+    TEXT_OPENCODE_OPENCODE_JSONC,
+    TEXT_OPENCODE_VERSION_FAILED,
+    TEXT_SCRIPTS_INSTALLATION_INSTALL_SH,
+    TEXT_SCRIPTS_VALIDATION_VALIDATE_CONFIG_PY,
+    TEXT_SKILL_MD,
+    TEXT_SKIPPED_BY_NO_MCP,
+    TEXT_TEXT,
+    TEXT_VALIDATOR_FAILED,
+    TEXT_VERSION,
+    TEXT_YML,
+    TOOL_AST_GREP,
+    TOOL_CODEGRAPH,
+    TOOL_SERENA,
+)
 
 import os
 import re
@@ -39,108 +109,108 @@ def build_check_result(identifier: str, status: str, detail: str) -> Check:
 
 def check_python_version() -> Check:
     current = sys.version_info
-    version = f"{current.major}.{current.minor}.{current.micro}"
+    version = TEXT_TEXT.format(current.major, current.minor, current.micro)
     if (current.major, current.minor) < MIN_PYTHON:
-        return build_check_result("python", "fail", f"{version} is older than 3.11")
-    return build_check_result("python", "ok", version)
+        return build_check_result(KEY_PYTHON, STATUS_FAIL, TEXT_IS_OLDER_THAN_3_11.format(version))
+    return build_check_result(KEY_PYTHON, STATUS_OK, version)
 
 
 def check_command_available(name: str, required: bool) -> Check:
     location = shutil.which(name)
     if location:
-        return build_check_result(name, "ok", location)
-    return build_check_result(name, "fail" if required else "warn", "not found on PATH")
+        return build_check_result(name, STATUS_OK, location)
+    return build_check_result(name, STATUS_FAIL if required else STATUS_WARN, TEXT_NOT_FOUND_ON_PATH)
 
 
 def check_repository_layout(root: Path) -> Check:
     required = [
-        "VERSION",
-        "configs/opencode/opencode.jsonc",
-        "agents/coordinator/AGENT.md",
-        "scripts/installation/install.sh",
-        "docs/provenance/registry.yml",
+        TEXT_VERSION,
+        TEXT_CONFIGS_OPENCODE_OPENCODE_JSONC,
+        TEXT_AGENTS_COORDINATOR_AGENT_MD,
+        TEXT_SCRIPTS_INSTALLATION_INSTALL_SH,
+        TEXT_DOCS_PROVENANCE_REGISTRY_YML,
     ]
     missing = [item for item in required if not (root / item).exists()]
     if missing:
-        return build_check_result("repository", "fail", f"missing: {', '.join(missing)}")
-    return build_check_result("repository", "ok", str(root))
+        return build_check_result(KEY_REPOSITORY, STATUS_FAIL, TEXT_MISSING.format(SEPARATOR_COMMA_SPACE.join(missing)))
+    return build_check_result(KEY_REPOSITORY, STATUS_OK, str(root))
 
 
 def check_artifact_counts(root: Path) -> Check:
-    agents = len(list((root / "agents").glob("*/AGENT.md")))
-    commands = len(list((root / "commands").glob("*.md")))
-    skills = len(list((root / "skills").glob("*/SKILL.md")))
-    hats = len(list((root / "configs/ralph/hats").glob("*.yml")))
+    agents = len(list((root / KEY_AGENTS).glob(TEXT_AGENT_MD)))
+    commands = len(list((root / KEY_COMMANDS).glob(TEXT_MD)))
+    skills = len(list((root / KEY_SKILLS).glob(TEXT_SKILL_MD)))
+    hats = len(list((root / TEXT_CONFIGS_RALPH_HATS).glob(TEXT_YML)))
     if min(agents, commands, skills, hats) == 0:
-        return build_check_result("artifacts", "fail", f"agents={agents} commands={commands} skills={skills} hats={hats}")
+        return build_check_result(KEY_ARTIFACTS, STATUS_FAIL, TEXT_AGENTS_COMMANDS_SKILLS_HATS_2.format(agents, commands, skills, hats))
     return build_check_result(
-        "artifacts",
-        "ok",
-        f"{agents} agents, {commands} commands, {skills} skills, {hats} hats",
+        KEY_ARTIFACTS,
+        STATUS_OK,
+        TEXT_AGENTS_COMMANDS_SKILLS_HATS.format(agents, commands, skills, hats),
     )
 
 
 def check_opencode_version() -> Check:
-    code, stdout, stderr = capture_command(["opencode", "--version"])
+    code, stdout, stderr = capture_command([DEFAULT_ADAPTER, FLAG_VERSION])
     if code != 0:
-        return build_check_result("opencode", "fail", stderr or "opencode --version failed")
-    match = re.search(r"(\d+)\.(\d+)\.(\d+)", stdout)
+        return build_check_result(DEFAULT_ADAPTER, STATUS_FAIL, stderr or TEXT_OPENCODE_VERSION_FAILED)
+    match = re.search(TEXT_D_D_D, stdout)
     if match is None:
-        return build_check_result("opencode", "warn", stdout)
+        return build_check_result(DEFAULT_ADAPTER, STATUS_WARN, stdout)
     major = int(match.group(1))
     if major < 2:
-        return build_check_result("opencode", "fail", f"{stdout} is V1; this profile requires V2")
-    return build_check_result("opencode", "ok", stdout)
+        return build_check_result(DEFAULT_ADAPTER, STATUS_FAIL, TEXT_IS_V1_THIS_PROFILE_REQUIRES_V2.format(stdout))
+    return build_check_result(DEFAULT_ADAPTER, STATUS_OK, stdout)
 
 
 def run_repository_validator(root: Path) -> Check:
-    script = root / "scripts/validation/validate_config.py"
+    script = root / TEXT_SCRIPTS_VALIDATION_VALIDATE_CONFIG_PY
     if not script.is_file():
-        return build_check_result("validator", "fail", f"missing {script}")
+        return build_check_result(KEY_VALIDATOR, STATUS_FAIL, TEXT_MISSING_2.format(script))
     code, stdout, stderr = capture_command([sys.executable, str(script)])
     if code != 0:
-        lines = [line for line in (stdout + "\n" + stderr).splitlines() if line.startswith("ERROR")]
-        detail = lines[0] if lines else "validator failed"
-        return build_check_result("validator", "fail", detail)
-    count = re.search(r"checked: (\d+)", stdout)
-    return build_check_result("validator", "ok", f"checked: {count.group(1)}" if count else "ok")
+        lines = [line for line in (stdout + NEWLINE + stderr).splitlines() if line.startswith(TEXT_ERROR)]
+        detail = lines[0] if lines else TEXT_VALIDATOR_FAILED
+        return build_check_result(KEY_VALIDATOR, STATUS_FAIL, detail)
+    count = re.search(TEXT_CHECKED_D, stdout)
+    return build_check_result(KEY_VALIDATOR, STATUS_OK, TEXT_CHECKED.format(count.group(1)) if count else STATUS_OK)
 
 
 def check_mcp_connections(target: Path) -> Check:
-    config = target / ".opencode/opencode.jsonc"
+    config = target / TEXT_OPENCODE_OPENCODE_JSONC
     if not config.is_file():
-        return build_check_result("mcp", "warn", "no .opencode/opencode.jsonc in the target; skipping")
+        return build_check_result(KEY_MCP, STATUS_WARN, TEXT_NO_OPENCODE_OPENCODE_JSONC_IN_THE_TARGET_SKIPPING)
     environment = dict(os.environ)
-    environment["OPENCODE_CONFIG"] = str(config)
-    code, stdout, stderr = capture_command(["opencode", "--standalone", "mcp", "list"], cwd=target, env=environment)
+    environment[TEXT_OPENCODE_CONFIG] = str(config)
+    code, stdout, stderr = capture_command([DEFAULT_ADAPTER, FLAG_STANDALONE, KEY_MCP, KEY_LIST], cwd=target, env=environment)
     if code != 0:
-        return build_check_result("mcp", "fail", (stderr or stdout or "mcp list failed").splitlines()[0])
+        return build_check_result(KEY_MCP, STATUS_FAIL, (stderr or stdout or TEXT_MCP_LIST_FAILED).splitlines()[0])
     lines = [line for line in stdout.splitlines() if line.strip()]
-    return build_check_result("mcp", "ok", f"{len(lines)} line(s) reported")
+    return build_check_result(KEY_MCP, STATUS_OK, TEXT_LINE_S_REPORTED.format(len(lines)))
 
 
 def check_installation_lock(target: Path) -> Check:
     path = lock_path(target)
     if not path.is_file():
-        return build_check_result("lock", "warn", "no toolwright.lock.json in the target; nothing installed by toolwright yet")
+        return build_check_result(KEY_LOCK, STATUS_WARN, TEXT_NO_TOOLWRIGHT_LOCK_JSON_IN_THE_TARGET_NOTHING_INSTALLED_BY_T)
     try:
         lock = read_lock(path)
     except (ValueError, OSError) as error:
-        return build_check_result("lock", "fail", str(error))
+        return build_check_result(KEY_LOCK, STATUS_FAIL, str(error))
     drift = lock_drift(lock or {}, target)
     if drift:
         first = drift[0]
-        return build_check_result("lock", "fail", f"{len(drift)} file(s) differ, e.g. {first['path']} ({first['status']})")
-    return build_check_result("lock", "ok", f"{len(lock.get('files', []))} managed file(s) match")
+        return build_check_result(KEY_LOCK, STATUS_FAIL, TEXT_FILE_S_DIFFER_E_G.format(len(drift), first[KEY_PATH], first[KEY_STATUS]))
+    return build_check_result(KEY_LOCK, STATUS_OK, TEXT_MANAGED_FILE_S_MATCH.format(len(lock.get(KEY_FILES, []))))
 
 
 def check_cli_state(target: Path) -> Check:
     directory = state_path(target).parent
     if not directory.exists():
-        return build_check_result("state", "warn", "no .toolwright/state.json yet")
+        return build_check_result(KEY_STATE, STATUS_WARN, TEXT_NO_TOOLWRIGHT_STATE_JSON_YET)
     if not directory.is_dir():
-        return build_check_result("state", "fail", f"{directory} is not a directory")
-    return build_check_result("state", "ok", str(directory))
+        return build_check_result(KEY_STATE, STATUS_FAIL, TEXT_IS_NOT_A_DIRECTORY.format(directory))
+    return build_check_result(KEY_STATE, STATUS_OK, str(directory))
 
 
 def run_diagnostic_checks(root: Path, target: Path, mcp: bool = True) -> list[Check]:
@@ -148,14 +218,14 @@ def run_diagnostic_checks(root: Path, target: Path, mcp: bool = True) -> list[Ch
         check_python_version(),
         check_repository_layout(root),
         check_artifact_counts(root),
-        check_command_available("git", required=True),
+        check_command_available(KEY_GIT, required=True),
         check_opencode_version(),
-        check_command_available("node", required=False),
-        check_command_available("rg", required=False),
-        check_command_available("ast-grep", required=False),
-        check_command_available("serena", required=False),
-        check_command_available("codegraph", required=False),
-        check_command_available("ralph", required=False),
+        check_command_available(KEY_NODE, required=False),
+        check_command_available(KEY_RG, required=False),
+        check_command_available(TOOL_AST_GREP, required=False),
+        check_command_available(TOOL_SERENA, required=False),
+        check_command_available(TOOL_CODEGRAPH, required=False),
+        check_command_available(KEY_RALPH, required=False),
         run_repository_validator(root),
         check_installation_lock(target),
         check_cli_state(target),
@@ -163,12 +233,12 @@ def run_diagnostic_checks(root: Path, target: Path, mcp: bool = True) -> list[Ch
     if mcp:
         checks.append(check_mcp_connections(target))
     else:
-        checks.append(build_check_result("mcp", "warn", "skipped by --no-mcp"))
+        checks.append(build_check_result(KEY_MCP, STATUS_WARN, TEXT_SKIPPED_BY_NO_MCP))
     return checks
 
 
 def summarize_checks(checks: list[Check]) -> dict[str, int]:
-    summary = {"ok": 0, "warn": 0, "fail": 0}
+    summary = {STATUS_OK: 0, STATUS_WARN: 0, STATUS_FAIL: 0}
     for check in checks:
         summary[check.status] = summary.get(check.status, 0) + 1
     return summary
@@ -176,6 +246,6 @@ def summarize_checks(checks: list[Check]) -> dict[str, int]:
 
 def checks_as_dict(checks: list[Check]) -> dict[str, Any]:
     return {
-        "checks": [{"id": check.id, "status": check.status, "detail": check.detail} for check in checks],
-        "summary": summarize_checks(checks),
+        KEY_CHECKS: [{KEY_ID: check.id, KEY_STATUS: check.status, KEY_DETAIL: check.detail} for check in checks],
+        KEY_SUMMARY: summarize_checks(checks),
     }

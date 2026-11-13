@@ -9,97 +9,144 @@ verified in this repository. Cells that were not verified are marked as such.
 Side effects: none.
 """
 from __future__ import annotations
+from .constants import KEY_FEATURE
+from .constants import KEY_FEATURES
+from .compat_strings import TEXT_FEATURE_LABEL
+from .compat_strings import TEMPLATE_DATA_ROW
+from .compat_strings import TEMPLATE_HEADER_ROW
+from .compat_strings import (
+    DEFAULT_ADAPTER,
+    EMPTY_STRING,
+    KEY_DISCLAIMER,
+    KEY_EXPERIMENTAL,
+    KEY_MCP,
+    KEY_NO,
+    KEY_NOTE,
+    KEY_TOOL,
+    KEY_V1,
+    KEY_V2,
+    KEY_VERSIONS,
+    KEY_YES,
+    NEWLINE,
+    TEXT_AGENT_DEFINITIONS,
+    TEXT_CODE_MODE,
+    TEXT_CODE_MODE_GROUPS_MCP_TOOLS_AND_REDUCES_SCHEMA_OVERHEAD,
+    TEXT_COMMAND_FILES_AND_AGENT_TARGETS_ARE_SUPPORTED_BY_BOTH,
+    TEXT_COMPACTION_CONTROLS,
+    TEXT_COMPATIBILITY_MATRIX_ONLY_IT_RECORDS_SUPPORTED_FEATURES_NOT_,
+    TEXT_COST_STATISTICS_JSON,
+    TEXT_EXPERIMENTAL_SUBAGENT_DEPTH_IS_V2_NATIVE,
+    TEXT_MARKDOWN_AGENTS_WITH_FRONTMATTER_ARE_READ_BY_BOTH_VERSIONS,
+    TEXT_MCP_CONFIGURATION,
+    TEXT_MCP_SERVERS,
+    TEXT_NATIVE_LSP_NAVIGATION,
+    TEXT_NOTE,
+    TEXT_NOT_VERIFIED,
+    TEXT_OPENCODE_STATS_COST_JSON_IS_VERIFIED_ON_2_2_7,
+    TEXT_SKILLS,
+    TEXT_SLASH_COMMANDS,
+    TEXT_SUBAGENT_DEPTH_CONTROL,
+    TEXT_TEXT,
+    TEXT_TEXT_2,
+    TEXT_THE_SKILL_TOOL_WAS_VERIFIED_ON_V2_ONLY,
+    TEXT_TOOL_OUTPUT_LIMITS,
+    TEXT_V1,
+    TEXT_V1_REQUIRES_OPENCODE_EXPERIMENTAL_LSP_TOOL_V2_DOES_NOT_RUN_L,
+    TEXT_V2,
+    TEXT_V2_REJECTS_THE_V1_SHAPE_SEE_AGENTS_MD_AND_ADR_001,
+    TEXT_VALIDATED_AGAINST_THE_V2_CONFIGURATION_LOADER,
+)
 
 from typing import Any
 
-DISCLAIMER = "Compatibility matrix only; it records supported features, not performance or benchmark results."
+DISCLAIMER = TEXT_COMPATIBILITY_MATRIX_ONLY_IT_RECORDS_SUPPORTED_FEATURES_NOT_
 
 MATRIX: tuple[dict[str, str], ...] = (
     {
-        "feature": "Agent definitions",
-        "v1": "yes",
-        "v2": "yes",
-        "note": "Markdown agents with frontmatter are read by both versions.",
+        KEY_FEATURE: TEXT_AGENT_DEFINITIONS,
+        KEY_V1: KEY_YES,
+        KEY_V2: KEY_YES,
+        KEY_NOTE: TEXT_MARKDOWN_AGENTS_WITH_FRONTMATTER_ARE_READ_BY_BOTH_VERSIONS,
     },
     {
-        "feature": "Slash commands",
-        "v1": "yes",
-        "v2": "yes",
-        "note": "Command files and agent targets are supported by both.",
+        KEY_FEATURE: TEXT_SLASH_COMMANDS,
+        KEY_V1: KEY_YES,
+        KEY_V2: KEY_YES,
+        KEY_NOTE: TEXT_COMMAND_FILES_AND_AGENT_TARGETS_ARE_SUPPORTED_BY_BOTH,
     },
     {
-        "feature": "Skills",
-        "v1": "not verified",
-        "v2": "yes",
-        "note": "The skill tool was verified on V2 only.",
+        KEY_FEATURE: TEXT_SKILLS,
+        KEY_V1: TEXT_NOT_VERIFIED,
+        KEY_V2: KEY_YES,
+        KEY_NOTE: TEXT_THE_SKILL_TOOL_WAS_VERIFIED_ON_V2_ONLY,
     },
     {
-        "feature": "MCP configuration",
-        "v1": "mcp",
-        "v2": "mcp.servers",
-        "note": "V2 rejects the V1 shape; see AGENTS.md and ADR-001.",
+        KEY_FEATURE: TEXT_MCP_CONFIGURATION,
+        KEY_V1: KEY_MCP,
+        KEY_V2: TEXT_MCP_SERVERS,
+        KEY_NOTE: TEXT_V2_REJECTS_THE_V1_SHAPE_SEE_AGENTS_MD_AND_ADR_001,
     },
     {
-        "feature": "Native LSP navigation",
-        "v1": "experimental",
-        "v2": "no",
-        "note": "V1 requires OPENCODE_EXPERIMENTAL_LSP_TOOL; V2 does not run language servers.",
+        KEY_FEATURE: TEXT_NATIVE_LSP_NAVIGATION,
+        KEY_V1: KEY_EXPERIMENTAL,
+        KEY_V2: KEY_NO,
+        KEY_NOTE: TEXT_V1_REQUIRES_OPENCODE_EXPERIMENTAL_LSP_TOOL_V2_DOES_NOT_RUN_L,
     },
     {
-        "feature": "Code Mode",
-        "v1": "no",
-        "v2": "yes",
-        "note": "Code Mode groups MCP tools and reduces schema overhead.",
+        KEY_FEATURE: TEXT_CODE_MODE,
+        KEY_V1: KEY_NO,
+        KEY_V2: KEY_YES,
+        KEY_NOTE: TEXT_CODE_MODE_GROUPS_MCP_TOOLS_AND_REDUCES_SCHEMA_OVERHEAD,
     },
     {
-        "feature": "Compaction controls",
-        "v1": "not verified",
-        "v2": "yes",
-        "note": "Validated against the V2 configuration loader.",
+        KEY_FEATURE: TEXT_COMPACTION_CONTROLS,
+        KEY_V1: TEXT_NOT_VERIFIED,
+        KEY_V2: KEY_YES,
+        KEY_NOTE: TEXT_VALIDATED_AGAINST_THE_V2_CONFIGURATION_LOADER,
     },
     {
-        "feature": "Tool output limits",
-        "v1": "not verified",
-        "v2": "yes",
-        "note": "Validated against the V2 configuration loader.",
+        KEY_FEATURE: TEXT_TOOL_OUTPUT_LIMITS,
+        KEY_V1: TEXT_NOT_VERIFIED,
+        KEY_V2: KEY_YES,
+        KEY_NOTE: TEXT_VALIDATED_AGAINST_THE_V2_CONFIGURATION_LOADER,
     },
     {
-        "feature": "Cost statistics JSON",
-        "v1": "not verified",
-        "v2": "yes",
-        "note": "opencode stats --cost --json is verified on 2.2.7.",
+        KEY_FEATURE: TEXT_COST_STATISTICS_JSON,
+        KEY_V1: TEXT_NOT_VERIFIED,
+        KEY_V2: KEY_YES,
+        KEY_NOTE: TEXT_OPENCODE_STATS_COST_JSON_IS_VERIFIED_ON_2_2_7,
     },
     {
-        "feature": "Subagent depth control",
-        "v1": "not verified",
-        "v2": "yes",
-        "note": "experimental.subagent_depth is V2-native.",
+        KEY_FEATURE: TEXT_SUBAGENT_DEPTH_CONTROL,
+        KEY_V1: TEXT_NOT_VERIFIED,
+        KEY_V2: KEY_YES,
+        KEY_NOTE: TEXT_EXPERIMENTAL_SUBAGENT_DEPTH_IS_V2_NATIVE,
     },
 )
 
 
 def as_compatibility_dict() -> dict[str, Any]:
     return {
-        "tool": "opencode",
-        "versions": ["v1", "v2"],
-        "disclaimer": DISCLAIMER,
-        "features": [dict(row) for row in MATRIX],
+        KEY_TOOL: DEFAULT_ADAPTER,
+        KEY_VERSIONS: [KEY_V1, KEY_V2],
+        KEY_DISCLAIMER: DISCLAIMER,
+        KEY_FEATURES: [dict(row) for row in MATRIX],
     }
 
 
 def render_text() -> str:
-    headers = ("Feature", "V1", "V2", "Note")
-    rows = [(row["feature"], row["v1"], row["v2"], row["note"]) for row in MATRIX]
+    headers = (TEXT_FEATURE_LABEL, TEXT_V1, TEXT_V2, TEXT_NOTE)
+    rows = [(row[KEY_FEATURE], row[KEY_V1], row[KEY_V2], row[KEY_NOTE]) for row in MATRIX]
     widths = [
         max(len(headers[0]), *(len(row[0]) for row in rows)),
         max(len(headers[1]), *(len(row[1]) for row in rows)),
         max(len(headers[2]), *(len(row[2]) for row in rows)),
     ]
     lines = [
-        f"{headers[0]:<{widths[0]}}  {headers[1]:<{widths[1]}}  {headers[2]:<{widths[2]}}  {headers[3]}",
-        f"{'-' * widths[0]}  {'-' * widths[1]}  {'-' * widths[2]}  {'-' * len(headers[3])}",
+        TEMPLATE_HEADER_ROW.format(headers[0], widths[0], headers[1], widths[1], headers[2], widths[2], headers[3]),
+        TEXT_TEXT.format(TEXT_TEXT_2 * widths[0], TEXT_TEXT_2 * widths[1], TEXT_TEXT_2 * widths[2], TEXT_TEXT_2 * len(headers[3])),
     ]
     for feature, v1, v2, note in rows:
-        lines.append(f"{feature:<{widths[0]}}  {v1:<{widths[1]}}  {v2:<{widths[2]}}  {note}")
-    lines.extend(["", DISCLAIMER])
-    return "\n".join(lines)
+        lines.append(TEMPLATE_DATA_ROW.format(feature, widths[0], v1, widths[1], v2, widths[2], note))
+    lines.extend([EMPTY_STRING, DISCLAIMER])
+    return NEWLINE.join(lines)

@@ -7,6 +7,31 @@ Side effects: reads the lock and local files. Network access happens only when
 ``remote=True`` and uses ``git ls-remote`` without modifying the repository.
 """
 from __future__ import annotations
+from .updater_strings import (
+    DEFAULT_COMMIT,
+    EMPTY_STRING,
+    KEY_AVAILABLE_COMMIT,
+    KEY_COMMIT,
+    KEY_CURRENT,
+    KEY_CURRENT_COMMIT,
+    KEY_FILES_CHANGED,
+    KEY_LOCK,
+    KEY_LOCKED_COMMIT,
+    KEY_MESSAGE,
+    KEY_REMOTE_CHECKED,
+    KEY_REPOSITORY,
+    KEY_SOURCE,
+    KEY_STATUS,
+    STATUS_MODIFIED,
+    TEXT_COULD_NOT_READ_THE_REMOTE_HEAD_CHECK_NETWORK_ACCESS,
+    TEXT_MANAGED_FILE_S_DIFFER_FROM_THE_LOCK,
+    TEXT_NO_LOCK,
+    TEXT_NO_LOCK_FILE_AT_RUN_TOOLWRIGHT_INSTALL_APPLY_FIRST,
+    TEXT_REMOTE_HEAD_IS_LOCK_IS,
+    TEXT_SOURCE_ADVANCED_FROM_TO,
+    TEXT_UPDATE_AVAILABLE,
+    TEXT_UP_TO_DATE,
+)
 
 from pathlib import Path
 from typing import Any
@@ -21,49 +46,49 @@ def check_for_updates(root: Path, target: Path, remote: bool = False) -> dict[st
     lock = read_lock(path)
     if lock is None:
         return {
-            "status": "no-lock",
-            "message": f"no lock file at {path}; run 'toolwright install --apply' first",
-            "lock": str(path),
+            KEY_STATUS: TEXT_NO_LOCK,
+            KEY_MESSAGE: TEXT_NO_LOCK_FILE_AT_RUN_TOOLWRIGHT_INSTALL_APPLY_FIRST.format(path),
+            KEY_LOCK: str(path),
         }
 
-    source = lock.get("source", {})
-    locked_commit = str(source.get("commit", "unknown"))
-    current_commit = git_commit(root) or "unknown"
+    source = lock.get(KEY_SOURCE, {})
+    locked_commit = str(source.get(KEY_COMMIT, DEFAULT_COMMIT))
+    current_commit = git_commit(root) or DEFAULT_COMMIT
     drift = lock_drift(lock, target)
 
     result: dict[str, Any] = {
-        "lock": str(path),
-        "locked_commit": locked_commit,
-        "current_commit": current_commit,
-        "files_changed": drift,
-        "remote_checked": False,
-        "available_commit": None,
-        "status": "current",
+        KEY_LOCK: str(path),
+        KEY_LOCKED_COMMIT: locked_commit,
+        KEY_CURRENT_COMMIT: current_commit,
+        KEY_FILES_CHANGED: drift,
+        KEY_REMOTE_CHECKED: False,
+        KEY_AVAILABLE_COMMIT: None,
+        KEY_STATUS: KEY_CURRENT,
     }
 
     if drift:
-        result["status"] = "modified"
-        result["message"] = f"{len(drift)} managed file(s) differ from the lock"
+        result[KEY_STATUS] = STATUS_MODIFIED
+        result[KEY_MESSAGE] = TEXT_MANAGED_FILE_S_DIFFER_FROM_THE_LOCK.format(len(drift))
         return result
 
     if locked_commit != current_commit:
-        result["status"] = "update-available"
-        result["message"] = f"source advanced from {locked_commit[:12]} to {current_commit[:12]}"
+        result[KEY_STATUS] = TEXT_UPDATE_AVAILABLE
+        result[KEY_MESSAGE] = TEXT_SOURCE_ADVANCED_FROM_TO.format(locked_commit[:12], current_commit[:12])
         return result
 
     if remote:
-        repository = str(source.get("repository", ""))
+        repository = str(source.get(KEY_REPOSITORY, EMPTY_STRING))
         available = git_remote_head(repository) if repository else None
-        result["remote_checked"] = True
-        result["available_commit"] = available
+        result[KEY_REMOTE_CHECKED] = True
+        result[KEY_AVAILABLE_COMMIT] = available
         if available and available != locked_commit:
-            result["status"] = "update-available"
-            result["message"] = f"remote HEAD is {available[:12]}, lock is {locked_commit[:12]}"
+            result[KEY_STATUS] = TEXT_UPDATE_AVAILABLE
+            result[KEY_MESSAGE] = TEXT_REMOTE_HEAD_IS_LOCK_IS.format(available[:12], locked_commit[:12])
             return result
         if available is None:
-            result["status"] = "unknown"
-            result["message"] = "could not read the remote HEAD; check network access"
+            result[KEY_STATUS] = DEFAULT_COMMIT
+            result[KEY_MESSAGE] = TEXT_COULD_NOT_READ_THE_REMOTE_HEAD_CHECK_NETWORK_ACCESS
             return result
 
-    result["message"] = "up to date"
+    result[KEY_MESSAGE] = TEXT_UP_TO_DATE
     return result

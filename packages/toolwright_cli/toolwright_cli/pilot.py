@@ -14,6 +14,99 @@ model invocation. It never stages or commits in the user's repository and never
 runs Ralph.
 """
 from __future__ import annotations
+from .constants import COMMAND_FETCH
+from .constants import GIT_FETCH_HEAD
+from .constants import KEY_FINISHED_AT
+from .constants import KEY_FOCUS
+from .pilot_strings import (
+    BASH,
+    DEFAULT_ADAPTER,
+    EMPTY_STRING,
+    ENCODING_UTF8,
+    FLAG_AGENT,
+    FLAG_AUTO,
+    FLAG_DEPTH,
+    FLAG_DETACH,
+    FLAG_FILTER_BLOB_NONE,
+    FLAG_FORMAT,
+    FLAG_MODEL,
+    FLAG_NO_CHECKOUT,
+    FLAG_STANDALONE,
+    ISO_TIMESPEC,
+    KEY_AGENT,
+    KEY_ARTIFACTS,
+    KEY_CHECKOUT,
+    KEY_CLONE,
+    KEY_COMMIT,
+    KEY_COMPONENTS,
+    KEY_COORDINATOR,
+    KEY_COST,
+    KEY_DRY_RUN,
+    KEY_GIT,
+    KEY_INPUT_TOKENS,
+    KEY_JSON,
+    KEY_MODEL,
+    KEY_NAME,
+    KEY_OPENCODE_EXIT,
+    KEY_OPENCODE_STDERR,
+    KEY_ORIGIN,
+    KEY_OUTPUT_TOKENS,
+    KEY_PILOT,
+    KEY_PILOTS,
+    KEY_PROFILE,
+    KEY_PROMPT,
+    KEY_REPOSITORY,
+    KEY_RUN,
+    KEY_SETUP_COMMAND,
+    KEY_STACK,
+    KEY_STARTED_AT,
+    KEY_STEPS,
+    KEY_SUCCESS,
+    KEY_TOOL_CALLS,
+    KEY_TOOL_ERRORS,
+    KEY_VERIFICATION_COMMAND,
+    KEY_VERIFICATION_EXIT,
+    KEY_WALL_TIME_SECONDS,
+    KEY_WORKSPACE,
+    NEWLINE,
+    SEPARATOR_COMMA_SPACE,
+    SEPARATOR_SPACE,
+    TEXT_1,
+    TEXT_BASH_LC,
+    TEXT_C,
+    TEXT_COMMAND_EXIT,
+    TEXT_CONFIGS_PILOTS_PILOTS_TOML,
+    TEXT_GIT_CLONE_NO_CHECKOUT_FILTER_BLOB_NONE,
+    TEXT_GIT_C_CHECKOUT_DETACH_FETCH_HEAD,
+    TEXT_GIT_C_FETCH_DEPTH_1_ORIGIN,
+    TEXT_GIT_FAILED,
+    TEXT_INVALID_TOML,
+    TEXT_IS_REQUIRED_FOR_A_REAL_PILOT_RUN,
+    TEXT_LC,
+    TEXT_META_JSON,
+    TEXT_MISSING_PILOTS_NAME_TABLES,
+    TEXT_OPENCODE_CONFIG,
+    TEXT_OPENCODE_OPENCODE_JSONC,
+    TEXT_OPENCODE_PILOT_MODEL,
+    TEXT_OPENCODE_STANDALONE_RUN_AGENT_MODEL_AUTO_FORMAT_JSON_PROMPT,
+    TEXT_PILOTS_MISSING,
+    TEXT_PILOTS_MUST_BE_A_TABLE,
+    TEXT_PILOT_CONFIGURATION_NOT_FOUND,
+    TEXT_PILOT_RUN_PILOT_REPOSITORY_COMMIT_MODEL_OPENCODE_EXIT_SUCCES,
+    TEXT_PILOT_SETUP_FAILED,
+    TEXT_PROVIDER_MODEL,
+    TEXT_PWD,
+    TEXT_SESSION_JSONL,
+    TEXT_SETUP_COMMAND,
+    TEXT_SUMMARY_MD,
+    TEXT_TOOLWRIGHT_INSTALL_PROFILE_TARGET_APPLY,
+    TEXT_TOOLWRIGHT_PILOT,
+    TEXT_UNKNOWN_PILOT_AVAILABLE,
+    TEXT_VERIFICATION_COMMAND,
+    TEXT_VERIFICATION_COMMAND_2,
+    TEXT_VERIFICATION_LOG,
+    TEXT_WORKSPACE_ALREADY_CONTAINS_A_CLONE,
+)
 
 import json
 import os
@@ -31,47 +124,47 @@ from .paths import ToolWrightError
 from .process import capture_command
 from .profiles import load_profiles, resolve_components
 
-CONFIG = Path("configs/pilots/pilots.toml")
-REQUIRED = ("repository", "commit", "stack", "focus")
+CONFIG = Path(TEXT_CONFIGS_PILOTS_PILOTS_TOML)
+REQUIRED = (KEY_REPOSITORY, KEY_COMMIT, KEY_STACK, KEY_FOCUS)
 
 
 def load_pilots(root: Path) -> dict[str, dict[str, str]]:
     path = root / CONFIG
     if not path.is_file():
-        raise ToolWrightError(f"pilot configuration not found: {path}")
+        raise ToolWrightError(TEXT_PILOT_CONFIGURATION_NOT_FOUND.format(path))
     try:
-        data = tomllib.loads(path.read_text(encoding="utf-8"))
+        data = tomllib.loads(path.read_text(encoding=ENCODING_UTF8))
     except tomllib.TOMLDecodeError as error:
-        raise ToolWrightError(f"{path}: invalid TOML: {error}") from error
-    pilots = data.get("pilots")
+        raise ToolWrightError(TEXT_INVALID_TOML.format(path, error)) from error
+    pilots = data.get(KEY_PILOTS)
     if not isinstance(pilots, dict) or not pilots:
-        raise ToolWrightError(f"{path}: missing [pilots.<name>] tables")
+        raise ToolWrightError(TEXT_MISSING_PILOTS_NAME_TABLES.format(path))
     results: dict[str, dict[str, str]] = {}
     for name, entry in pilots.items():
         if not isinstance(entry, dict):
-            raise ToolWrightError(f"{path}: pilots.{name} must be a table")
-        missing = [field for field in REQUIRED if not str(entry.get(field, "")).strip()]
+            raise ToolWrightError(TEXT_PILOTS_MUST_BE_A_TABLE.format(path, name))
+        missing = [field for field in REQUIRED if not str(entry.get(field, EMPTY_STRING)).strip()]
         if missing:
-            raise ToolWrightError(f"{path}: pilots.{name} missing {', '.join(missing)}")
+            raise ToolWrightError(TEXT_PILOTS_MISSING.format(path, name, SEPARATOR_COMMA_SPACE.join(missing)))
         results[name] = {field: str(entry[field]) for field in REQUIRED}
     return results
 
 
 def list_pilots(root: Path) -> list[dict[str, str]]:
     pilots = load_pilots(root)
-    return [{"name": name, **entry} for name, entry in sorted(pilots.items())]
+    return [{KEY_NAME: name, **entry} for name, entry in sorted(pilots.items())]
 
 
 def require_pilot_argument(value: str | None, label: str) -> str:
     if not value or not value.strip():
-        raise ToolWrightError(f"{label} is required for a real pilot run")
+        raise ToolWrightError(TEXT_IS_REQUIRED_FOR_A_REAL_PILOT_RUN.format(label))
     return value.strip()
 
 
 def run_git(args: list[str], cwd: Path | None = None, timeout: int = 1800) -> None:
-    code, stdout, stderr = capture_command(["git", *args], cwd=cwd, timeout=timeout)
+    code, stdout, stderr = capture_command([KEY_GIT, *args], cwd=cwd, timeout=timeout)
     if code != 0:
-        raise ToolWrightError(f"git {' '.join(args)} failed: {stderr or stdout}")
+        raise ToolWrightError(TEXT_GIT_FAILED.format(SEPARATOR_SPACE.join(args), stderr or stdout))
 
 
 def run_pilot(
@@ -84,133 +177,120 @@ def run_pilot(
     keep: bool,
     dry_run: bool,
     model: str | None,
-    agent: str = "coordinator",
+    agent: str = KEY_COORDINATOR,
     setup_command: str | None = None,
 ) -> dict[str, Any]:
     pilots = load_pilots(root)
     if name not in pilots:
-        raise ToolWrightError(f"unknown pilot: {name} (available: {', '.join(sorted(pilots))})")
+        raise ToolWrightError(TEXT_UNKNOWN_PILOT_AVAILABLE.format(name, SEPARATOR_COMMA_SPACE.join(sorted(pilots))))
     pilot = pilots[name]
     profiles = load_profiles(root)
     components = resolve_components(profiles, profile, None)
-    directory = workspace or Path(tempfile.mkdtemp(prefix=f"toolwright-pilot-{name}-"))
-    clone = directory / "clone"
-    artifacts = directory / "artifacts"
+    directory = workspace or Path(tempfile.mkdtemp(prefix=TEXT_TOOLWRIGHT_PILOT.format(name)))
+    clone = directory / KEY_CLONE
+    artifacts = directory / KEY_ARTIFACTS
     commands = [
-        f"git clone --no-checkout --filter=blob:none {pilot['repository']} {clone}",
-        f"git -C {clone} fetch --depth 1 origin {pilot['commit']}",
-        f"git -C {clone} checkout --detach FETCH_HEAD",
-        f"toolwright install --profile {profile} --target {clone} --apply",
-        f"bash -lc {setup_command or '<setup command>'}",
-        f"opencode --standalone run --agent {agent} --model {model or '<provider/model>'} --auto --format json <prompt>",
-        f"bash -lc {verify_command or '<verification command>'}",
+        TEXT_GIT_CLONE_NO_CHECKOUT_FILTER_BLOB_NONE.format(pilot[KEY_REPOSITORY], clone),
+        TEXT_GIT_C_FETCH_DEPTH_1_ORIGIN.format(clone, pilot[KEY_COMMIT]),
+        TEXT_GIT_C_CHECKOUT_DETACH_FETCH_HEAD.format(clone),
+        TEXT_TOOLWRIGHT_INSTALL_PROFILE_TARGET_APPLY.format(profile, clone),
+        TEXT_BASH_LC.format(setup_command or TEXT_SETUP_COMMAND),
+        TEXT_OPENCODE_STANDALONE_RUN_AGENT_MODEL_AUTO_FORMAT_JSON_PROMPT.format(agent, model or TEXT_PROVIDER_MODEL),
+        TEXT_BASH_LC.format(verify_command or TEXT_VERIFICATION_COMMAND),
     ]
     if dry_run:
         return {
-            "pilot": name,
-            "repository": pilot["repository"],
-            "commit": pilot["commit"],
-            "workspace": str(directory),
-            "profile": profile,
-            "components": components,
-            "steps": commands,
-            "dry_run": True,
+            KEY_PILOT: name,
+            KEY_REPOSITORY: pilot[KEY_REPOSITORY],
+            KEY_COMMIT: pilot[KEY_COMMIT],
+            KEY_WORKSPACE: str(directory),
+            KEY_PROFILE: profile,
+            KEY_COMPONENTS: components,
+            KEY_STEPS: commands,
+            KEY_DRY_RUN: True,
         }
 
-    prompt_value = require_pilot_argument(prompt, "prompt")
-    verify_value = require_pilot_argument(verify_command, "verification command")
-    model_value = require_pilot_argument(model, "OPENCODE_PILOT_MODEL")
+    prompt_value = require_pilot_argument(prompt, KEY_PROMPT)
+    verify_value = require_pilot_argument(verify_command, TEXT_VERIFICATION_COMMAND_2)
+    model_value = require_pilot_argument(model, TEXT_OPENCODE_PILOT_MODEL)
     directory.mkdir(parents=True, exist_ok=True)
     artifacts.mkdir(parents=True, exist_ok=True)
     if clone.exists():
-        raise ToolWrightError(f"workspace already contains a clone: {clone}")
+        raise ToolWrightError(TEXT_WORKSPACE_ALREADY_CONTAINS_A_CLONE.format(clone))
 
     started = time.monotonic()
-    started_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    started_at = datetime.now(timezone.utc).isoformat(timespec=ISO_TIMESPEC)
     try:
-        run_git(["clone", "--no-checkout", "--filter=blob:none", pilot["repository"], str(clone)])
-        run_git(["-C", str(clone), "fetch", "--depth", "1", "origin", pilot["commit"]])
-        run_git(["-C", str(clone), "checkout", "--detach", "FETCH_HEAD"])
+        run_git([KEY_CLONE, FLAG_NO_CHECKOUT, FLAG_FILTER_BLOB_NONE, pilot[KEY_REPOSITORY], str(clone)])
+        run_git([TEXT_C, str(clone), COMMAND_FETCH, FLAG_DEPTH, TEXT_1, KEY_ORIGIN, pilot[KEY_COMMIT]])
+        run_git([TEXT_C, str(clone), KEY_CHECKOUT, FLAG_DETACH, GIT_FETCH_HEAD])
         install(root=root, target=clone, profile=profile, components=components, apply=True)
         if setup_command:
             setup_code, setup_out, setup_err = capture_command(
-                ["bash", "-lc", setup_command],
+                [BASH, TEXT_LC, setup_command],
                 cwd=clone,
                 timeout=1800,
             )
             if setup_code != 0:
-                raise ToolWrightError(f"pilot setup failed: {setup_err or setup_out}")
+                raise ToolWrightError(TEXT_PILOT_SETUP_FAILED.format(setup_err or setup_out))
         environment = dict(os.environ)
-        environment["PWD"] = str(clone)
-        environment["OPENCODE_CONFIG"] = str(clone / ".opencode/opencode.jsonc")
+        environment[TEXT_PWD] = str(clone)
+        environment[TEXT_OPENCODE_CONFIG] = str(clone / TEXT_OPENCODE_OPENCODE_JSONC)
         code, session, session_error = capture_command(
             [
-                "opencode",
-                "--standalone",
-                "run",
-                "--agent",
+                DEFAULT_ADAPTER,
+                FLAG_STANDALONE,
+                KEY_RUN,
+                FLAG_AGENT,
                 agent,
-                "--model",
+                FLAG_MODEL,
                 model_value,
-                "--auto",
-                "--format",
-                "json",
+                FLAG_AUTO,
+                FLAG_FORMAT,
+                KEY_JSON,
                 prompt_value,
             ],
             cwd=clone,
             env=environment,
             timeout=3600,
         )
-        (artifacts / "session.jsonl").write_text(session, encoding="utf-8")
-        verify_code, verify_out, verify_err = capture_command(["bash", "-lc", verify_value], cwd=clone, timeout=3600)
-        (artifacts / "verification.log").write_text(
-            f"command: {verify_value}\nexit: {verify_code}\n\n{verify_out}\n{verify_err}\n",
-            encoding="utf-8",
+        (artifacts / TEXT_SESSION_JSONL).write_text(session, encoding=ENCODING_UTF8)
+        verify_code, verify_out, verify_err = capture_command([BASH, TEXT_LC, verify_value], cwd=clone, timeout=3600)
+        (artifacts / TEXT_VERIFICATION_LOG).write_text(
+            TEXT_COMMAND_EXIT.format(verify_value, verify_code, verify_out, verify_err),
+            encoding=ENCODING_UTF8,
         )
-        session_totals = stats.parse_session(artifacts / "session.jsonl")
+        session_totals = stats.parse_session(artifacts / TEXT_SESSION_JSONL)
         result = {
-            "pilot": name,
-            "repository": pilot["repository"],
-            "commit": pilot["commit"],
-            "profile": profile,
-            "components": components,
-            "model": model_value,
-            "agent": agent,
-            "prompt": prompt_value,
-            "verification_command": verify_value,
-            "verification_exit": verify_code,
-            "opencode_exit": code,
-            "setup_command": setup_command,
-            "success": verify_code == 0 and code == 0,
-            "opencode_stderr": session_error,
-            "started_at": started_at,
-            "finished_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-            "wall_time_seconds": round(time.monotonic() - started, 2),
-            "cost": session_totals["cost"],
-            "input_tokens": session_totals["input_tokens"],
-            "output_tokens": session_totals["output_tokens"],
-            "tool_calls": session_totals["tool_calls"],
-            "tool_errors": session_totals["tool_errors"],
-            "workspace": str(directory),
-            "dry_run": False,
+            KEY_PILOT: name,
+            KEY_REPOSITORY: pilot[KEY_REPOSITORY],
+            KEY_COMMIT: pilot[KEY_COMMIT],
+            KEY_PROFILE: profile,
+            KEY_COMPONENTS: components,
+            KEY_MODEL: model_value,
+            KEY_AGENT: agent,
+            KEY_PROMPT: prompt_value,
+            KEY_VERIFICATION_COMMAND: verify_value,
+            KEY_VERIFICATION_EXIT: verify_code,
+            KEY_OPENCODE_EXIT: code,
+            KEY_SETUP_COMMAND: setup_command,
+            KEY_SUCCESS: verify_code == 0 and code == 0,
+            KEY_OPENCODE_STDERR: session_error,
+            KEY_STARTED_AT: started_at,
+            KEY_FINISHED_AT: datetime.now(timezone.utc).isoformat(timespec=ISO_TIMESPEC),
+            KEY_WALL_TIME_SECONDS: round(time.monotonic() - started, 2),
+            KEY_COST: session_totals[KEY_COST],
+            KEY_INPUT_TOKENS: session_totals[KEY_INPUT_TOKENS],
+            KEY_OUTPUT_TOKENS: session_totals[KEY_OUTPUT_TOKENS],
+            KEY_TOOL_CALLS: session_totals[KEY_TOOL_CALLS],
+            KEY_TOOL_ERRORS: session_totals[KEY_TOOL_ERRORS],
+            KEY_WORKSPACE: str(directory),
+            KEY_DRY_RUN: False,
         }
-        (artifacts / "meta.json").write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-        (artifacts / "summary.md").write_text(
-            "# Pilot Run\n\n"
-            f"- Pilot: {name}\n"
-            f"- Repository: {pilot['repository']}\n"
-            f"- Commit: {pilot['commit']}\n"
-            f"- Model: {model_value}\n"
-            f"- OpenCode exit: {code}\n"
-            f"- Success: {verify_code == 0 and code == 0}\n"
-            f"- Verification exit: {verify_code}\n"
-            f"- Cost: ${session_totals['cost']:.6f}\n"
-            f"- Tokens: {session_totals['input_tokens']} input, {session_totals['output_tokens']} output\n"
-            f"- Tool calls: {session_totals['tool_calls']} ({session_totals['tool_errors']} errors)\n"
-            f"- Wall time: {result['wall_time_seconds']}s\n\n"
-            "Success requires both the OpenCode run and the verification command to exit zero. "
-            "Rework and human intervention must be recorded separately.\n",
-            encoding="utf-8",
+        (artifacts / TEXT_META_JSON).write_text(json.dumps(result, indent=2, sort_keys=True) + NEWLINE, encoding=ENCODING_UTF8)
+        (artifacts / TEXT_SUMMARY_MD).write_text(
+            TEXT_PILOT_RUN_PILOT_REPOSITORY_COMMIT_MODEL_OPENCODE_EXIT_SUCCES.format(name, pilot[KEY_REPOSITORY], pilot[KEY_COMMIT], model_value, code, verify_code == 0 and code == 0, verify_code, session_totals[KEY_COST], session_totals[KEY_INPUT_TOKENS], session_totals[KEY_OUTPUT_TOKENS], session_totals[KEY_TOOL_CALLS], session_totals[KEY_TOOL_ERRORS], result[KEY_WALL_TIME_SECONDS]),
+            encoding=ENCODING_UTF8,
         )
         return result
     finally:
